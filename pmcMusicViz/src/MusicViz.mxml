@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+xmlns:view="ca.ryerson.musicViz.view.components.*"
+	layout="absolute" 
+	creationComplete="facade.startup(this)" backgroundColor="0xFFFFFF">
+		<mx:Script>
+		<![CDATA[
+		import ca.ryerson.musicViz.*;
+		private var facade:ApplicationFacade = ApplicationFacade.getInstance();
+		]]>
+	</mx:Script>
+	    <mx:VBox>
+	    	
+	    	<mx:HBox width="100%">
+	    		<mx:Button id="readFile" label="read"/>
+	    	    <mx:Button id="playFile" label="play"/>
+	    	    <mx:Button id="stopFile" label="stop"/>
+	    	</mx:HBox>
+			
+	    <mx:HBox  width="100%">
+			
+			<view:TonalVisualize id="tonalVisualize" />
+			<view:BeatVisualize id="beatVisualize"/>
+		</mx:HBox>
+		</mx:VBox>
+</mx:Application>

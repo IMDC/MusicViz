@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	 xmlns:mx="http://www.adobe.com/2006/mxml"
+	  xmlns:local="*">
+	
+    <mx:Label text="Tonal Events" x="0" y="0"/>
+    <!--<mx:TextArea id="instFamily" height="80" width="138" x="0" y="20"/> -->
+    
+   
+    <local:LidaFanComponent  visible="false" name="fan0" x="10" y="20" />
+    <local:LidaFanComponent2  visible="false" name="fan1" x="136" y="20"/>
+    <local:LidaFanComponent3  visible="false" name="fan2" x="262" y="20"/>
+    <local:LidaFanComponent4  visible="false" name="fan3" x="388" y="20"/>
+    <local:LidaFanComponent5  visible="false" name="fan4" x="512" y="20"/>
+    <local:LidaFanComponent6  visible="false" name="fan5" x="10" y="210" />
+    <local:LidaFanComponent7  visible="false" name="fan6" x="136" y="210"/>
+    <local:LidaFanComponent8  visible="false" name="fan7" x="262" y="210"/>
+    <local:LidaFanComponent9  visible="false" name="fan8" x="388" y="210"/>
+    <local:LidaFanComponent10 visible="false" name="fan9" x="512" y="210"/>
+    <local:LidaFanComponent  visible="false" name="fan10" x="10" y="400" />
+    <local:LidaFanComponent2  visible="false" name="fan11" x="136" y="400"/>
+    <local:LidaFanComponent3  visible="false" name="fan12" x="262" y="400"/>
+    <local:LidaFanComponent4  visible="false" name="fan13" x="388" y="400"/>
+    <local:LidaFanComponent5  visible="false" name="fan14" x="512" y="400"/>
+    
+
+   
+    <!--
+    <local:FanBladeDecayComponent name="fan0" x="150" y="0" />
+    <local:FanBladeDecayComponent name="fan1" x="287" y="0"/>
+    <local:FanBladeDecayComponent name="fan2" x="424" y="0"/>
+    <local:FanBladeDecayComponent name="fan3" x="561" y="0"/>
+    <local:FanBladeDecayComponent name="fan4" x="698" y="0"/>
+    <local:FanBladeDecayComponent name="fan5" x="150" y="254" />
+    <local:FanBladeDecayComponent name="fan6" x="287" y="254"/>
+    <local:FanBladeDecayComponent name="fan7" x="424" y="254"/>
+    <local:FanBladeDecayComponent name="fan8" x="561" y="254"/>
+    <local:FanBladeDecayComponent name="fan9" x="698" y="254"/>
+    -->
+   </mx:Canvas>
+     <!--
+    <mx:Canvas width="452" height="358" id="fans">
+  
+       <mx:TextArea x="10" y="10" height="107" width="138" name="fan0"/>
+        <mx:TextArea x="156" y="10" height="107" width="138" name="fan1"/>
+        <mx:TextArea x="302" y="240" height="107" width="138" name="fan2"/>
+        <mx:TextArea x="156" y="240" height="107" width="138" name="fan3"/>
+        <mx:TextArea x="10" y="240" height="107" width="138" name="fan4"/>
+        <mx:TextArea x="302" y="125" height="107" width="138" name="fan5"/>
+        <mx:TextArea x="156" y="125" height="107" width="138" name="fan6"/>
+        <mx:TextArea x="10" y="125" height="107" width="138" name="fan7"/>
+        <mx:TextArea x="302" y="10" height="107" width="138" name="fan8"/> 
+        
+    </mx:Canvas>
+	-->
+	
+
