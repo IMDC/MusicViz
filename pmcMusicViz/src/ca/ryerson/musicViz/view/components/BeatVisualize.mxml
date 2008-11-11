@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-	xmlns:local="*" >
-	<mx:Label text="Beat Events"/>
-	<!--<mx:TextArea width="338" height="262" id="beat"/> -->
-	<local:BeatComponent id="percViz"/>
-</mx:VBox>
