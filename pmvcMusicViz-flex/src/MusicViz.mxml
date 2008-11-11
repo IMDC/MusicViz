@@ -11,6 +11,7 @@ xmlns:view="ca.ryerson.musicViz.view.components.*"
 	</mx:Script>
 	    <mx:VBox>
 	    	
+	    	
 	    	<mx:HBox width="100%">
 	    		<mx:Button id="readFile" label="read"/>
 	    	    <mx:Button id="playFile" label="play"/>
