@@ -212,7 +212,6 @@ public class MidiNoteReceiver implements Receiver
 	    	 * [ ( newPitch - initialPitchInChannel )/MAXVALUEOFWHEEL ] * rangeOfPitchForChannel : This gives us the change in semitones.
 	    	 */
 		    double offset =(((double)pitchBend - (double)initialPitchSettings[channel])/(double)MAXVALUE)*rangeOfPitchValues[channel];
-	
 		    if( (pitchBend - (double)initialPitchSettings[channel]) != 0.0)
 		    {
 			   // OpenGLMessagePitchChange pitchChange = new OpenGLMessagePitchChange(offset, channel,rangeOfPitchValues[channel]);

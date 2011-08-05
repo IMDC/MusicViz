@@ -76,8 +76,8 @@ public class ListChangeListener implements ListSelectionListener
 			//disables the slider 
 			gui.disableSlider();
 			gui.setCurrentValueForSlider(0);
-			gui.getPlayPauseToggleButton().setText("Play ");	//tells the toggle button to be reset to play
-			gui.getPlayPauseToggleButton().setSelected(false); //deselects the button because nothing is playing
+			gui.setTextJToggleButton("Play ");	//tells the toggle button to be reset to play
+			gui.setSelectedJToggleButton(false); //deselects the button because nothing is playing
 		}
 		else
 		{

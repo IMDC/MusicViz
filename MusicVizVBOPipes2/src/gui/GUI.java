@@ -363,10 +363,32 @@ public class GUI
 		return loopCheckBox;
 	}
 
-	public JToggleButton getPlayPauseToggleButton()
+	public void setSelectedJToggleButton(final boolean isSelected )
 	{
-		return playPauseButton;
+		Runnable setSelected = 
+	      	new Runnable()
+			{
+	        	public void run()
+	        	{
+	        		playPauseButton.setSelected(isSelected);
+	        	}
+			};
+		SwingUtilities.invokeLater(setSelected);
 	}
+	
+	public void setTextJToggleButton(final String text )
+	{
+		Runnable setText = 
+	      	new Runnable()
+			{
+	        	public void run()
+	        	{
+	        		playPauseButton.setText(text);
+	        	}
+			};
+		SwingUtilities.invokeLater(setText);
+	}
+	
 	
 	public JList getPlaylist()
 	{

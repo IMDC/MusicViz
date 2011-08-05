@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 
 import controller.Controller;
 import gui.GUI;
-import player.Player;
 import player.Song;
 import utilities.Utils;
 
@@ -35,7 +34,6 @@ public class PlaylistSaver
 	public void savePlaylist( File fileToSaveTo )
 	{
 		GUI gui = controller.getGUI();
-		Player player = controller.getPlayer();
 		if( gui.getPlaylist().getModel().getSize() != 0 )
 		{
 	    	try

@@ -69,8 +69,8 @@ public class ListMouseListener implements MouseListener
 			//controller.play();
 			
 			//Now i have to make the JToggleButton toggle to show this change.
-			gui.getPlayPauseToggleButton().setSelected(true);
-			gui.getPlayPauseToggleButton().setText("Pause");
+			gui.setSelectedJToggleButton(true);
+			gui.setTextJToggleButton("Pause");
 		}	
 		list.repaint();
 	}

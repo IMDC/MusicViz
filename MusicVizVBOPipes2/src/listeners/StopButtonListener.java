@@ -21,8 +21,8 @@ public class StopButtonListener implements ActionListener
 		GUI gui = controller.getGUI();
 		Player player = controller.getPlayer();
 		player.stop();
-		gui.getPlayPauseToggleButton().setSelected(false);
-		gui.getPlayPauseToggleButton().setText("Play ");
+		gui.setSelectedJToggleButton(false);
+		gui.setTextJToggleButton("Play ");
 	}
 
 }

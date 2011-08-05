@@ -124,8 +124,8 @@ public class MidiMetaEventListener implements MetaEventListener
 				}
 				else
 				{
-					gui.getPlayPauseToggleButton().setText("Play ");
-					gui.getPlayPauseToggleButton().setSelected(false);
+					gui.setTextJToggleButton("Play ");
+					gui.setSelectedJToggleButton(false);
 				}
 			}
 			
