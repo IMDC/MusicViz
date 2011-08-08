@@ -88,7 +88,7 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 		//was just changed to this value. 
 		long currentTick = player.getCurrentTickPositionOfSong();
 		//<Tick>,<BPM> = at variable <tick> the beat changed to <BPM>
-		TreeMap<Long, Float> ticksWhereBeatChanged = controller.getTicksWithBPMChanges();
+		TreeMap<Long, Float> ticksWhereBeatChanged = player.getTicksWithBPMChanges();//controller.getTicksWithBPMChanges();
 		Object ticks[] = ticksWhereBeatChanged.keySet().toArray();
 		double theTimeWhereTheBeatChanged = 0;
 		for( int i = 0; i < ticks.length; i++ )
@@ -98,19 +98,19 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 				if( currentTick >= (Long)ticks[i] && currentTick < (Long)ticks[i+1] )
 				{
 					theTickWhereBeatWasChanged = (Long)ticks[i];
-					theTimeWhereTheBeatChanged = controller.getTicksWithBPMChangesToTime().get(theTickWhereBeatWasChanged);
+					theTimeWhereTheBeatChanged = player.getTicksWithBPMChangesToTime().get(theTickWhereBeatWasChanged);
 					break;
 				}
 			}
 			else
 			{
 				theTickWhereBeatWasChanged = (Long)ticks[i];
-				theTimeWhereTheBeatChanged = controller.getTicksWithBPMChangesToTime().get(theTickWhereBeatWasChanged);
+				theTimeWhereTheBeatChanged = player.getTicksWithBPMChangesToTime().get(theTickWhereBeatWasChanged);
 				break;
 			}
 		}
-		controller.setLastTick(theTickWhereBeatWasChanged);
-		controller.setLastTimeInSeconds(theTimeWhereTheBeatChanged);
+		player.setLastTick(theTickWhereBeatWasChanged);
+		player.setLastTimeInSeconds(theTimeWhereTheBeatChanged);
 		
 		//Only start the song again, if the song was playing before the user changed position
 		if( isRunning )

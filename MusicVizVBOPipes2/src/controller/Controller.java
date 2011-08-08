@@ -1,19 +1,9 @@
 package controller;
 
-import java.util.HashMap;
-import java.util.TreeMap;
-
-import javax.swing.JCheckBox;
-import javax.swing.JList;
-import javax.swing.JToggleButton;
-
-
-import com.jogamp.opengl.util.Animator;
 
 import gui.GUI;
 import player.Player;
-import player.Song;
-import visualizer.Visualizer;
+
 
 /**
  * The program follows a 3 tier/MVC programming model. This is the class that allows the program to achieve 
@@ -50,112 +40,6 @@ public class Controller
 	{
 		return gui;
 	}
-
-	/*public void setEnabledPlayerFrame(final boolean enabled )
-	{
-		gui.setEnabledPlayerFrame(enabled);
-	}
-	
-
-	public JCheckBox getLoopCheckBox()
-	{
-		return gui.getLoopCheckBox();
-	}
-	
-
-	public Visualizer getVisualizer()
-	{
-		return gui.getVisualizer();
-	}
-	
-
-	public JToggleButton getPlayPauseToggleButton()
-	{
-		return gui.getPlayPauseToggleButton();
-	}
-	
-
-	public JList getPlaylist()
-	{
-		return gui.getPlaylist();
-	}
-	
-	public void setMaximumValueForSlider( final int maxTimeInSeconds )
-	{
-		gui.setMaximumValueForSlider(maxTimeInSeconds);
-	}
-
-	public void setCurrentValueForSlider( final int currentValue )
-	{
-		gui.setCurrentValueForSlider(currentValue);
-	}
-	
-	public void enableSlider()
-	{
-		gui.enableSlider();
-	}
-	
-	public void disableSlider()
-	{
-		gui.disableSlider();
-	}
-	
-
-	public void updateTimer(String time)
-	{
-		gui.updateTimer(time);
-	}
-	
-
-	public void updateTotalTime(String time )
-	{
-		gui.updateTotalTime(time);
-	}
-	
-
-	public boolean startPreprocessing( Song file, boolean autoPlayAfterPreprocessing )
-	{
-		return player.openMidiFile(file,autoPlayAfterPreprocessing);
-	}
-
-	public void play()
-	{
-		player.play();
-	}
-	
-
-	public void stop()
-	{
-		player.stop();
-	}
-	
-
-	public void pause()
-	{
-		player.pause();
-	}
-	
-
-	public void changeSongPosition( int position )
-	{
-		player.setPosition(position);
-	}
-	
-
-	public Song getCurrentSongPlaying()
-	{
-		return player.currentSongPlaying();
-	}
-	
-	public boolean isRunning()
-	{
-		return player.isRunning();
-	}
-	
-	public long getCurrentTickPositionOfSong()
-	{
-		return player.getCurrentTickPositionOfSong();
-	}*/
 	
 	/**
 	 * The pre processor finds all the places in the song where the BPM changes. The changes are
@@ -170,10 +54,10 @@ public class Controller
 	 * 
 	 * @return
 	 */
-	public TreeMap<Long, Float> getTicksWithBPMChanges()
-	{
-		return player.getTicksWithBPMChanges();
-	}
+	//public TreeMap<Long, Float> getTicksWithBPMChanges()
+	//{
+	//	return player.getTicksWithBPMChanges();
+	//}
 	
 	/**
 	 * After the preprocessing is done, the ticks and ticks converted to time are stored in the
@@ -184,10 +68,10 @@ public class Controller
 	 * 
 	 * @return
 	 */
-	public HashMap<Long, Double> getTicksWithBPMChangesToTime()
-	{
-		return player.getTicksWithBPMChangesToTime();
-	}
+	//public HashMap<Long, Double> getTicksWithBPMChangesToTime()
+	//{
+	//	return player.getTicksWithBPMChangesToTime();
+	//}
 	
 	/**
 	 * When a beat change event is caught by the MidiMetaEventListener object, it sets
@@ -197,10 +81,10 @@ public class Controller
 	 * 
 	 * @param time un-rouded time in seconds.
 	 */
-	public void setLastTimeInSeconds( double time )
-	{
-		player.setLastTimeInSeconds(time);
-	}
+	//public void setLastTimeInSeconds( double time )
+	//{
+	//	player.setLastTimeInSeconds(time);
+	//}
 	
 	/**
 	 * When a beat change event is caught by the MidiMetaEventListener object, it sets
@@ -211,14 +95,14 @@ public class Controller
 	 * 
 	 * @param tick 
 	 */
-	public void setLastTick( long tick )
-	{
-		player.setLastTick(tick);
-	}
+	//public void setLastTick( long tick )
+	//{
+	//	player.setLastTick(tick);
+	//}
 	
-	public void setColourSetToUse( int colourSet )
-	{
-		player.setColourSetToUse(colourSet);
-	}
+	//public void setColourSetToUse( int colourSet )
+	//{
+	//	player.setColourSetToUse(colourSet);
+	//}
 	
 }

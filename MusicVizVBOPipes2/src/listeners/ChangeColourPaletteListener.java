@@ -5,6 +5,8 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JOptionPane;
 
+import player.Player;
+
 import controller.Controller;
 
 public class ChangeColourPaletteListener implements MouseListener
@@ -25,6 +27,7 @@ public class ChangeColourPaletteListener implements MouseListener
 
 	public void mouseReleased(MouseEvent e) {
         Object[] possibilities = {1, 2, 3};
+        Player player = controller.getPlayer();
         try
         {
 	        int choice = (Integer)JOptionPane.showInputDialog(
@@ -44,11 +47,11 @@ public class ChangeColourPaletteListener implements MouseListener
 	                            possibilities[0]);
 	
 	        //If a string was returned, say so.
-	        controller.setColourSetToUse(choice);
+	        player.setColourSetToUse(choice);
         }
         catch(NullPointerException ex)
         {
-        	controller.setColourSetToUse((Integer)possibilities[0]);
+        	player.setColourSetToUse((Integer)possibilities[0]);
         }
 	}
 }
