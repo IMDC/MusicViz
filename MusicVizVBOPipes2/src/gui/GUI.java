@@ -58,6 +58,8 @@ import com.jogamp.opengl.util.Animator;
  */
 public class GUI 
 {
+	private boolean isInitialized;
+	
 	//This is for the MidiPlayer
 	private JFrame frame;
 	
@@ -85,7 +87,7 @@ public class GUI
 	
 	private String totalTime;
 	
-	private Controller controller;
+	//private Controller controller;
 	
 	//This is for the OpenGL visualizers.
 	private Frame openGLFrame;
@@ -104,11 +106,9 @@ public class GUI
 	 * @param height
 	 * @param c
 	 */
-	public GUI(int width, int height, Controller c)
+	public GUI(int width, int height)
 	{
-        //Sets the program controller which allows communication with the backend.
-        controller = c;
-		
+		isInitialized = false;
         Runnable playerGui = new Runnable()
         		{
         			public void run()
@@ -128,7 +128,7 @@ public class GUI
         new Thread(openGL).start();
 	}
 	
-	private void startPlayerGUI()
+	private synchronized void startPlayerGUI()
 	{
 		//Sets up the JFrame and adds a border layout, so panels can be easily arranged.
 		frame = new JFrame();
@@ -212,9 +212,19 @@ public class GUI
         sliderPanel.add(slider);
         playListPanel.add(scrollPane);
         
-
-        //Add listeners
-        stopButton.addActionListener( new StopButtonListener(controller) );
+        isInitialized = true;
+        notify();
+        frame.setVisible(true);
+	}
+	
+	public  synchronized void  addListeners(Controller controller) throws InterruptedException
+	{
+		if( !isInitialized  )
+		{
+			wait();
+		}
+		stopButton.addActionListener( 
+				new StopButtonListener(controller) );
         
         playList.addMouseListener(new ListMouseListener(controller));
         playList.addKeyListener( new ListKeyListener(controller) );
@@ -229,9 +239,11 @@ public class GUI
         playPauseButton.addActionListener( new PlayPauseToggleButtonActionListener(controller) );
         loopCheckBox.addActionListener( new LoopingCheckBoxListener() );
         changeColourMenuItem.addMouseListener(new ChangeColourPaletteListener(controller));
-        addSliderChangeListener();
         
-        frame.setVisible(true);
+		SlideMouseListener sml = new SlideMouseListener(controller);
+		slider.addMouseListener( sml );
+		slider.addMouseMotionListener( sml );
+		slider.addChangeListener( new SliderTimeChangeListener(controller) );
 	}
 	
 	private void startVisualizer()
@@ -241,7 +253,7 @@ public class GUI
          */
         openGLFrame = new Frame("Visualizer");
         canvas = new GLCanvas();
-        visualizer = new Visualizer(controller);
+        visualizer = new Visualizer();
 	    canvas.addGLEventListener(visualizer);
 	    canvas.addMouseMotionListener(visualizer);
 	    canvas.addMouseWheelListener(visualizer);
@@ -400,12 +412,12 @@ public class GUI
 		totalTime = time;
 	}
 	
-	private void addSliderChangeListener()
+	/*private void addSliderChangeListener()
 	{
 		SlideMouseListener sml = new SlideMouseListener(controller);
 		slider.addMouseListener( sml );
 		slider.addMouseMotionListener( sml );
 		slider.addChangeListener( new SliderTimeChangeListener(controller) );
-	}
+	}*/
 	
 }

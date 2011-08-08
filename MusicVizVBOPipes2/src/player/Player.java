@@ -54,40 +54,34 @@ public class Player
 	 * 
 	 * @param c
 	 * @throws MidiUnavailableException 
-	 * @throws MidiUnavailableException 
 	 */
-	public Player(Controller c) 
+	public Player() throws MidiUnavailableException 
 	{
-		controller = c;
 
-		try 
-		{
-			sequencer = MidiSystem.getSequencer();
-			transmitter = sequencer.getTransmitter();
-			receiver = new MidiNoteReceiver(controller,sequencer);
-			transmitter.setReceiver(receiver);
-			sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );
-			colourSetToUse = 0;
-			/*synthesizer = MidiSystem.getSynthesizer(false);
-			synthReceiver = synthesizer.getReceiver();
-			transmitter = sequencer.getTransmitter();
-			transmitter.setReceiver(synthReceiver);
-			synthesizer.open();
-			Soundbank soundBank = MidiSystem.getSoundbank(new File("C:\\Program Files (x86)\\Java\\jre6\\lib\\audio\\soundbank-deluxe.gm"));
-			synthesizer.loadAllInstruments(soundBank);
-			System.out.println( synthesizer.getDefaultSoundbank() );*/
-			
-			sequencer.open();
-		} 
-		catch (MidiUnavailableException e) 
-		{
-			JOptionPane.showMessageDialog(null, "Your system's midi player cannot be accessed.\n" +
-												"Please close any programs using the midi player\n" +
-												"and restart the program. If you are in Windows7, " +
-												"please plug in speakers or headphones because windows "+ 
-												"thinks there is no sound card on your machine until you do so.");
-			System.exit(0);
-		} 
+		sequencer = MidiSystem.getSequencer();
+		transmitter = sequencer.getTransmitter();
+		/*receiver = new MidiNoteReceiver(controller,sequencer);
+		transmitter.setReceiver(receiver);
+		sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );*/
+		colourSetToUse = 0;
+		/*synthesizer = MidiSystem.getSynthesizer(false);
+		synthReceiver = synthesizer.getReceiver();
+		transmitter = sequencer.getTransmitter();
+		transmitter.setReceiver(synthReceiver);
+		synthesizer.open();
+		Soundbank soundBank = MidiSystem.getSoundbank(new File("C:\\Program Files (x86)\\Java\\jre6\\lib\\audio\\soundbank-deluxe.gm"));
+		synthesizer.loadAllInstruments(soundBank);
+		System.out.println( synthesizer.getDefaultSoundbank() );*/
+		
+		sequencer.open();
+	}
+	
+	public void init( Controller controller )
+	{
+		this.controller = controller;
+		receiver = new MidiNoteReceiver(controller,sequencer);
+		transmitter.setReceiver(receiver);
+		sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );
 	}
 	
 	/**

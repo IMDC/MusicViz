@@ -36,6 +36,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	public static final int MAX_PIPES_PER_CHANNEL = 3;
 	public static final int FLOATS_USED_PER_3D_POINT = 3;
 	public static final int FLOATS_USED_PER_COLOUR = 4;
+	private static final int WAVE = 5;
 	
 	private GLU glu;
 	private Camera camera;
@@ -67,10 +68,11 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	private float[][] lastLoomingPositionInChannelAndPipe;
 	private float[][][] lastCoorindates;
 	private float[][][] lastDimensions;
+	private int[][] lastWave;
 	
 	public HashMap<Integer, LinkedList<OpenGLMessage>> messageQueue;
 	
-	public Visualizer( Controller controller )
+	public Visualizer()
 	{
 		this.messageQueue = new HashMap<Integer, LinkedList<OpenGLMessage>>();
 		
@@ -79,6 +81,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		this.lastLoomingPositionInChannelAndPipe = new float[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 		this.lastCoorindates = new float[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL][FLOATS_USED_PER_3D_POINT];
 		this.lastDimensions = new float[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL][FLOATS_USED_PER_3D_POINT];
+		this.lastWave = new int[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 		
 		for( int i = 0; i < MAX_CHANNELS; i++ )
 		{
@@ -87,6 +90,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 				this.lastPitchInChannelAndPipe[i][j] = 0;
 				this.lastVolumeInChannelAndPipe[i][j] = 0;
 				this.lastLoomingPositionInChannelAndPipe[i][j] = 0;
+				this.lastWave[i][j] = WAVE;
 				
 				for( int k = 0; k < FLOATS_USED_PER_3D_POINT; k++ )
 				{
@@ -181,10 +185,11 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 			lastLoomingPositionInChannelAndPipe[channel][pipe] = loomingPosition;
 			coordinates =  p.getInitialPlacement();
 			coordinates[0] += loomingPosition;
-			coordinates[1] = relativeNoteOnGrid;
+			coordinates[1] = relativeNoteOnGrid - lastWave[channel][pipe];
 			coordinates[2] = 0;
 			
 			lastCoorindates[channel][pipe] = coordinates;
+			lastWave[channel][pipe] = (-lastWave[channel][pipe]);
 			
 			float newFace[][] =  p.createNewFacePrimitive(xAndY, coordinates[0], coordinates[1], 0);
 			
