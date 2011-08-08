@@ -196,10 +196,10 @@ public class MidiNoteReceiver implements Receiver
 		    lastTimeNoteWasPlayed = seconds;
 	    }
 	    
-	    if( status >= 224 && status <= 239 )
-	    {
-	    	channel = status - 224;
-	    	int pitchBend = (midiByte[2] & 0xff) << 7 | (midiByte[1] & 0xff);
+	    //if( status >= 224 && status <= 239 )
+	    //{
+	    //	channel = status - 224;
+	    //	int pitchBend = (midiByte[2] & 0xff) << 7 | (midiByte[1] & 0xff);
 
 	    	/*
 	    	 * The way pitch bends work is that there is a pitch wheel; the pitch wheel has a min and max value of 0x0000 and
@@ -211,13 +211,13 @@ public class MidiNoteReceiver implements Receiver
 	    	 * 
 	    	 * [ ( newPitch - initialPitchInChannel )/MAXVALUEOFWHEEL ] * rangeOfPitchForChannel : This gives us the change in semitones.
 	    	 */
-		    double offset =(((double)pitchBend - (double)initialPitchSettings[channel])/(double)MAXVALUE)*rangeOfPitchValues[channel];
-		    if( (pitchBend - (double)initialPitchSettings[channel]) != 0.0)
-		    {
+		    //double offset =(((double)pitchBend - (double)initialPitchSettings[channel])/(double)MAXVALUE)*rangeOfPitchValues[channel];
+		   // if( (pitchBend - (double)initialPitchSettings[channel]) != 0.0)
+		   // {
 			   // OpenGLMessagePitchChange pitchChange = new OpenGLMessagePitchChange(offset, channel,rangeOfPitchValues[channel]);
 	//		   // controller.getVisualizer().messageQueue.get(channel).add(pitchChange);
-		    }
-	    }
+		    //}
+	    //}
 	    //Checks the status for a note on event
 	    else if ( status >= 144 && status <= 159 )
 	    {

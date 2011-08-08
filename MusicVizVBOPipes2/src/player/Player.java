@@ -60,10 +60,11 @@ public class Player
 
 		sequencer = MidiSystem.getSequencer();
 		transmitter = sequencer.getTransmitter();
+		colourSetToUse = 0;
 		/*receiver = new MidiNoteReceiver(controller,sequencer);
 		transmitter.setReceiver(receiver);
 		sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );*/
-		colourSetToUse = 0;
+		
 		/*synthesizer = MidiSystem.getSynthesizer(false);
 		synthReceiver = synthesizer.getReceiver();
 		transmitter = sequencer.getTransmitter();

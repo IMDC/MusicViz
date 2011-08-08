@@ -163,7 +163,7 @@ public class Pipe
 					dataCounter++;
 					floatBuffer.put(dataCounter, 0);
 				}	
-				eZ = eZ + 2;
+				eZ = eZ + 3;
 			}
 			
 			float lf[][] = getFace(floatBuffer, 0);
@@ -350,7 +350,7 @@ public class Pipe
 	 * @param z: z axis translation
 	 * @return
 	 */
-	public float[][] createNewFacePrimitive(float radius, float x, float y, float z)
+	public float[][] createNewFace(float radius, float x, float y, float z)
 	{
 		float[][] newFace = new float[AMOUNT_OF_VERTS][3];
 		
@@ -494,7 +494,7 @@ public class Pipe
 	{
 		positionAnimationQueue.clear();
 		alphaAnimationQueue.clear();
-		lastFace = createNewFacePrimitive(INITIAL_RADIUS, initialPlacement[0], initialPlacement[1], initialPlacement[2]);
+		lastFace = createNewFace(INITIAL_RADIUS, initialPlacement[0], initialPlacement[1], initialPlacement[2]);
 		lastAlpha = 1;	
 	}
 	

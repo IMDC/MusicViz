@@ -24,7 +24,6 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import controller.Controller;
 import player.messages.OpenGLMessage;
 import player.messages.OpenGLMessageTonal;
 import visualizer.camera.Camera;
@@ -36,7 +35,6 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	public static final int MAX_PIPES_PER_CHANNEL = 3;
 	public static final int FLOATS_USED_PER_3D_POINT = 3;
 	public static final int FLOATS_USED_PER_COLOUR = 4;
-	private static final int WAVE = 5;
 	
 	private GLU glu;
 	private Camera camera;
@@ -68,7 +66,6 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	private float[][] lastLoomingPositionInChannelAndPipe;
 	private float[][][] lastCoorindates;
 	private float[][][] lastDimensions;
-	private int[][] lastWave;
 	
 	public HashMap<Integer, LinkedList<OpenGLMessage>> messageQueue;
 	
@@ -81,7 +78,6 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		this.lastLoomingPositionInChannelAndPipe = new float[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 		this.lastCoorindates = new float[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL][FLOATS_USED_PER_3D_POINT];
 		this.lastDimensions = new float[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL][FLOATS_USED_PER_3D_POINT];
-		this.lastWave = new int[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 		
 		for( int i = 0; i < MAX_CHANNELS; i++ )
 		{
@@ -90,7 +86,6 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 				this.lastPitchInChannelAndPipe[i][j] = 0;
 				this.lastVolumeInChannelAndPipe[i][j] = 0;
 				this.lastLoomingPositionInChannelAndPipe[i][j] = 0;
-				this.lastWave[i][j] = WAVE;
 				
 				for( int k = 0; k < FLOATS_USED_PER_3D_POINT; k++ )
 				{
@@ -185,13 +180,13 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 			lastLoomingPositionInChannelAndPipe[channel][pipe] = loomingPosition;
 			coordinates =  p.getInitialPlacement();
 			coordinates[0] += loomingPosition;
-			coordinates[1] = relativeNoteOnGrid - lastWave[channel][pipe];
+			coordinates[1] = relativeNoteOnGrid;
 			coordinates[2] = 0;
 			
-			lastCoorindates[channel][pipe] = coordinates;
-			lastWave[channel][pipe] = (-lastWave[channel][pipe]);
 			
-			float newFace[][] =  p.createNewFacePrimitive(xAndY, coordinates[0], coordinates[1], 0);
+			lastCoorindates[channel][pipe] = coordinates;
+			
+			float newFace[][] =  p.createNewFace(xAndY, coordinates[0], coordinates[1], 0);
 			
 			p.getPositionAnimationList().addLast(newFace);
 			p.getAlphaAnimationList().addLast(alpha);
@@ -202,7 +197,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 			coordinates[1] = lastCoorindates[channel][pipe][1];
 			coordinates[2] = 0;
 			
-			float newFace[][] =  p.createNewFacePrimitive(0, coordinates[0], coordinates[1], 0);
+			float newFace[][] =  p.createNewFace(0, coordinates[0], coordinates[1], 0);
 
 			p.getPositionAnimationList().addLast(newFace);
 			p.getAlphaAnimationList().addLast(alpha);
