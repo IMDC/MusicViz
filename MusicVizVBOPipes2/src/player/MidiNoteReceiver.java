@@ -219,7 +219,7 @@ public class MidiNoteReceiver implements Receiver
 		    //}
 	    //}
 	    //Checks the status for a note on event
-	    else if ( status >= 144 && status <= 159 )
+	    if ( status >= 144 && status <= 159 )
 	    {
 	    	// calculates the channel the note belongs to
 	    	channel = status > 143 ? status - 144 : status - 128;
