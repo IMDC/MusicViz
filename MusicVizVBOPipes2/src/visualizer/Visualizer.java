@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import player.messages.OpenGLMessage;
+import player.messages.OpenGLMessageBeat;
 import player.messages.OpenGLMessageTonal;
 import visualizer.camera.Camera;
 
@@ -32,6 +33,7 @@ import visualizer.camera.Camera;
 public class Visualizer implements GLEventListener, MouseMotionListener, KeyListener, MouseWheelListener
 {
 	public static final int MAX_CHANNELS = 16;
+	public static final int MAX_BEAT_PIPES = 5;
 	public static final int MAX_PIPES_PER_CHANNEL = 3;
 	public static final int FLOATS_USED_PER_3D_POINT = 3;
 	public static final int FLOATS_USED_PER_COLOUR = 4;
@@ -45,6 +47,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	private FPSTimer timer;
 	
 	private Pipe[][] pipes;
+	private Beat[] beats;
 	private int[] pipesToUse = {0} ;
 	
 	private Color colours[] = { 
@@ -106,7 +109,6 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		final GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
-        
         timer.update();
         
         camera.update();
@@ -124,16 +126,33 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		    		{
 		    			processTones((OpenGLMessageTonal)message, drawable);
 		    		}
+		    		else if( message.getMessage() == OpenGLMessage.BEAT )
+		    		{
+		    			beats[((OpenGLMessageBeat)message).getPipe()].draw(drawable, true);
+		    		}
 		    	}
 		    }
 	    }
 
+	    /*Cube.draw(drawable, 10);
+	    gl.glPushMatrix();
+	    	gl.glTranslatef(20, 0, 0);
+	    	Cube.draw(drawable, 10);
+	    	gl.glTranslatef(20, 0, 0);
+	    	Cube.draw(drawable, 10);
+	    gl.glPopMatrix();*/
+	    
 	    for( int i = 0; i < pipesToUse.length ; i++ )
 	    {	
 	    	for( int j = 0; j < MAX_PIPES_PER_CHANNEL; j++ )
 	    	{
 	    		pipes[ pipesToUse[i] ][j].draw(drawable);
 	    	}
+	    }
+	    
+	    for( int i = 0; i < MAX_BEAT_PIPES; i++ )
+	    {
+	    	beats[i].draw(drawable, false);
 	    }
 	}
 
@@ -236,13 +255,15 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, lightDiffuse0,0);
 		gl.glEnable(GL2.GL_LIGHT0);
 		
+		glu = new GLU();
+		
         ((Component) drawable).addKeyListener(this);
        
         camera = new Camera(0, 80,500,0,0,0);
 
 		//Create the pipes and position them properly with their appropriate color
 		float[] initialColour = {1,0,0,1f};
-		float[] intialPosition = {10,0,0};
+		float[] initialPosition = {10,0,0};
 		pipes = new Pipe[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 
 		for( int i = 0; i < MAX_CHANNELS; i++ )
@@ -252,15 +273,25 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 				initialColour[0] = (float) (colours[i].getRed() / 255.0);
 				initialColour[1] = (float) (colours[i].getGreen() / 255.0);
 				initialColour[2] = (float) (colours[i].getBlue() / 255.0);
-				pipes[i][j] = new Pipe(0,0, 200, initialColour, intialPosition);
+				pipes[i][j] = new Pipe(0,0, 200, initialColour, initialPosition);
 				pipes[i][j].createPipe(drawable);
-				intialPosition[1] += 7;
+				initialPosition[1] -= 7;
 			}
-			intialPosition[1] = 0;
-			intialPosition[0] = intialPosition[0]+25;
+			initialPosition[1] = 0;
+			initialPosition[0] = initialPosition[0]+25;
 		}
 		
-		glu = new GLU();
+		initialPosition[0] = 0;
+		initialPosition[1] = 0;
+		initialPosition[2] = 0;
+		beats = new Beat[MAX_BEAT_PIPES];
+		for( int i = 0; i < MAX_BEAT_PIPES; i++ )
+		{
+			beats[i] = new Beat(initialPosition, initialColour, 200, 15);
+			initialPosition[0] += 40;
+		}
+		
+		
 		timer = new FPSTimer();
 	}
 	

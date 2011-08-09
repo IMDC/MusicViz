@@ -261,8 +261,8 @@ public class MidiNoteReceiver implements Receiver
 	    	{
 	    		//Beats, with note offs do have a velocity that is needed, tones don't
 	    		
-    			velocity = (int) (midiByte[2] & 0xff);
-    			beatEventProcessing(note, velocity);
+    			//velocity = (int) (midiByte[2] & 0xff);
+    			//beatEventProcessing(note, velocity);
     		}
     	}
 	}
@@ -297,7 +297,7 @@ public class MidiNoteReceiver implements Receiver
 		OpenGLMessageBeat beat = bp.processBeat(note, velocity);
 		if( beat != null )
 		{
-	//		controller.getVisualizer().messageQueue.get(9).add(beat);
+			controller.getGUI().getVisualizer().messageQueue.get(9).add(beat);
 		}
 	}
 	

@@ -56,11 +56,11 @@ public class Pipe
 	 * These are used for the placement of the pipes and random operations
 	 * which are used for testing the object.
 	 */
-	private float[] initialPlacement;
-	private float[] initialColor;
+	private final float[] initialPlacement;
+	private final float[] initialColor;
 	
-	private int channel;
-	private int pipe;
+	private final int channel;
+	private final int pipe;
 	
 	
 	
