@@ -15,23 +15,24 @@ public class Pipe
 	public static final int AMOUNT_OF_VERTS = 6;
 	public static final int FLOATS_USED_PER_COLOUR = 4;
 	public static final float INITIAL_RADIUS = 0;
+	private static final int AMOUNT_BETWEEN_FACES = 4;
 	
 	//Amount of FLOATS that make up the vertex and its information.
 	//The information for a vertex is placed as follows:
 	//VVVCCCCNNN. Therefore there are 10 floats for the information for a vertex.
 	//Each V,C and N are a signal number specified as a float.
-	private static int SIZE_OF_VERTEX_INFORMATION = 10;
+	private static final int SIZE_OF_VERTEX_INFORMATION = 10;
 							
 	//The amount of sections the pipe has. Note: 1 section has 2 faces.
-	private int amountOfSections; 
+	private final int amountOfSections; 
 	
 	//The amount of faces the pipe has. Note: The amount of faces
 	//is the amountOfSections + 1
-	private int amountOfFaces; 
+	private final int amountOfFaces; 
 	
 	//To make a pipe with 3 sides (AKA triangle), we need 4 verticies.
 	//Therefore, the amount of sides we have is: AMOUNT_OF_VERTS - 1
-	private int amountOfSides; 
+	private final int amountOfSides; 
 	
 	//Holds the order that the verticies are drawn in
 	private ArrayList<Integer> indicies;
@@ -163,7 +164,7 @@ public class Pipe
 					dataCounter++;
 					floatBuffer.put(dataCounter, 0);
 				}	
-				eZ = eZ + 3;
+				eZ = eZ + AMOUNT_BETWEEN_FACES;
 			}
 			
 			float lf[][] = getFace(floatBuffer, 0);

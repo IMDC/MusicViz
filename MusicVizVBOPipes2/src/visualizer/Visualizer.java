@@ -252,7 +252,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 				initialColour[0] = (float) (colours[i].getRed() / 255.0);
 				initialColour[1] = (float) (colours[i].getGreen() / 255.0);
 				initialColour[2] = (float) (colours[i].getBlue() / 255.0);
-				pipes[i][j] = new Pipe(0,0, 250, initialColour, intialPosition);
+				pipes[i][j] = new Pipe(0,0, 200, initialColour, intialPosition);
 				pipes[i][j].createPipe(drawable);
 				intialPosition[1] += 7;
 			}
