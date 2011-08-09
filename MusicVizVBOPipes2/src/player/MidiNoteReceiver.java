@@ -183,9 +183,9 @@ public class MidiNoteReceiver implements Receiver
 	    int note = -1;
 	    int seconds = 0;
 	    GUI gui = controller.getGUI();
-	    
-	    if( sequencer.isRunning() )
-	    {
+
+	   // if( sequencer.isRunning() )
+	   // {
 		    // Used to update the slider to show current position in the song
 		    seconds = Utils.microSecondsToSeconds(sequencer.getMicrosecondPosition());
 		    if( (seconds - lastTimeNoteWasPlayed) > 0 )
@@ -194,7 +194,7 @@ public class MidiNoteReceiver implements Receiver
 		    	gui.updateTimer(Utils.secondsToTime(seconds));
 		    }
 		    lastTimeNoteWasPlayed = seconds;
-	    }
+	   // }
 	    
 	    //if( status >= 224 && status <= 239 )
 	    //{
