@@ -285,11 +285,15 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		initialPosition[0] = 0;
 		initialPosition[1] = 0;
 		initialPosition[2] = 0;
+		int positions[] = {-80,-40,-160,0,-120};
+		int sizes[] = {35,20,15,15,20};
+		int iSizes[] = {25,33,11,11,33};
 		beats = new Beat[MAX_BEAT_PIPES];
 		for( int i = 0; i < MAX_BEAT_PIPES; i++ )
 		{
-			beats[i] = new Beat(initialPosition, beatColours[i], 200, 15);
-			initialPosition[0] -= 40;
+			initialPosition[0] = positions[i];
+			beats[i] = new Beat(initialPosition, beatColours[i], 200, sizes[i],iSizes[i]);
+			//initialPosition[0] -= 40;
 		}
 		
 		

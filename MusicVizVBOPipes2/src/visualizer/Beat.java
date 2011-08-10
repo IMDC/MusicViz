@@ -16,6 +16,7 @@ public class Beat
 	private final float[] initialColour;
 	private final int maxLengthOfBeat;
 	private int radius;
+	private int innerRadius;
 	private int position;
 	
 	/**
@@ -30,10 +31,11 @@ public class Beat
 	 * 		animate the beat objects in the same amount of time.
 	 * @param radius: The radius of the beat.
 	 */
-	public Beat( float[] initialPlacement, float[] initialColour, int amountOfFaces, int radius )
+	public Beat( float[] initialPlacement, float[] initialColour, int amountOfFaces, int radius, int innerRadius )
 	{
 		this.glu = new GLU();
 		this.radius = radius;
+		this.innerRadius = innerRadius;
 		this.quadric = this.glu.gluNewQuadric();
 		this.amountOfFaces = amountOfFaces;
 		this.initialPlacement = initialPlacement.clone();
@@ -92,6 +94,6 @@ public class Beat
 		//Position and draw it
 		gl.glTranslatef(initialPlacement[0], initialPlacement[1], position);
 		gl.glColor4f(initialColour[0],initialColour[1],initialColour[2], currentAlpha);
-		glu.gluDisk(quadric, radius, radius - 4, 15, 1);
+		glu.gluDisk(quadric, radius, innerRadius, 15, 1);
 	}
 }
