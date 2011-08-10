@@ -50,6 +50,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	private Beat[] beats;
 	private int[] pipesToUse = {0} ;
 	
+	private float[][] beatColours = {{1,0,0,1},{0,1,0,1},{0,0,1,1},{0,1,1,1},{1,1,0,1}};
 	private Color colours[] = { 
 			new Color(255, 0, 0),  new Color(255, 72, 0), new Color(255, 145, 0),new Color(255, 217, 0),
 			new Color(217, 255, 0),new Color(145, 255, 0),new Color(72, 255, 0) ,new Color(0, 255, 217),
@@ -134,7 +135,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		    }
 	    }
 
-	    /*Cube.draw(drawable, 10);
+	   /* Cube.draw(drawable, 10);
 	    gl.glPushMatrix();
 	    	gl.glTranslatef(20, 0, 0);
 	    	Cube.draw(drawable, 10);
@@ -256,14 +257,14 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		gl.glEnable(GL2.GL_LIGHT0);
 		
 		glu = new GLU();
-		
+
         ((Component) drawable).addKeyListener(this);
        
         camera = new Camera(0, 80,500,0,0,0);
 
 		//Create the pipes and position them properly with their appropriate color
 		float[] initialColour = {1,0,0,1f};
-		float[] initialPosition = {10,0,0};
+		float[] initialPosition = {0,0,0};
 		pipes = new Pipe[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 
 		for( int i = 0; i < MAX_CHANNELS; i++ )
@@ -278,7 +279,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 				initialPosition[1] -= 7;
 			}
 			initialPosition[1] = 0;
-			initialPosition[0] = initialPosition[0]+25;
+			initialPosition[0] = initialPosition[0]-25;
 		}
 		
 		initialPosition[0] = 0;
@@ -287,8 +288,8 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		beats = new Beat[MAX_BEAT_PIPES];
 		for( int i = 0; i < MAX_BEAT_PIPES; i++ )
 		{
-			beats[i] = new Beat(initialPosition, initialColour, 200, 15);
-			initialPosition[0] += 40;
+			beats[i] = new Beat(initialPosition, beatColours[i], 200, 15);
+			initialPosition[0] -= 40;
 		}
 		
 		
