@@ -304,8 +304,13 @@ public class Pipe
 			currentFace = getFace(floatBuffer, i);
 			currentAlpha = getAlphaForFace(floatBuffer, i);
 			
+			if( i >= 150 )
+			{
+				beforeAlpha = 0.75f - ((i/(float)50) - (150.0f/50.0f));
+			}
 			setFace(floatBuffer, beforeFace, i);
 			setAlphaForFace(floatBuffer, beforeAlpha, i);
+			
 			
 			beforeFace = currentFace.clone();
 			beforeAlpha = currentAlpha;
