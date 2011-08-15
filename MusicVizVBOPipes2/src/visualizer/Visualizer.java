@@ -111,7 +111,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
         timer.update();
-        
+
         camera.update();
         gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition0, 0);
         
@@ -147,6 +147,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	    {
 	    	beats[i].draw(drawable, false);
 	    }
+
 	}
 
 	
@@ -278,15 +279,15 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		initialPosition[0] = 0;
 		initialPosition[1] = 0;
 		initialPosition[2] = 0;
-		int positions[] = {-80,-40,-160,0,-120};
-		int sizes[] = {35,20,15,15,20};
-		int iSizes[] = {25,33,11,11,33};
+		//int positions[] = {-80,-40,-160,0,-120};
+		int positions[] = {-130,-60,-240,0,-200};
+		int sizes[] = {250,33,15,15,33};
+		int iSizes[] = {235,20,11,11,22};
 		beats = new Beat[MAX_BEAT_PIPES];
 		for( int i = 0; i < MAX_BEAT_PIPES; i++ )
 		{
 			initialPosition[0] = positions[i];
 			beats[i] = new Beat(initialPosition, beatColours[i], amountOfSections, sizes[i],iSizes[i]);
-			//initialPosition[0] -= 40;
 		}
 		
 		
