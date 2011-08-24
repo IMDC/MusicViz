@@ -8,20 +8,28 @@ import java.util.LinkedList;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
 
 public class Pipe 
 {
 	//Amount of verticies per face
 	public static final int AMOUNT_OF_VERTS = 6;
 	public static final int FLOATS_USED_PER_COLOUR = 4;
+	public static final int FLOATS_USED_PER_3D_POINT = 3;
 	public static final float INITIAL_RADIUS = 0;
 	private static final int AMOUNT_BETWEEN_FACES = 4;
+	private static final float PERCENTAGE_OF_PIPE_TO_FADE = 0.75f;
 	
 	//Amount of FLOATS that make up the vertex and its information.
 	//The information for a vertex is placed as follows:
 	//VVVCCCCNNN. Therefore there are 10 floats for the information for a vertex.
 	//Each V,C and N are a signal number specified as a float.
-	private static final int SIZE_OF_VERTEX_INFORMATION = 10;
+	private static final int SIZE_OF_VERTEX_INFORMATION_IN_FLOATS = 10;
+	private static final int SIZE_OF_VERTEX_INFORMATION_IN_BYTES = SIZE_OF_VERTEX_INFORMATION_IN_FLOATS * (Float.SIZE/Byte.SIZE);
+	private static final int START_INDEX_OF_VERTEX = 0;
+	private static final int START_INDEX_OF_COLOUR = START_INDEX_OF_VERTEX + FLOATS_USED_PER_3D_POINT * (Float.SIZE/Byte.SIZE);
+	private static final int START_INDEX_OF_NORMAL = START_INDEX_OF_COLOUR + FLOATS_USED_PER_COLOUR * (Float.SIZE/Byte.SIZE);
 							
 	//The amount of sections the pipe has. Note: 1 section has 2 faces.
 	private final int amountOfSections; 
@@ -33,6 +41,11 @@ public class Pipe
 	//To make a pipe with 3 sides (AKA triangle), we need 4 verticies.
 	//Therefore, the amount of sides we have is: AMOUNT_OF_VERTS - 1
 	private final int amountOfSides; 
+	
+	//These are used for the placement of the pipes and random operations
+	//which are used for testing the object.
+	private final float[] initialPlacement;
+	private final float[] initialColor;
 	
 	//Holds the order that the verticies are drawn in
 	private ArrayList<Integer> indicies;
@@ -51,18 +64,21 @@ public class Pipe
 	
 	private float lastAlpha;
 	private LinkedList<Float> alphaAnimationQueue;
-
-	/*
-	 * These are used for the placement of the pipes and random operations
-	 * which are used for testing the object.
-	 */
-	private final float[] initialPlacement;
-	private final float[] initialColor;
 	
+	private float currentRadius;
+	private LinkedList<Float> radiusAnimationQueue;
+	private int amountOfFacesNotDrawn;
+	
+	//Identifies the pipe's channel and the part of the channel it belongs to
 	private final int channel;
 	private final int pipe;
 	
-	
+	//Used for the ball at the end
+	private GLU glu;
+	private GLUquadric quadric;
+
+	//The pipe is faded out at the back. Use this to store where the fading starts
+	private final int minValueAlphaFading;
 	
 	/**
 	 * Once the pipe has been initialized, this method must be called right after
@@ -78,9 +94,9 @@ public class Pipe
 			GL2 gl = drawable.getGL().getGL2();
 			
 			//Calculate the size (in bytes) that we need for the verticies, colors and normals
-			int byteSizeForVerticies = amountOfFaces * AMOUNT_OF_VERTS * 3 * (Float.SIZE/Byte.SIZE);
-			int byteSizeForColors = amountOfFaces * AMOUNT_OF_VERTS * 4 * (Float.SIZE/Byte.SIZE);
-			int byteSizeForNormals = amountOfFaces * AMOUNT_OF_VERTS * 3 * (Float.SIZE/Byte.SIZE);
+			int byteSizeForVerticies = amountOfFaces * AMOUNT_OF_VERTS * FLOATS_USED_PER_3D_POINT * (Float.SIZE/Byte.SIZE);
+			int byteSizeForColors = amountOfFaces * AMOUNT_OF_VERTS * FLOATS_USED_PER_COLOUR * (Float.SIZE/Byte.SIZE);
+			int byteSizeForNormals = amountOfFaces * AMOUNT_OF_VERTS * FLOATS_USED_PER_3D_POINT * (Float.SIZE/Byte.SIZE);
 			
 			//Create the buffer, bind it for use, then allocate the amount of memory needed.
 			//The get the data as a float buffer.
@@ -119,7 +135,10 @@ public class Pipe
 				dataCounter++;
 				floatBuffer.put(dataCounter, initialColor[3]);
 				
-				//The Normal
+				//The normal calculations and placement in buffer
+				x = (float) ( Math.sin(2*j*Math.PI/(amountOfSides)));
+				y = (float) ( Math.cos(2*j*Math.PI/(amountOfSides))) ;
+				
 				dataCounter++;
 				floatBuffer.put(dataCounter, x);
 				dataCounter++;
@@ -127,6 +146,9 @@ public class Pipe
 				dataCounter++;
 				floatBuffer.put(dataCounter, 0);
 			}
+			
+			//Make the second face a certain length away.
+			eZ += AMOUNT_BETWEEN_FACES;
 			
 			//The first face is done, therefore I have to make a second face that is 
 			//one away from the first. Each consecutive face is one away.
@@ -156,7 +178,10 @@ public class Pipe
 					dataCounter++;
 					floatBuffer.put(dataCounter, initialColor[3]);
 					
-					//The Normal
+					//The normal calculations and placement in buffer
+					x = (float) ( Math.sin(2*j*Math.PI/(amountOfSides)));
+					y = (float) ( Math.cos(2*j*Math.PI/(amountOfSides))) ;
+					
 					dataCounter++;
 					floatBuffer.put(dataCounter, x);
 					dataCounter++;
@@ -249,21 +274,74 @@ public class Pipe
 		this.positionAnimationQueue = new LinkedList<float[][]>();
 		this.alphaAnimationQueue = new LinkedList<Float>();
 		
-		this.lastFace= new float[AMOUNT_OF_VERTS][3];
+		this.lastFace= new float[AMOUNT_OF_VERTS][FLOATS_USED_PER_3D_POINT];
 		this.lastAlpha = 1f;
+		
+		this.glu = new GLU();
+		this.quadric = this.glu.gluNewQuadric();
+		
+		//this.amountOfFacesNotDrawn = 0;
+		//this.currentRadius = 0;
+		
+		this.minValueAlphaFading = (int) (PERCENTAGE_OF_PIPE_TO_FADE * this.amountOfFaces);
+		
+		this.currentRadius = 0;
+		this.radiusAnimationQueue = new LinkedList<Float>();
+		this.amountOfFacesNotDrawn = 0;
 	}
-	
+
 	public void draw(GLAutoDrawable drawable)
 	{
 		GL2 gl = drawable.getGL().getGL2();
 		
+		//animate(drawable);
+		
+		//If the current radius is (essentially 0), then the face drawn
+		//will not be displayed, it will look as if the face is not there.
+		//This uses more cpu/gpu power than needed. Therefore keep track
+		//of the faces that have a radius of 0. If there is a radius
+		//not 0, then that means the pipe is shown and reset the count.
+		//If there are whole pipes not being shown, then do not drawn them.
+		if( radiusAnimationQueue.isEmpty() )
+		{
+			radiusAnimationQueue.addLast(currentRadius);
+		}
+		currentRadius = radiusAnimationQueue.removeFirst();
+		if(currentRadius < Visualizer.MIN_SIZE_FOR_RADIUS)
+		{
+			amountOfFacesNotDrawn++;
+		}
+		else
+		{
+			amountOfFacesNotDrawn = 0;
+		}
+		if(amountOfFacesNotDrawn >= amountOfFaces)
+		{
+			amountOfFacesNotDrawn = amountOfFaces + 1;
+			return;
+		}
+		
 		animate(drawable);
 		
-		gl.glPushMatrix();
+		//Used to cap off the end so it doesn't look empty. Only do this when the pipe is drawn
+		if( currentRadius > Visualizer.MIN_SIZE_FOR_RADIUS )
+		{
+			gl.glPushMatrix();
+				gl.glTranslatef(lastFace[0][0], lastFace[0][1]-(currentRadius), lastFace[0][2]);
+				gl.glColor4f(initialColor[0], initialColor[1], initialColor[2], 1);
+				glu.gluSphere(quadric, currentRadius+1, 10, 10);
+			gl.glPopMatrix();
+		}
+		
+		//Access the memory and draw the pipes
+		gl.glPushMatrix();		
 			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, pipePointer);
-	        gl.glVertexPointer(3, GL2.GL_FLOAT, 40, 0);
-	        gl.glColorPointer(4, GL2.GL_FLOAT, 40, 12);
-	        gl.glNormalPointer(GL2.GL_FLOAT, 40, 28);
+	        //gl.glVertexPointer(3, GL2.GL_FLOAT, SIZE_OF_VERTEX_INFORMATION_IN_BYTES, 0);
+	        //gl.glColorPointer(4, GL2.GL_FLOAT, SIZE_OF_VERTEX_INFORMATION_IN_BYTES, 12);
+	        //gl.glNormalPointer(GL2.GL_FLOAT, SIZE_OF_VERTEX_INFORMATION_IN_BYTES, 28);
+			 gl.glVertexPointer(3, GL2.GL_FLOAT, SIZE_OF_VERTEX_INFORMATION_IN_BYTES, START_INDEX_OF_VERTEX);
+		     gl.glColorPointer(4, GL2.GL_FLOAT, SIZE_OF_VERTEX_INFORMATION_IN_BYTES, START_INDEX_OF_COLOUR);
+		     gl.glNormalPointer(GL2.GL_FLOAT, SIZE_OF_VERTEX_INFORMATION_IN_BYTES, START_INDEX_OF_NORMAL);
 	        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, indexPointer);
 	        gl.glDrawElements(GL.GL_TRIANGLE_STRIP, indicies.size()  , GL.GL_UNSIGNED_INT, 0);
 		gl.glPopMatrix();
@@ -304,9 +382,13 @@ public class Pipe
 			currentFace = getFace(floatBuffer, i);
 			currentAlpha = getAlphaForFace(floatBuffer, i);
 			
-			if( i >= 150 )
+			/*if( i >= 150 )
 			{
 				beforeAlpha = 0.75f - ((i/(float)50) - (150.0f/50.0f));
+			}*/
+			if( i >= minValueAlphaFading )
+			{
+				beforeAlpha = 0.75f - (( i / (float)(amountOfFaces - minValueAlphaFading) ) - ( minValueAlphaFading / (float)(amountOfFaces - minValueAlphaFading)));
 			}
 			setFace(floatBuffer, beforeFace, i);
 			setAlphaForFace(floatBuffer, beforeAlpha, i);
@@ -358,7 +440,7 @@ public class Pipe
 	 */
 	public float[][] createNewFace(float radius, float x, float y, float z)
 	{
-		float[][] newFace = new float[AMOUNT_OF_VERTS][3];
+		float[][] newFace = new float[AMOUNT_OF_VERTS][FLOATS_USED_PER_3D_POINT];
 		
 		for( int i = 0; i < AMOUNT_OF_VERTS; i++ )
 		{
@@ -384,11 +466,11 @@ public class Pipe
 	 */
 	private float[][] getFace( FloatBuffer buffer, int face )
 	{
-		float[][] verticiesValues = new float[AMOUNT_OF_VERTS][3];
+		float[][] verticiesValues = new float[AMOUNT_OF_VERTS][FLOATS_USED_PER_3D_POINT];
 		
-		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION, j =0 ; 
-    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION);
-    	i+=SIZE_OF_VERTEX_INFORMATION, j++ )
+		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j =0 ; 
+    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS);
+    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j++ )
 		{
 			verticiesValues[j][0] = buffer.get((i + 0));
 			verticiesValues[j][1] = buffer.get((i + 1));
@@ -398,7 +480,7 @@ public class Pipe
 		return verticiesValues;
 	}
 	
-	private float[][] getColourForFace( FloatBuffer buffer, int face )
+	/*private float[][] getColourForFace( FloatBuffer buffer, int face )
 	{
 		float[][] colourValues = new float[AMOUNT_OF_VERTS][FLOATS_USED_PER_COLOUR];
 		
@@ -413,15 +495,22 @@ public class Pipe
 		}
 		
 		return colourValues;
-	}
+	}*/
 	
+	/**
+	 * Gets the alpha values of a specific face from the buffer. Even though every
+	 * vertex in the face has its own alpha value, the alpha values are the same
+	 * for every vertex in a face. Therefore, I just return one value.
+	 * 
+	 * @param The buffer that holds the data and the face that is needed.
+	 */
 	private float getAlphaForFace( FloatBuffer buffer, int face )
 	{
 		float alpha = -1;
 		
-		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION, j =0 ; 
-    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION);
-    	i+=SIZE_OF_VERTEX_INFORMATION, j++ )
+		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j =0 ; 
+    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS);
+    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j++ )
 		{
 			alpha = buffer.get((i + 6));
 		}
@@ -429,11 +518,20 @@ public class Pipe
 		return alpha;
 	}
 	
+	/**
+	 * Sets the alpha value of a specific face to the alpha value
+	 * specified. The face is set to a alpha value, where the face is stored
+	 * in the float buffer
+	 * .
+	 * @param buffer The buffer that holds the vertex, colour and normal values
+	 * @param alpha The alpha value to be set
+	 * @param face The specific face to be altered (0 to (n-1), where n is the amount of faces )
+	 */
 	private void setAlphaForFace( FloatBuffer buffer, float alpha, int face )
 	{
-		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION, j =0 ; 
-    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION);
-    	i+=SIZE_OF_VERTEX_INFORMATION, j++ )
+		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j =0 ; 
+    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS);
+    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j++ )
 		{
 			buffer.put((i+6),alpha);
 		}
@@ -456,9 +554,9 @@ public class Pipe
 	 */
 	private void setFace( FloatBuffer buffer, float[][] values , int face )
 	{
-		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION, j =0 ; 
-    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION);
-    	i+=SIZE_OF_VERTEX_INFORMATION, j++ )
+		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j =0 ; 
+    	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS);
+    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j++ )
 		{
 			buffer.put((i + 0),values[j][0]);
 			buffer.put((i + 1),values[j][1]);
@@ -466,42 +564,105 @@ public class Pipe
 		}
 	}
 	
+	/**
+	 * Returns true if the Pipe object has been created. This means,
+	 * that the graphics card holds the VBO.
+	 * 
+	 * @return true or false, depending on whether the pipe has been
+	 * initialized in graphics card memory.
+	 */
 	public boolean isCreated()
 	{
 		return isCreated;
 	}
 	
+	/**
+	 * Returns the coordinates of the pipe where the 
+	 * pipe was initially placed in the world. This is 
+	 * set for the life of the object.
+	 * 
+	 * @return
+	 */
 	public float[] getInitialPlacement()
 	{
 		return initialPlacement.clone();
 	}
 	
+	/**
+	 * The pipe is apart of the music visualization. The
+	 * visualization has pipes that split into 16 channels.
+	 * This method sets what channel this pipe belongs to.
+	 * 
+	 * @return The channel that this pipe belongs to
+	 */
 	public int getChannel()
 	{
 		return channel;
 	}
 	
+	/**
+	 * There are 16 channels and each channel is allowed to have 3
+	 * pipes. This returns what pipe this pipe is.
+	 * 
+	 * @return The role this pipe plays
+	 */
 	public int getPipe()
 	{
 		return pipe;
 	}
 	
+	/**
+	 * Returns the face animation queue
+	 * 
+	 * @return: The face animation queue
+	 */
 	public LinkedList<float[][]> getPositionAnimationList()
 	{
 		return positionAnimationQueue;
 	}
 	
+	/**
+	 * Returns the animation queue for the alpha values
+	 * 
+	 * @return: The alpha animation queue
+	 */
 	public LinkedList<Float> getAlphaAnimationList()
 	{
 		return alphaAnimationQueue;
 	}
 	
+	/**
+	 * The pipe object has animation queues that store how
+	 * the next first (0th) face should look at be placed. These animation
+	 * queues must be cleared whenever a new song is loaded. Another part of
+	 * the animation queues are seperate primitives for the face and alpha,
+	 * these last values are used whenever there is nothing inside the animation
+	 * queue, so we have to reset these as well.
+	 */
 	public void resetPipeAnimation()
 	{
 		positionAnimationQueue.clear();
 		alphaAnimationQueue.clear();
+		radiusAnimationQueue.clear();
 		lastFace = createNewFace(INITIAL_RADIUS, initialPlacement[0], initialPlacement[1], initialPlacement[2]);
 		lastAlpha = 1;	
+		currentRadius = 0;
+	}
+	
+	/**
+	 * In the Pipe class, there is a sphere drawn at the very front 
+	 * of the pipe where the new faces are placed. Therefore, to
+	 * draw the sphere, I have to keep track of where the first
+	 * face is located at. The radius is used to figure out 
+	 * whether to draw the sphere. If the radius is too small,
+	 * as in it is turned off, then the sphere is not drawn.
+	 * 
+	 * @param firstFaceCoordinates: The position of the first (0th) face
+	 * @param firstFaceRadius: The radius of the first (0th) face
+	 */
+	public void setFirstFaceData( float firstFaceRadius )
+	{
+		this.radiusAnimationQueue.addLast(firstFaceRadius);
 	}
 	
 }

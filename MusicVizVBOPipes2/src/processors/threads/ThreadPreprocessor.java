@@ -13,6 +13,7 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import controller.Controller;
@@ -454,7 +455,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	{
 		setProgress(0);
 		GUI gui = controller.getGUI();
-		gui.getAnimator().pause();
+		//gui.getAnimator().pause();
+		gui.pauseAnimator();
 		gui.setEnabledPlayerFrame(false);
 		
 		Track singleTrack;
@@ -674,11 +676,11 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 
 		//Once the groupNotesByTicks method is finished, (which works on the variable "notesForTheCurrentSong")
 		//it is set in the receiver for further use.
-		receiver.setNotesForTheCurrentSong(notesForTheCurrentSong);
+		//receiver.setNotesForTheCurrentSong(notesForTheCurrentSong);
 	
 		//Calculate which pipes will be played based on a percent threshold. Please see method description.
-		double[][] calculatedNoteChangePercentage = calculateNoteChangePercentage();
-		receiver.setChannelsToUse(0.0,calculatedNoteChangePercentage);
+		//double[][] calculatedNoteChangePercentage = calculateNoteChangePercentage();
+		//receiver.setChannelsToUse(0.0,calculatedNoteChangePercentage);
 		
 		setProgress(80);
 		
@@ -761,13 +763,14 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 		{
 			if( (Long)o[i] < smallestLengthOfBarInSong ){ smallestLengthOfBarInSong = (Long)o[i];}
 		}
-		receiver.smallestBarInSong = smallestLengthOfBarInSong;
+		//receiver.smallestBarInSong = smallestLengthOfBarInSong;
 
 		//Set the data structure in the receiver
-		receiver.setStartOfBarsWithChangesInBarTreeString(startOfBarsWithChangesInBarTreeString);
+		//receiver.setStartOfBarsWithChangesInBarTreeString(startOfBarsWithChangesInBarTreeString);
 		
-		receiver.setRangeOfPitchValuesInChannels(rangeOfPitchValues);
-		receiver.setInitialPitchSettingsInChannels(initialPitchSettings);
+		//receiver.setRangeOfPitchValuesInChannels(rangeOfPitchValues);
+		//receiver.setInitialPitchSettingsInChannels(initialPitchSettings);
+		receiver.setPitchData(initialPitchSettings, rangeOfPitchValues);
 
 		this.setUpVisualizer();
 	
@@ -1194,17 +1197,6 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	}
 
 	/**
-	 * During pre-processing, the channels that are used are recorded, this is used to setup the visualiser
-	 * because the number of active channels are important in setting the position and colour of the pipes.
-	 * 
-	 * @return A TreeMap which stores the channels used.
-	 */
-	public TreeMap<Integer, Boolean> getChannelsUsed()
-	{
-		return channelsUsed;
-	}
-
-	/**
 	 * During the preprocessing, each channel's role as an instrument was calculated.
 	 * 
 	 * @return A string array that holds what each channel's role is.
@@ -1293,7 +1285,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
     	GUI gui = controller.getGUI();
     	Player player = controller.getPlayer();
     	gui.setEnabledPlayerFrame(true);
-    	gui.getAnimator().resume();
+    	//gui.getAnimator().resume();
+    	gui.resumeAnimator();
 		closeButton.setEnabled(true);
 		if( autoPlayAfterPreprocessing ){ player.play();}
     }

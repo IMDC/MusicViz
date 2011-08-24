@@ -67,7 +67,7 @@ public class TonalProcessor
 	public static int getPipe( int currentNote )
 	{
 		int pipe = -10;
-		if( currentNote >= 0 && currentNote <= 41 )
+		/*if( currentNote >= 0 && currentNote <= 41 )
 		{
 			pipe = 0;
 		}
@@ -78,6 +78,14 @@ public class TonalProcessor
 		else if( currentNote >= 83 && currentNote <= 127 )
 		{
 			pipe = 2;
+		}*/
+		if( currentNote >= 0 && currentNote <= 41 )
+		{
+			pipe = 0;
+		}
+		else if( (currentNote >= 42 && currentNote <= 127)  )
+		{
+			pipe = 1;
 		}
 		return pipe;
 	}

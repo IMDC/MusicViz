@@ -42,6 +42,7 @@ import renderers.FileCellRenderer;
 import visualizer.Visualizer;
 
 import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.FPSAnimator;
 
 /**
  * GUIs allow easy communication with the program. They allow users with little technical experience 
@@ -91,7 +92,7 @@ public class GUI
 	
 	//This is for the OpenGL visualizers.
 	private Frame openGLFrame;
-	private Animator animator;
+	private FPSAnimator animator;
 	private GLCanvas canvas;
 	private Visualizer visualizer;
 	
@@ -260,8 +261,8 @@ public class GUI
 	    canvas.addKeyListener(visualizer);
 	    openGLFrame.add(canvas);
 	    openGLFrame.setSize(1024, 768);
-	    animator = new Animator(canvas);
-	    animator.setRunAsFastAsPossible(true);
+	    animator = new FPSAnimator(canvas,150);
+	    //animator.setRunAsFastAsPossible(true);
 	    openGLFrame.addWindowListener(
 	    		new WindowAdapter()
 	    		{
@@ -365,9 +366,35 @@ public class GUI
 		return visualizer;
 	}
 	
-	public Animator getAnimator()
+	public FPSAnimator getAnimator()
 	{
 		return animator;
+	}
+	
+	public void pauseAnimator()
+	{
+		Runnable pauseAnimator = 
+	      	new Runnable()
+			{
+	        	public void run()
+	        	{
+	        		animator.pause();
+	        	}
+			};
+		SwingUtilities.invokeLater(pauseAnimator);
+	}
+	
+	public void resumeAnimator()
+	{
+		Runnable resumeAnimator = 
+	      	new Runnable()
+			{
+	        	public void run()
+	        	{
+	        		animator.resume();
+	        	}
+			};
+		SwingUtilities.invokeLater(resumeAnimator);
 	}
 	
 	public JCheckBox getLoopCheckBox()
