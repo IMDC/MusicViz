@@ -8,7 +8,6 @@ import javax.media.opengl.glu.GLUquadric;
 public class Beat
 {
 	private static final int AMOUNT_BETWEEN_FACES = 4;
-	private static final int SLICES = 15;
 	
 	private final GLU glu;
 	private final GLUquadric quadric;
@@ -43,7 +42,6 @@ public class Beat
 		this.initialColour = initialColour.clone();
 		this.maxLengthOfBeat = AMOUNT_BETWEEN_FACES * this.amountOfFaces;
 		this.position = maxLengthOfBeat;
-		this.glu.gluQuadricNormals(this.quadric,GLU.GLU_SMOOTH);
 	}
 	
 	/**
@@ -92,21 +90,10 @@ public class Beat
 		GL2 gl = drawable.getGL().getGL2();
 		
 		float currentAlpha = 1f - (position / (float) maxLengthOfBeat);
-
-		//float emissiveLight0[] = {0.1f, 0.1f, 0.1f, 1.0f};
-		float emissiveLight1[] = {1f, 0f, 0f, 1.0f};
-		if( position <= 25 )
-		{
-			emissiveLight1[0] = 0.75f*initialColour[0] - (position / (float) 25);
-			emissiveLight1[1] = 0.75f*initialColour[1] - (position / (float) 25);
-			emissiveLight1[2] = 0.75f*initialColour[2] - (position / (float) 25);
-			gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, emissiveLight1, 0);
-		}
 		
 		//Position and draw it
 		gl.glTranslatef(initialPlacement[0], initialPlacement[1], position);
 		gl.glColor4f(initialColour[0],initialColour[1],initialColour[2], currentAlpha);
-		glu.gluDisk(quadric, radius, innerRadius, SLICES, 1);
-		//gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, emissiveLight0, 0);
+		glu.gluDisk(quadric, radius, innerRadius, 15, 1);
 	}
 }
