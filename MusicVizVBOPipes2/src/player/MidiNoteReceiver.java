@@ -3,10 +3,12 @@ package player;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequencer;
+import javax.swing.SwingUtilities;
 
 import controller.Controller;
 import gui.GUI;
 import player.messages.OpenGLMessageBeat;
+import player.messages.OpenGLMessagePitchChange;
 import player.messages.OpenGLMessageTonal;
 import processors.BeatProcessor;
 import processors.TonalProcessor;
@@ -88,6 +90,8 @@ public class MidiNoteReceiver implements Receiver
 	    int note = -1;
 	    GUI gui = controller.getGUI();
 
+	    //Set the timing every time a second changes. The negative check is 
+	    //to see if the slider was changed to a previous time and reset the time
 	    int seconds = Utils.microSecondsToSeconds(sequencer.getMicrosecondPosition());
 		if( (seconds - lastTimeNoteWasPlayed) > 0 )
 		{
@@ -95,12 +99,15 @@ public class MidiNoteReceiver implements Receiver
 		    gui.updateTimer(Utils.secondsToTime(seconds));
 		    lastTimeNoteWasPlayed = seconds;
 		}
-
-	    
-	    //if( status >= 224 && status <= 239 )
-	    //{
-	    //	channel = status - 224;
-	    //	int pitchBend = (midiByte[2] & 0xff) << 7 | (midiByte[1] & 0xff);
+		else if( (seconds - lastTimeNoteWasPlayed) < 0 )
+		{
+			lastTimeNoteWasPlayed = seconds;
+		}
+		
+	    if( status >= 224 && status <= 239 )
+	    {
+	    	channel = status - 224;
+	    	int pitchBend = (midiByte[2] & 0xff) << 7 | (midiByte[1] & 0xff);
 
 	    	/*
 	    	 * The way pitch bends work is that there is a pitch wheel; the pitch wheel has a min and max value of 0x0000 and
@@ -112,13 +119,18 @@ public class MidiNoteReceiver implements Receiver
 	    	 * 
 	    	 * [ ( newPitch - initialPitchInChannel )/MAXVALUEOFWHEEL ] * rangeOfPitchForChannel : This gives us the change in semitones.
 	    	 */
-		    //double offset =(((double)pitchBend - (double)initialPitchSettings[channel])/(double)MAXVALUE)*rangeOfPitchValues[channel];
-		   // if( (pitchBend - (double)initialPitchSettings[channel]) != 0.0)
-		   // {
-			   // OpenGLMessagePitchChange pitchChange = new OpenGLMessagePitchChange(offset, channel,rangeOfPitchValues[channel]);
-	//		   // controller.getVisualizer().messageQueue.get(channel).add(pitchChange);
-		    //}
-	    //}
+		    double offset =(((double)pitchBend - (double)initialPitchSettings[channel])/(double)MAXVALUE)*rangeOfPitchValues[channel];
+		    if( (pitchBend - (double)initialPitchSettings[channel]) != 0.0)
+		    {
+		    	//System.out.println(offset);
+			    OpenGLMessagePitchChange pitchChange = new OpenGLMessagePitchChange(offset, channel,rangeOfPitchValues[channel]);
+			   // System.out.println("gfhfghfgh");
+			    if( gui.getVisualizer().messageQueue.get(channel).size() < 20 )
+			    {
+			    	gui.getVisualizer().messageQueue.get(channel).add(pitchChange);
+			    }
+		    }
+	    }
 	    //Checks the status for a note on event
 	    if ( status >= 144 && status <= 159 )
 	    {
@@ -163,13 +175,12 @@ public class MidiNoteReceiver implements Receiver
 	 */
 	private  void tonalEventProcessing( int channel, int velocity, int note) 
    	{
-		OpenGLMessageTonal tonalMessage = tonalProcessor.processNote( note, velocity, channel);
 		GUI gui = controller.getGUI();
 		if(gui.getVisualizer().messageQueue.get(channel).size() < 20)
 		{
+			OpenGLMessageTonal tonalMessage = tonalProcessor.processNote( note, velocity, channel);
 			gui.getVisualizer().messageQueue.get(channel).add(tonalMessage);
 		}
-		
    	}
 	
 	/**

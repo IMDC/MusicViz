@@ -13,6 +13,7 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import controller.Controller;
@@ -454,7 +455,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	{
 		setProgress(0);
 		GUI gui = controller.getGUI();
-		gui.getAnimator().pause();
+		//gui.getAnimator().pause();
+		gui.pauseAnimator();
 		gui.setEnabledPlayerFrame(false);
 		
 		Track singleTrack;
@@ -1283,7 +1285,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
     	GUI gui = controller.getGUI();
     	Player player = controller.getPlayer();
     	gui.setEnabledPlayerFrame(true);
-    	gui.getAnimator().resume();
+    	//gui.getAnimator().resume();
+    	gui.resumeAnimator();
 		closeButton.setEnabled(true);
 		if( autoPlayAfterPreprocessing ){ player.play();}
     }
