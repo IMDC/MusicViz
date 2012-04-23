@@ -41,7 +41,6 @@ import listeners.StopButtonListener;
 import renderers.FileCellRenderer;
 import visualizer.Visualizer;
 
-import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
 /**
@@ -222,6 +221,7 @@ public class GUI
 	{
 		if( !isInitialized  )
 		{
+			System.out.println("HGello");
 			wait();
 		}
 		stopButton.addActionListener( 
