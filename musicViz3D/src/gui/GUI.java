@@ -109,7 +109,7 @@ public class GUI
 	public GUI(int width, int height)
 	{
 		isInitialized = false;
-        Runnable playerGui = new Runnable()
+        /*Runnable playerGui = new Runnable()
         		{
         			public void run()
         			{
@@ -117,7 +117,7 @@ public class GUI
         			}
         		};
         new Thread(playerGui).start();
-
+         */
         Runnable openGL = new Runnable()
         		{
         			public void run()
@@ -126,6 +126,8 @@ public class GUI
         			}
         		};
         new Thread(openGL).start();
+        
+        startPlayerGUI();
 	}
 	
 	private synchronized void startPlayerGUI()
@@ -214,14 +216,14 @@ public class GUI
         
         isInitialized = true;
         notify();
+        frame.setEnabled(false);
         frame.setVisible(true);
 	}
 	
-	public  synchronized void  addListeners(Controller controller) throws InterruptedException
+	public synchronized  void  addListeners(Controller controller) throws InterruptedException
 	{
 		if( !isInitialized  )
 		{
-			System.out.println("HGello");
 			wait();
 		}
 		stopButton.addActionListener( 
@@ -245,6 +247,8 @@ public class GUI
 		slider.addMouseListener( sml );
 		slider.addMouseMotionListener( sml );
 		slider.addChangeListener( new SliderTimeChangeListener(controller) );
+		frame.setEnabled(true);
+		System.out.println("Initialized Correctly");
 	}
 	
 	private void startVisualizer()

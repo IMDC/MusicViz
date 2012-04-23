@@ -31,10 +31,16 @@ public class Controller
 	 */
 	public Controller() throws InterruptedException, MidiUnavailableException
 	{		
-		player = new Player();
-		gui = new GUI(400,400);
-		gui.addListeners(this);
-		player.init(this);
+		//player = new Player();
+		//gui = new GUI(400,400);
+		//gui.addListeners(this);
+		//player.init(this);
+	}
+	
+	public void initController( Player player, GUI gui )
+	{
+		this.player = player;
+		this.gui = gui;
 	}
 	
 	public Player getPlayer()

@@ -1,5 +1,9 @@
+import gui.GUI;
+
 import javax.sound.midi.MidiUnavailableException;
 import javax.swing.JOptionPane;
+
+import player.Player;
 
 import controller.Controller;
 
@@ -9,7 +13,15 @@ public class MainExecutable
 	{
 		try 
 		{
-			new Controller();
+			//new Controller();
+			Controller controller = new Controller();
+			Player player = new Player();
+			GUI gui = new GUI(400,400);
+			
+			controller.initController(player, gui);
+			
+			player.init(controller);
+			gui.addListeners(controller);
 		} 
 		catch (InterruptedException e)
 		{
