@@ -1,5 +1,7 @@
 package player;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequencer;
@@ -24,6 +26,9 @@ import utilities.Utils;
  */
 public class MidiNoteReceiver implements Receiver
 {
+	public AtomicBoolean playInstruments;
+	public AtomicBoolean playBeats;
+	
 	/*
 	 *	These 2 values represent the values that a MIDI device's pitch wheel can have; the lowest
 	 *value is 0x0000 and the highest value is 0x3fff.  
@@ -64,6 +69,8 @@ public class MidiNoteReceiver implements Receiver
 		this.lastTimeNoteWasPlayed = 0;
 		this.rangeOfPitchValues = new int[16];
 		this.initialPitchSettings = new int[16];
+		this.playInstruments = new AtomicBoolean(true);
+		this.playBeats = new AtomicBoolean(true);
 	}
 	
 	/**
@@ -176,7 +183,7 @@ public class MidiNoteReceiver implements Receiver
 	private  void tonalEventProcessing( int channel, int velocity, int note) 
    	{
 		GUI gui = controller.getGUI();
-		if(gui.getVisualizer().messageQueue.get(channel).size() < 20)
+		if(gui.getVisualizer().messageQueue.get(channel).size() < 20 && playInstruments.get() )
 		{
 			OpenGLMessageTonal tonalMessage = tonalProcessor.processNote( note, velocity, channel);
 			gui.getVisualizer().messageQueue.get(channel).add(tonalMessage);
@@ -193,7 +200,7 @@ public class MidiNoteReceiver implements Receiver
 	private void beatEventProcessing( int note, int velocity )
 	{
 		OpenGLMessageBeat beat = bp.processBeat(note, velocity);
-		if( beat != null )
+		if( beat != null && playBeats.get() )
 		{
 			controller.getGUI().getVisualizer().messageQueue.get(9).add(beat);
 		}
@@ -222,4 +229,6 @@ public class MidiNoteReceiver implements Receiver
 		this.rangeOfPitchValues = rangeOfPitchValues;
 		this.lastTimeNoteWasPlayed = 0;
 	}
+	
+	
 }

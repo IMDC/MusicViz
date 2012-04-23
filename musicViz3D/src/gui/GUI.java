@@ -28,6 +28,7 @@ import controller.Controller;
 import handlers.ListTransferHandler;
 import listeners.AddMidiSongMouseListener;
 import listeners.ChangeColourPaletteListener;
+import listeners.ChangeVisualDisplay;
 import listeners.ListChangeListener;
 import listeners.ListKeyListener;
 import listeners.ListMouseListener;
@@ -84,6 +85,7 @@ public class GUI
 	private JMenuItem loadMenuItem;
 	private JMenuItem openMidiItem;
 	private JMenuItem changeColourMenuItem;
+	private JMenuItem changeDisplayMenuItem;// = new JMenuItem("Viz Display");
 	
 	private String totalTime;
 	
@@ -193,7 +195,7 @@ public class GUI
         loadMenuItem = new JMenuItem("Load Playlist");
         openMidiItem = new JMenuItem("Load Midi");
         changeColourMenuItem = new JMenuItem("Change Colours");
-        
+        changeDisplayMenuItem = new JMenuItem("Change Display");
         
         //Adds the menus to menus and to the frame
         fileMenu.add(openMidiItem);
@@ -201,6 +203,7 @@ public class GUI
         fileMenu.add(saveMenuItem);
         fileMenu.add(loadMenuItem);
         optionsMenu.add(changeColourMenuItem);
+        optionsMenu.add(changeDisplayMenuItem);
         menuBar.add(fileMenu);
         menuBar.add(optionsMenu);
         frame.setJMenuBar(menuBar);
@@ -242,6 +245,7 @@ public class GUI
         playPauseButton.addActionListener( new PlayPauseToggleButtonActionListener(controller) );
         loopCheckBox.addActionListener( new LoopingCheckBoxListener() );
         changeColourMenuItem.addMouseListener(new ChangeColourPaletteListener(controller));
+        changeDisplayMenuItem.addMouseListener( new ChangeVisualDisplay(controller) );
         
 		SlideMouseListener sml = new SlideMouseListener(controller);
 		slider.addMouseListener( sml );

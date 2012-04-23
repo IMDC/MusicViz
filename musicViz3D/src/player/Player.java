@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
@@ -390,5 +391,15 @@ public class Player
 	public void setColourSetToUse( int colourSet )
 	{
 		colourSetToUse = colourSet;
+	}
+	
+	public AtomicBoolean getIsPlayingInstruments()
+	{
+		return (( MidiNoteReceiver ) receiver).playInstruments;
+	}
+	
+	public AtomicBoolean getIsPlayingBeats()
+	{
+		return (( MidiNoteReceiver ) receiver).playBeats;
 	}
 }
