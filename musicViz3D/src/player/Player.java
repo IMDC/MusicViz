@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -27,7 +25,7 @@ import controller.Controller;
 import gui.GUI;
 import listeners.MidiMetaEventListener;
 import listeners.PreprocessorPropertyChangeListener;
-import processors.threads.ThreadPreprocessor;
+import processors.threads.LightThreadPreprocessor;
 import utilities.Utils;
 
 /**
@@ -44,7 +42,8 @@ public class Player
 	private Transmitter transmitter = null;
 	private Receiver receiver = null;
 	private Controller controller = null;
-	private ThreadPreprocessor threadedPreprocessor = null;
+	//private ThreadPreprocessor threadedPreprocessor = null;
+	private LightThreadPreprocessor threadedPreprocessor = null;
 	private Song currentSong=null;
 	int colourSetToUse;
 	JFrame frame;
@@ -202,7 +201,7 @@ public class Player
 		 * I also give the SwingWorker a property change listener which will listen to property change events.
 		 * Property change events are triggered by the build in method in the SwingWorker called "setProgress()" method
 		 */
-		threadedPreprocessor = new ThreadPreprocessor(controller,(MidiNoteReceiver) receiver, sequence.getTracks(), sequence, sequencer.getTempoInBPM(),closeButton,colourSetToUse);
+		threadedPreprocessor = new LightThreadPreprocessor(controller,(MidiNoteReceiver) receiver, sequence.getTracks(), sequence, sequencer.getTempoInBPM(),closeButton,colourSetToUse);
 		threadedPreprocessor.addPropertyChangeListener(new PreprocessorPropertyChangeListener(progressBar));
 		threadedPreprocessor.autoPlayAfterPreprocessing = autoPlayAfterPreprocessing;
 		threadedPreprocessor.execute();
@@ -368,26 +367,26 @@ public class Player
 	 * is the BPM that the song was changed to at that tick.
 	 * @return
 	 */
-	public TreeMap<Long, Float> getTicksWithBPMChanges()
+	/*public TreeMap<Long, Float> getTicksWithBPMChanges()
 	{
 		return threadedPreprocessor.getTicksWithBPMChanges();
-	}
+	}*/
 	
 	/**
 	 * The HashMap has Midi ticks as keys and the ticks turned to time as values. The ticks
 	 * are where the BPM changed and the values are those ticks converted to time.
 	 * @return
 	 */
-	public HashMap<Long, Double> getTicksWithBPMChangesToTime()
+	/*public HashMap<Long, Double> getTicksWithBPMChangesToTime()
 	{
 		return threadedPreprocessor.getTicksWithBPMChangesToTime();
-	}
+	}*/
 	
-	public void setLastBPMChangeData( long tickWhereBPMChanged, double timeWhereBPMChanged )
+	/*public void setLastBPMChangeData( long tickWhereBPMChanged, double timeWhereBPMChanged )
 	{
 		MidiNoteReceiver temp = (MidiNoteReceiver) receiver;
 		temp.setLastBPMChangeData(tickWhereBPMChanged, timeWhereBPMChanged);
-	}
+	}*/
 	
 	public void setColourSetToUse( int colourSet )
 	{

@@ -179,9 +179,9 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * notesForTheCurrentSong holds all the ticks where a note is turned on as well as the corresponding note. The reason for the LinkedList
 	 * is because at a tick, many notes can be played (like in real music). Therefore, the LinkedList holds all those notes.
 	 */
-	private ArrayList<Note> notes;
-	private Note[] sortedNotes;
-	private HashMap<Long, LinkedList<Note>> notesForTheCurrentSong;
+	//private ArrayList<Note> notes;
+	//private Note[] sortedNotes;
+	//private HashMap<Long, LinkedList<Note>> notesForTheCurrentSong;
 	
 	/*
 	 * These variables are solely used to set up the visualiser. The colors array is a size 16 array and each position i corresponds
@@ -291,8 +291,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 			instrumentMinMax[i][0] = 1;
 			instrumentMinMax[i][1] = 5;
 		}
-		this.notes = new ArrayList<Note>();
-		this.notesForTheCurrentSong = new HashMap<Long, LinkedList<Note>>(); 
+		//this.notes = new ArrayList<Note>();
+		//this.notesForTheCurrentSong = new HashMap<Long, LinkedList<Note>>(); 
 		this.closeButton = closeButton;
 	}
 	
@@ -365,7 +365,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * I.E: At tick 200, Notes:1,2,3,123,126 all play at the same time. So we have 200 map to an linked list that holds
 	 * all the notes. It looks like this: 200->[1,2,3,123,126]
 	 */
-	private void groupNotesByTicks()
+	/*private void groupNotesByTicks()
 	{
 		LinkedList<Note> n;
 		for( int i = 0; i < sortedNotes.length; i++ )
@@ -409,7 +409,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 				notesForTheCurrentSong.get(firstTick).add(sortedNotes[i]);
 			}
 		}
-	}
+	}*/
 	
 	/**
 	 * This method is called when a midi event and midi note need to be paired with their first events. This means
@@ -423,7 +423,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * @param channel The midi event's current change
 	 * @param midiEvent The end midi event that has to be paired with its starting midi event.
 	 */
-	private void findCorrespondingFirstNote( int midiNote, int channel, MidiEvent midiEvent )
+	/*private void findCorrespondingFirstNote( int midiNote, int channel, MidiEvent midiEvent )
 	{
 		for( int k = 0; k < notes.size(); k++ )
 		{
@@ -441,7 +441,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 				}
 			}
 		}
-	}
+	}*/
 	
 	/**
 	 * This method is like the run method in a thread object, except this is a task. In theory, they are the
@@ -557,13 +557,13 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	   	    	    	lastNote[channel][pipe] = currentNote;
 	   	    	    	
 	   	    	    	//This is for the note groupings
-		   	    	    Note n = new Note();
-	   	   	    	    n.setFirstEvent(midiEvent);
-	   	   	    	    n.setChannel(channel);
+		   	    	    //Note n = new Note();
+	   	   	    	    //n.setFirstEvent(midiEvent);
+	   	   	    	    //n.setChannel(channel);
 	   	   	    	    //now we need to set the beginning time
 	   	   	    	    //startTime = calculateTime( midiEvent.getTick() );
-	   	   	    	    n.setStartTimeInSeconds(startTime);
-	   	   	    	    notes.add(n);
+	   	   	    	    //n.setStartTimeInSeconds(startTime);
+	   	   	    	    //notes.add(n);
 	   	   	    	    
    	   	    	    	/* The next part is to calculate the amount of note changes in a 10 second interval.
    	   	    	    	 * In order to figure out what "threshold" second interval a note belongs to, the time (in seconds)
@@ -580,7 +580,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
    	    	    		//position = (int)( calculateTime(midiEvent.getTick()) /threshold );
    	    	    		//noteChangesInInterval[position][channel]++;
 	    	    		//when a note on with a velocity of 0 is used, that is considered a note off. Therefore it's the end of the note.
-	    	    		findCorrespondingFirstNote((midiByte[1] & 0xff), channel, midiEvent);
+	    	    		//findCorrespondingFirstNote((midiByte[1] & 0xff), channel, midiEvent);
 	    	    	}
 	    	    	//findNoteChangesInBarAndChannel(midiEvent, channel);
    	    	    }	  
@@ -599,7 +599,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
    	    	    	//noteChangesInInterval[position][channel]++;
 	   		    	
 	   		    	//an actual note off event that we need to pair.
-	   		    	findCorrespondingFirstNote((midiByte[1] & 0xff), channel, midiEvent);
+	   		    	//findCorrespondingFirstNote((midiByte[1] & 0xff), channel, midiEvent);
 	   		    	//findNoteChangesInBarAndChannel(midiEvent, channel);
 	    		}
 	    	    else if( status >= 192 && status <= 207 )//instrument event 
@@ -666,12 +666,12 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 		
 		setProgress(70);
 		//Sorts the notes by the tick in ascending order
-		sortedNotes = notes.toArray(new Note[0]);
-		Arrays.sort(sortedNotes);
+		//sortedNotes = notes.toArray(new Note[0]);
+		//Arrays.sort(sortedNotes);
 
 		//Once the notes are sorted, this method indexes the HashMap by the tick
 		//and if there are many notes to one tick then they are put into a List.
-		groupNotesByTicks();
+		//groupNotesByTicks();
 
 		//Once the groupNotesByTicks method is finished, (which works on the variable "notesForTheCurrentSong")
 		//it is set in the receiver for further use.
@@ -1200,10 +1200,10 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * 
 	 * @return A string array that holds what each channel's role is.
 	 */
-	public String[] getInstruments()
+	/*public String[] getInstruments()
 	{
 		return instruments;
-	}
+	}*/
 	
 	/**
 	 * This returns a data structure that holds the ticks where a BPM change occurred. The midi tick where this
@@ -1212,10 +1212,10 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * 
 	 * @return
 	 */
-	public TreeMap<Long, Float> getTicksWithBPMChanges()
+	/*public TreeMap<Long, Float> getTicksWithBPMChanges()
 	{
 		return tickWithBPMChanges;
-	}
+	}*/
 	
 	/**
 	 * Returns a data structure that holds the ticks where the BPM changed and the time in second where this occurred.
@@ -1224,10 +1224,10 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * 
 	 * @return
 	 */
-	public HashMap<Long, Double> getTicksWithBPMChangesToTime()
+	/*public HashMap<Long, Double> getTicksWithBPMChangesToTime()
 	{
 		return tickWithBPMChangesToTime;
-	}
+	}*/
 	
 	/**
 	 * Returns a String array that holds the note changes for a channel. These note changes must be over a certain threshold
@@ -1253,10 +1253,10 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * 
 	 * @return
 	 */
-	public String[] getChangesByAmountString()
+	/*public String[] getChangesByAmountString()
 	{
 		return changesByAmountString;
-	}
+	}*/
 	
 	/**
 	 * This method specifically sets up the visualization. It handles initial pipes placement, colour 

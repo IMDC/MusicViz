@@ -71,6 +71,7 @@ public class ChangeVisualDisplay implements MouseListener
 		}
 		catch(NullPointerException ex)
 		{
+			JOptionPane.showMessageDialog(null, "Cannot Alter the Visualization because there is a null pointer exception");
 		}
 	}
 

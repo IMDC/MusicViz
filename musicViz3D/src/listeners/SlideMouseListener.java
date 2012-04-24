@@ -3,7 +3,6 @@ package listeners;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.TreeMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JSlider;
@@ -68,7 +67,7 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 	
 	public void mouseReleased(MouseEvent e) 
 	{	
-		long theTickWhereBeatWasChanged = 0;
+		//long theTickWhereBeatWasChanged = 0;
 		
 		Player player = controller.getPlayer();
 		
@@ -86,7 +85,7 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 		 */
 		//The current tick that we use to figure out where the last beat change was, in order to do calculation properly. The Slider
 		//was just changed to this value. 
-		long currentTick = player.getCurrentTickPositionOfSong();
+		/*long currentTick = player.getCurrentTickPositionOfSong();
 		//<Tick>,<BPM> = at variable <tick> the beat changed to <BPM>
 		TreeMap<Long, Float> ticksWhereBeatChanged = player.getTicksWithBPMChanges();//controller.getTicksWithBPMChanges();
 		Object ticks[] = ticksWhereBeatChanged.keySet().toArray();
@@ -111,7 +110,7 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 		}
 		//player.setLastTick(theTickWhereBeatWasChanged);
 		//player.setLastTimeInSeconds(theTimeWhereTheBeatChanged);
-		player.setLastBPMChangeData(theTickWhereBeatWasChanged, theTimeWhereTheBeatChanged);
+		player.setLastBPMChangeData(theTickWhereBeatWasChanged, theTimeWhereTheBeatChanged);*/
 		
 		//Only start the song again, if the song was playing before the user changed position
 		if( isRunning )

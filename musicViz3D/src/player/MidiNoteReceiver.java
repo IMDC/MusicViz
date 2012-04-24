@@ -217,11 +217,11 @@ public class MidiNoteReceiver implements Receiver
 	 * @Param The tick position where the BPM changed
 	 * @param The time position where the BPM changed
 	 */
-	public void setLastBPMChangeData( long tickWhereBPMChanged, double timeWhereBPMChanged )
+	/*public void setLastBPMChangeData( long tickWhereBPMChanged, double timeWhereBPMChanged )
 	{
 		this.lastTick = tickWhereBPMChanged;
 		this.lastTime = timeWhereBPMChanged;
-	}
+	}*/
 	
 	public void setPitchData( int[] initialPitchSettings, int[] rangeOfPitchValues )
 	{
