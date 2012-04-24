@@ -14,6 +14,7 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -401,5 +402,27 @@ public class Player
 	public AtomicBoolean getIsPlayingBeats()
 	{
 		return (( MidiNoteReceiver ) receiver).playBeats;
+	}
+	
+	public void changeVolume( int channel, int volume )
+	{
+		Object[] transmitters = sequencer.getTransmitters().toArray();
+		ShortMessage myMsg = new ShortMessage();
+		
+		for( int i = 0; i < transmitters.length; i++)
+		{
+			try
+			{
+				myMsg = new ShortMessage();
+				myMsg.setMessage(ShortMessage.CONTROL_CHANGE,channel,7,volume);//sounds off
+			   	((Transmitter)transmitters[i]).getReceiver().send(myMsg, -1);
+			}
+			catch (InvalidMidiDataException e)
+			{
+				System.err.println("Problem when clearing Controllers, turning off all notes and turning off sounds");
+				System.exit(1);
+			}
+		}
+	
 	}
 }
