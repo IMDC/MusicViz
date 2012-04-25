@@ -10,8 +10,8 @@ import javax.swing.SwingWorker;
 
 import controller.Controller;
 import gui.GUI;
-import player.MidiNoteReceiver;
 import player.Player;
+import player.receivers.PitchReceiver;
 
 /**
  * This Class extends SwingWorker which in theory (at the core) is exactly a thread (like the thread class in java).
@@ -92,7 +92,7 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	private Track allMidiTracks[];
 	//private Sequence sequence;
 	//private float lastBPMInSong;
-	private MidiNoteReceiver receiver;
+	private PitchReceiver receiver;
 	Controller controller;
 	
 	/**
@@ -261,7 +261,7 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	 * @param firstBPMInSong
 	 * @param closeButton
 	 */
-	public LightThreadPreprocessor( Controller controller, MidiNoteReceiver receiver, Track allMidiTracks[], 
+	public LightThreadPreprocessor( Controller controller, PitchReceiver receiver, Track allMidiTracks[], 
 								Sequence sequence, float firstBPMInSong, JButton closeButton, int colourSetToUse )
 	{
 		this.allMidiTracks = allMidiTracks;

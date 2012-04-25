@@ -17,9 +17,9 @@ import javax.swing.SwingWorker;
 
 import controller.Controller;
 import gui.GUI;
-import player.MidiNoteReceiver;
 
 import player.Player;
+import player.receivers.MidiNoteReceiver;
 import processors.ChannelProcessor;
 import processors.TonalProcessor;
 import utilities.StringComparator;

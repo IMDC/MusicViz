@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
@@ -25,6 +24,10 @@ import controller.Controller;
 import gui.GUI;
 import listeners.MidiMetaEventListener;
 import listeners.PreprocessorPropertyChangeListener;
+import player.receivers.BeatReceiver;
+import player.receivers.ControlReceiver;
+import player.receivers.InstrumentReceiver;
+import player.receivers.PitchReceiver;
 import processors.threads.LightThreadPreprocessor;
 import utilities.Utils;
 
@@ -39,8 +42,8 @@ public class Player
 {
 	private Sequence sequence = null;
 	private Sequencer sequencer = null;
-	private Transmitter transmitter = null;
-	private Receiver receiver = null;
+	//private Transmitter transmitter = null;
+	//private Receiver receiver = null;
 	private Controller controller = null;
 	//private ThreadPreprocessor threadedPreprocessor = null;
 	private LightThreadPreprocessor threadedPreprocessor = null;
@@ -50,6 +53,15 @@ public class Player
 	//Synthesizer synthesizer;
 	//Receiver synthReceiver;
 	
+	
+	BeatReceiver beatReceiver;
+	InstrumentReceiver instrumentReceiver;
+	ControlReceiver controlReceiver;
+	PitchReceiver pitchReceiver;
+	Transmitter instrumentTransmitter;
+	Transmitter beatTransmitter;
+	Transmitter controlTransmitter;
+	Transmitter pitchTransmitter;
 	/**
 	 * Gives the class the program controller for back end to front end communication.
 	 * 
@@ -60,7 +72,12 @@ public class Player
 	{
 
 		sequencer = MidiSystem.getSequencer();
-		transmitter = sequencer.getTransmitter();
+		//transmitter = sequencer.getTransmitter();
+		instrumentTransmitter = sequencer.getTransmitter();
+		beatTransmitter = sequencer.getTransmitter();
+		controlTransmitter = sequencer.getTransmitter();
+		pitchTransmitter = sequencer.getTransmitter();
+		
 		colourSetToUse = 0;
 		/*receiver = new MidiNoteReceiver(controller,sequencer);
 		transmitter.setReceiver(receiver);
@@ -81,8 +98,21 @@ public class Player
 	public void init( Controller controller )
 	{
 		this.controller = controller;
-		receiver = new MidiNoteReceiver(controller,sequencer);
-		transmitter.setReceiver(receiver);
+		
+		//receiver = new MidiNoteReceiver(controller,sequencer);
+		//transmitter.setReceiver(receiver);
+		
+
+		beatReceiver = new BeatReceiver(controller);
+		instrumentReceiver = new InstrumentReceiver(controller);
+		controlReceiver = new ControlReceiver(controller, sequencer);
+		pitchReceiver = new PitchReceiver(controller);
+		
+		instrumentTransmitter.setReceiver(instrumentReceiver);
+		beatTransmitter.setReceiver(beatReceiver);
+		controlTransmitter.setReceiver(controlReceiver);
+		pitchTransmitter.setReceiver(pitchReceiver);
+		
 		sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );
 	}
 	
@@ -201,7 +231,7 @@ public class Player
 		 * I also give the SwingWorker a property change listener which will listen to property change events.
 		 * Property change events are triggered by the build in method in the SwingWorker called "setProgress()" method
 		 */
-		threadedPreprocessor = new LightThreadPreprocessor(controller,(MidiNoteReceiver) receiver, sequence.getTracks(), sequence, sequencer.getTempoInBPM(),closeButton,colourSetToUse);
+		threadedPreprocessor = new LightThreadPreprocessor(controller, pitchReceiver, sequence.getTracks(), sequence, sequencer.getTempoInBPM(),closeButton,colourSetToUse);
 		threadedPreprocessor.addPropertyChangeListener(new PreprocessorPropertyChangeListener(progressBar));
 		threadedPreprocessor.autoPlayAfterPreprocessing = autoPlayAfterPreprocessing;
 		threadedPreprocessor.execute();
@@ -395,12 +425,12 @@ public class Player
 	
 	public AtomicBoolean getIsPlayingInstruments()
 	{
-		return (( MidiNoteReceiver ) receiver).playInstruments;
+		return this.instrumentReceiver.getIsPlayingInstruments();
 	}
 	
 	public AtomicBoolean getIsPlayingBeats()
 	{
-		return (( MidiNoteReceiver ) receiver).playBeats;
+		return this.beatReceiver.getIsPlayingBeats();
 	}
 	
 	public void changeVolume( int channel, int volume )
