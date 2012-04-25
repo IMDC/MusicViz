@@ -50,7 +50,7 @@ public class ListMouseListener implements MouseListener
 		{
 			Player player = controller.getPlayer();
 			GUI gui = controller.getGUI();
-			player.stop();
+			//player.stop();
 			Song song = (Song) listModel.getElementAt(firstIndex);
 			//controller.stop();
 			

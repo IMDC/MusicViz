@@ -62,7 +62,7 @@ public class MidiMetaEventListener implements MetaEventListener
 					{
 					   	myMsg = new ShortMessage();
 					   	myMsg.setMessage(ShortMessage.CONTROL_CHANGE,j,120,0);//sounds off
-					   	((Transmitter)transmitters[i]).getReceiver().send(myMsg, -1);
+					   ((Transmitter)transmitters[i]).getReceiver().send(myMsg, -1);
 					}
 					catch (InvalidMidiDataException e)
 					{
@@ -72,7 +72,7 @@ public class MidiMetaEventListener implements MetaEventListener
 				}
 			}
 		
-			player.stop();
+			//player.stop();
 
 			//sets the first item as selected/
 			gui.getPlaylist().setSelectedIndex(0);

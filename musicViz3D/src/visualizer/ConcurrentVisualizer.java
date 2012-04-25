@@ -17,12 +17,13 @@ import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
 
-import timer.FPSTimer;
+
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import player.messages.OpenGLMessage;
 import player.messages.OpenGLMessageBeat;
@@ -31,7 +32,7 @@ import player.messages.OpenGLMessageTonal;
 import visualizer.camera.Camera;
 
 
-public class Visualizer implements GLEventListener, MouseMotionListener, KeyListener, MouseWheelListener
+public class ConcurrentVisualizer implements GLEventListener, MouseMotionListener, KeyListener, MouseWheelListener
 {
 	public static final int MAX_CHANNELS = 16;
 	public static final int MAX_BEAT_PIPES = 5;
@@ -46,11 +47,12 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	//Used to assist the mouse
 	private float prevX, prevY;
 
-	private FPSTimer timer;
+	//private FPSTimer timer;
 	
-	private Pipe[][] pipes;
+	private ConcurrentPipe[][] pipes;
 	private Beat[] beats;
-	private int[] pipesToUse;
+	//private int[] pipesToUse;
+	private ConcurrentHashMap<Integer, Boolean> pipesToUse;
 	
 	private float[][] beatColours = {{1,0,0,1},{0,1,0,1},{0,0,1,1},{0,1,1,1},{1,1,0,1}};
 	private Color colours[] = { 
@@ -79,7 +81,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	//public HashMap<Integer, LinkedList<OpenGLMessage>> messageQueue;
 	public ConcurrentHashMap<Integer, ConcurrentLinkedQueue<OpenGLMessage>> concurrentMessageQueue;
 
-	public Visualizer()
+	public ConcurrentVisualizer()
 	{
 		//this.messageQueue = new HashMap<Integer, LinkedList<OpenGLMessage>>();
 		this.concurrentMessageQueue = new ConcurrentHashMap<Integer, ConcurrentLinkedQueue<OpenGLMessage>>();
@@ -112,8 +114,9 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 			this.concurrentMessageQueue.put(i, new ConcurrentLinkedQueue<OpenGLMessage>() );
 		}
 		
-		this.pipesToUse = new int[1];
-		this.pipesToUse[0] = 0;
+		//this.pipesToUse = new int[1];
+		//this.pipesToUse[0] = 0;
+		this.pipesToUse = new ConcurrentHashMap<Integer, Boolean>(2, 0.9f, 2);
 	}
 	
 	public void display(GLAutoDrawable drawable)
@@ -121,7 +124,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		final GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
-        timer.update();
+        //timer.update();
 
         camera.update();
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
@@ -153,11 +156,18 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		    }
 	    }
 	    
-	    for( int i = 0; i < pipesToUse.length ; i++ )
+	    /*for( int i = 0; i < pipesToUse.length ; i++ )
 	    {	
 	    	for( int j = 0; j < MAX_PIPES_PER_CHANNEL; j++ )
 	    	{
 	    		pipes[ pipesToUse[i] ][j].draw(drawable);
+	    	}
+	    } */
+	    for( Integer i : this.pipesToUse.keySet() )
+	    {
+	    	for( int j = 0; j < MAX_PIPES_PER_CHANNEL; j++ )
+	    	{
+	    		pipes[i][j].draw(drawable);
 	    	}
 	    }
 	    
@@ -183,7 +193,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		float[] coordinates = new float[3];
 		
 		//The pipe that we are altering
-		Pipe p = pipes[channel][pipe];
+		ConcurrentPipe p = pipes[channel][pipe];
 		
 		//Calculate the alpha for the new face
 		alpha = 0.003937f*velocity +0.5f;
@@ -220,8 +230,8 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 			float newFace[][] =  p.createNewFace(xAndY, coordinates[0], coordinates[1], 0);
 	
 			//Must set the firstFaceData in order for the pipe to show the animations.
-			p.getPositionAnimationList().addLast(newFace);
-			p.getAlphaAnimationList().addLast(alpha);
+			p.getPositionAnimationList().add(newFace);
+			p.getAlphaAnimationList().add(alpha);
 			p.setFirstFaceData(xAndY);
 		}
 		else if( message.getMessage() == OpenGLMessageTonal.NOTEOFF )
@@ -236,8 +246,8 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 			float newFace[][] =  p.createNewFace(0, coordinates[0], coordinates[1], 0);
 
 			//Must set the firstFaceData in order for the pipe to show the animations.
-			p.getPositionAnimationList().addLast(newFace);
-			p.getAlphaAnimationList().addLast(alpha);
+			p.getPositionAnimationList().add(newFace);
+			p.getAlphaAnimationList().add(alpha);
 			p.setFirstFaceData(0);//(xAndY);
 		}
 	}
@@ -268,7 +278,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		
 		
 		//2. Apply same note for the channel affected
-		Pipe p;
+		ConcurrentPipe p;
 		float[][] newFace;
 		for( int i = 0; i < MAX_PIPES_PER_CHANNEL; i++)
 		{
@@ -278,7 +288,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 			newFace = p.createNewFace(lastDimensions[channel][i], lastCoorindates[channel][i][0], lastCoorindates[channel][i][1]+pitchBends[channel] , 0);
 			
 			//Add the new face to the animation list
-			p.getPositionAnimationList().addLast(newFace);
+			p.getPositionAnimationList().add(newFace);
 			//p.getAlphaAnimationList().addLast(1f);
 			lastCoorindates[channel][i][1] += pitchBends[channel];
 			p.setFirstFaceData(lastDimensions[channel][i]);
@@ -339,7 +349,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
         int amountOfSections = 200;
 		float[] initialColour = {1,0,0,1f};
 		float[] initialPosition = {0,0,0};
-		pipes = new Pipe[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
+		pipes = new ConcurrentPipe[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 
 		for( int i = 0; i < MAX_CHANNELS; i++ )
 		{
@@ -348,7 +358,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 				initialColour[0] = (float) (colours[i].getRed() / 255.0);
 				initialColour[1] = (float) (colours[i].getGreen() / 255.0);
 				initialColour[2] = (float) (colours[i].getBlue() / 255.0);
-				pipes[i][j] = new Pipe(0,0, amountOfSections, initialColour, initialPosition);
+				pipes[i][j] = new ConcurrentPipe(0,0, amountOfSections, initialColour, initialPosition);
 				pipes[i][j].createPipe(drawable);
 				initialPosition[1] -= 7;
 			}
@@ -371,7 +381,7 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 		}
 		
 		
-		timer = new FPSTimer();
+		//timer = new FPSTimer();
 	}
 	
 	/**
@@ -420,7 +430,17 @@ public class Visualizer implements GLEventListener, MouseMotionListener, KeyList
 	 */
 	public void setChannelsUsed(int[] pipesToUse)
 	{
-		this.pipesToUse = pipesToUse.clone();
+		//this.pipesToUse = pipesToUse.clone();
+		this.pipesToUse.clear();
+		for( int i = 0; i < 16; i++ )
+		{
+			this.pipesToUse.remove(i);
+		}
+		for( int i = 0; i < pipesToUse.length ; i++ )
+		{
+			this.pipesToUse.put(pipesToUse[i], true);
+		}
+		
 	}
 	
 	/**

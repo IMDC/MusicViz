@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequencer;
-import javax.swing.SwingUtilities;
 
 import controller.Controller;
 import gui.GUI;
@@ -50,8 +49,8 @@ public class MidiNoteReceiver implements Receiver
 	 * Therefore, instead of a note on signal then a note off signal later, I have grouped
 	 * the note on/offs together.
 	 */
-	private long lastTick;
-	private double lastTime;
+	//private long lastTick;
+	//private double lastTime;
 	
 	private int[] rangeOfPitchValues;
 	private int[] initialPitchSettings;
@@ -64,8 +63,8 @@ public class MidiNoteReceiver implements Receiver
 		this.bp = new BeatProcessor();
 		this.controller = controller;
 		this.sequencer = sequencer;
-		this.lastTick = 0;
-		this.lastTime = 0;
+		//this.lastTick = 0;
+		//this.lastTime = 0;
 		this.lastTimeNoteWasPlayed = 0;
 		this.rangeOfPitchValues = new int[16];
 		this.initialPitchSettings = new int[16];
@@ -132,10 +131,13 @@ public class MidiNoteReceiver implements Receiver
 		    	//System.out.println(offset);
 			    OpenGLMessagePitchChange pitchChange = new OpenGLMessagePitchChange(offset, channel,rangeOfPitchValues[channel]);
 			   // System.out.println("gfhfghfgh");
-			    if( gui.getVisualizer().messageQueue.get(channel).size() < 20 )
+			    /*if( gui.getVisualizer().messageQueue.get(channel).size() < 20 )
 			    {
 			    	gui.getVisualizer().messageQueue.get(channel).add(pitchChange);
-			    }
+			    }*/
+
+			    	gui.getVisualizer().concurrentMessageQueue.get(channel).add(pitchChange);
+			    
 		    }
 	    }
 	    //Checks the status for a note on event
@@ -183,10 +185,15 @@ public class MidiNoteReceiver implements Receiver
 	private  void tonalEventProcessing( int channel, int velocity, int note) 
    	{
 		GUI gui = controller.getGUI();
-		if(gui.getVisualizer().messageQueue.get(channel).size() < 20 && playInstruments.get() )
+		/*if(gui.getVisualizer().messageQueue.get(channel).size() < 20 && playInstruments.get() )
 		{
 			OpenGLMessageTonal tonalMessage = tonalProcessor.processNote( note, velocity, channel);
 			gui.getVisualizer().messageQueue.get(channel).add(tonalMessage);
+		}*/
+		if( playInstruments.get() )
+		{
+			OpenGLMessageTonal tonalMessage = tonalProcessor.processNote( note, velocity, channel);
+			gui.getVisualizer().concurrentMessageQueue.get(channel).add(tonalMessage);
 		}
    	}
 	
@@ -200,9 +207,13 @@ public class MidiNoteReceiver implements Receiver
 	private void beatEventProcessing( int note, int velocity )
 	{
 		OpenGLMessageBeat beat = bp.processBeat(note, velocity);
-		if( beat != null && playBeats.get() )
+		/*if( beat != null && playBeats.get() )
 		{
 			controller.getGUI().getVisualizer().messageQueue.get(9).add(beat);
+		}*/
+		if( beat != null && playBeats.get() )
+		{
+			controller.getGUI().getVisualizer().concurrentMessageQueue.get(9).add(beat);
 		}
 	}
 	

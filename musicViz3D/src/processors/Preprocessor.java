@@ -64,7 +64,7 @@ public class Preprocessor
 	//Used for keeping track of note changes
 	private int[][] changes = new int[16][3];
 	private int[][] lastNote = new int[16][3];
-	private MidiNoteReceiver receiver;
+	//private MidiNoteReceiver receiver;
 	//this variable is also used to keep track of the changes by a certain amount. IE 
 	//the note changed by 10, this will be used to initially place the instruments. Hopefully
 	//we will be able to keep the less changes but overall more important ones more visible.
@@ -103,7 +103,7 @@ public class Preprocessor
 	public Preprocessor( MidiNoteReceiver receiver, Track allMidiTracks[], Sequence sequence, float firstBPMInSong )
 	{
 		this.allMidiTracks = allMidiTracks;
-		this.receiver = receiver;
+		//this.receiver = receiver;
 		this.sequence = sequence;
 		this.lastBPMInSong = firstBPMInSong;
 		for( int i = 0; i < instruments.length; i++ )
@@ -664,7 +664,7 @@ public class Preprocessor
 	 * 
 	 * @return A 2D array where i acts as one of the 16 channels and j acts as one of the 3 pipes. [channel][pipe].
 	 */
-	private double[][] calculateNoteChangePercentage()
+	/*private double[][] calculateNoteChangePercentage()
 	{
 		double[][] noteChangePercentage = new double[16][3];
 		double largestAmountOfChanges = -100;
@@ -689,7 +689,7 @@ public class Preprocessor
 		}
 		
 		return noteChangePercentage;
-	}
+	}*/
 
 	/**
 	 * During pre-processing, the channels that are used are recorded, this is used to setup the visualiser

@@ -41,7 +41,7 @@ import listeners.SlideMouseListener;
 import listeners.SliderTimeChangeListener;
 import listeners.StopButtonListener;
 import renderers.FileCellRenderer;
-import visualizer.Visualizer;
+import visualizer.ConcurrentVisualizer;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -60,7 +60,7 @@ import com.jogamp.opengl.util.FPSAnimator;
  */
 public class GUI 
 {
-	private boolean isInitialized;
+	//private boolean isInitialized;
 	
 	//This is for the MidiPlayer
 	private JFrame frame;
@@ -97,7 +97,8 @@ public class GUI
 	private Frame openGLFrame;
 	private FPSAnimator animator;
 	private GLCanvas canvas;
-	private Visualizer visualizer;
+	//private Visualizer visualizer;
+	private ConcurrentVisualizer visualizer;
 	
 	/**
 	 * Constructor for the GUI class. Sets up a JFrame object with the width and height parameters given for the frame size.
@@ -112,7 +113,7 @@ public class GUI
 	 */
 	public GUI(int width, int height)
 	{
-		isInitialized = false;
+		//isInitialized = false;
         /*Runnable playerGui = new Runnable()
         		{
         			public void run()
@@ -134,7 +135,7 @@ public class GUI
         startPlayerGUI();
 	}
 	
-	private synchronized void startPlayerGUI()
+	private  void startPlayerGUI()
 	{
 		//Sets up the JFrame and adds a border layout, so panels can be easily arranged.
 		frame = new JFrame();
@@ -221,18 +222,18 @@ public class GUI
         sliderPanel.add(slider);
         playListPanel.add(scrollPane);
         
-        isInitialized = true;
-        notify();
+       // isInitialized = true;
+        //notify();
         frame.setEnabled(false);
         frame.setVisible(true);
 	}
 	
-	public synchronized  void  addListeners(Controller controller) throws InterruptedException
+	public   void  addListeners(Controller controller) throws InterruptedException
 	{
-		if( !isInitialized  )
-		{
-			wait();
-		}
+		//if( !isInitialized  )
+		//{
+		//	wait();
+		//}
 		stopButton.addActionListener( 
 				new StopButtonListener(controller) );
         
@@ -267,7 +268,8 @@ public class GUI
          */
         openGLFrame = new Frame("Visualizer");
         canvas = new GLCanvas();
-        visualizer = new Visualizer();
+        //visualizer = new Visualizer();
+        visualizer = new ConcurrentVisualizer();
 	    canvas.addGLEventListener(visualizer);
 	    canvas.addMouseMotionListener(visualizer);
 	    canvas.addMouseWheelListener(visualizer);
@@ -374,7 +376,12 @@ public class GUI
 		SwingUtilities.invokeLater(setEnabled);
 	}
 	
-	public Visualizer getVisualizer()
+	/*public Visualizer getVisualizer()
+	{
+		return visualizer;
+	}*/
+	
+	public ConcurrentVisualizer getVisualizer()
 	{
 		return visualizer;
 	}

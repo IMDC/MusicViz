@@ -1,16 +1,9 @@
 package processors.threads;
 
-
-import java.util.Arrays;
-import java.util.HashMap;
-
 import java.util.TreeMap;
 
-
-import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Sequence;
-
 import javax.sound.midi.Track;
 import javax.swing.JButton;
 import javax.swing.SwingWorker;
@@ -18,12 +11,7 @@ import javax.swing.SwingWorker;
 import controller.Controller;
 import gui.GUI;
 import player.MidiNoteReceiver;
-
 import player.Player;
-import processors.ChannelProcessor;
-import processors.TonalProcessor;
-import utilities.StringComparator;
-import utilities.Utils;
 
 /**
  * This Class extends SwingWorker which in theory (at the core) is exactly a thread (like the thread class in java).
@@ -36,7 +24,7 @@ import utilities.Utils;
  * @author Michael Pouris
  *
  */
-public class ThreadPreprocessor extends SwingWorker<Void,Void>
+public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 {
 	/**
 	 * The important variables that are used outside this object:
@@ -102,8 +90,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * 
 	 */
 	private Track allMidiTracks[];
-	private Sequence sequence;
-	private float lastBPMInSong;
+	//private Sequence sequence;
+	//private float lastBPMInSong;
 	private MidiNoteReceiver receiver;
 	Controller controller;
 	
@@ -119,15 +107,15 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * is not considered a note change. This is used to calculate a threshold that will denote what
 	 * instruments will be visualised. 
 	 */
-	private int[][] changes = new int[16][3];
+	/*private int[][] changes = new int[16][3];
 	private int[][] lastNote = new int[16][3];
-	
+	*/
 	/*
 	 * This variable holds the length of the smallest bar in the song. This will be used in
 	 * the MidiNoteReceiver and be the maximum amount of time to wait before checking to
 	 * see if the bar changed.
 	 */
-	private long smallestLengthOfBarInSong = Integer.MAX_VALUE;
+	//private long smallestLengthOfBarInSong = Integer.MAX_VALUE;
 	/*
 	 * Like the 2 variables above, these ones also keep track of the note changes except over
 	 * a certain amount. Unlike the variables above, where a single note change of 1 will be counted
@@ -135,8 +123,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * The main use for these variables are for the placement of the pipes. Therefore, the pipes
 	 * with the most movement over the recorded threshold will be placed closer to the front.
 	 */
-	private int[] changesByAmount = new int[16];
-	private String[] changesByAmountString = new String[16];
+	//private int[] changesByAmount = new int[16];
+	//private String[] changesByAmountString = new String[16];
 	
 	/*
 	 * This set of variables keep track of where the BPM changes occured in the song.
@@ -148,9 +136,9 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * 
 	 * These variables are used for converting ticks to real time.
 	 */
-	private TreeMap<Long, Float> tickWithBPMChanges = new TreeMap<Long, Float>();
-	private TreeMap<Long, Long> tickWithMPQChanges = new TreeMap<Long, Long>();
-	private HashMap<Long,Double> tickWithBPMChangesToTime = new HashMap<Long, Double>();
+	//private TreeMap<Long, Float> tickWithBPMChanges = new TreeMap<Long, Float>();
+	//private TreeMap<Long, Long> tickWithMPQChanges = new TreeMap<Long, Long>();
+	//private HashMap<Long,Double> tickWithBPMChangesToTime = new HashMap<Long, Double>();
 	
 	/*
 	 * These following variables have the same principle as the beat variables above, except they
@@ -163,13 +151,13 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * startOfBarsWithChangesInBarTreeString holds the point where a bar changes and the corresponding
 	 * value holds a 16 position array which holds how much that channel changes in that bar.
 	 */
-	private TreeMap<Long,Float[]> tickWithTimeSignatureChanges = new TreeMap<Long, Float[]>();
+	/*private TreeMap<Long,Float[]> tickWithTimeSignatureChanges = new TreeMap<Long, Float[]>();
 	private HashMap<Long,Double> tickWithTimeSignatureChangesToTime = new HashMap<Long, Double>();
 	private HashMap<Long, Float> tickWithLengthOfBarInSeconds = new HashMap<Long, Float>(); 
 	private HashMap<Long, Long> tickWithLengthOfBarInTicks = new HashMap<Long, Long>(); 
 	private TreeMap<Long,  Integer[] > startOfBarsWithChangesInBarTree = new TreeMap<Long,Integer[] >();
 	private TreeMap<Long,  String[] > startOfBarsWithChangesInBarTreeString = new TreeMap<Long,String[] >(); //this is what we use for bar changes
-	
+	*/
 	/*
 	 * These are used for grouping midi messages into actual note objects that hold their duration in ticks and seconds.
 	 * The ArrayList notes variable is used to place the new notes into. This is a simple structure used to easily accommodate 
@@ -200,8 +188,8 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	//private float[] channelOrderWithXLimit = new float[16];
 	private JButton closeButton;
 	private TreeMap<Integer, Boolean> channelsUsed = new TreeMap<Integer, Boolean>();
-	private String[] instruments = new String[16];
-	private int[][] instrumentMinMax = new int[16][2];
+	//private String[] instruments = new String[16];
+	//private int[][] instrumentMinMax = new int[16][2];
 	
 	 
 	/*
@@ -248,10 +236,10 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 *  	amount of changes in interval 1 = channel 1.
 	 * 
 	 */
-	public static final int threshold = 10;
-	private int[][] noteChangesInInterval;
-	private String[][] noteChangesInIntervalString;
-	private int[][] noteChangesInIntervalInteger;
+	//public static final int threshold = 10;
+	//private int[][] noteChangesInInterval;
+	//private String[][] noteChangesInIntervalString;
+	//private int[][] noteChangesInIntervalInteger;
 	
 	/*
 	 * This is used to find out the instruments used in the song: 
@@ -273,23 +261,23 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * @param firstBPMInSong
 	 * @param closeButton
 	 */
-	public ThreadPreprocessor( Controller controller, MidiNoteReceiver receiver, Track allMidiTracks[], 
+	public LightThreadPreprocessor( Controller controller, MidiNoteReceiver receiver, Track allMidiTracks[], 
 								Sequence sequence, float firstBPMInSong, JButton closeButton, int colourSetToUse )
 	{
 		this.allMidiTracks = allMidiTracks;
 		this.controller = controller;
 		this.receiver = receiver;
-		this.sequence = sequence;
-		this.lastBPMInSong = firstBPMInSong;
-		for( int i = 0; i < instruments.length; i++ )
+		//this.sequence = sequence;
+		//this.lastBPMInSong = firstBPMInSong;
+		for( int i = 0; i < 16; i++ )
 		{
-			instruments[i] = "Not set";
-			changesByAmountString[i] = defaultString;
+			//instruments[i] = "Not set";
+			//changesByAmountString[i] = defaultString;
 			rangeOfPitchValues[i] = Integer.MIN_VALUE;
 			initialPitchSettings[i] = Integer.MIN_VALUE;
 			typeOfTuningInChannel[i] = Integer.MIN_VALUE;
-			instrumentMinMax[i][0] = 1;
-			instrumentMinMax[i][1] = 5;
+			//instrumentMinMax[i][0] = 1;
+			//instrumentMinMax[i][1] = 5;
 		}
 		//this.notes = new ArrayList<Note>();
 		//this.notesForTheCurrentSong = new HashMap<Long, LinkedList<Note>>(); 
@@ -309,7 +297,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * @param currentTick
 	 * @return The currentTick converted to the time in seconds.
 	 */
-	private double calculateTime( long currentTick )
+	/*private double calculateTime( long currentTick )
 	{
 		//These are the variables that store where the last BPM change happened
 		double lastRelativeTime = 0;
@@ -320,7 +308,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
   	    //at the same position in beats. IE the tick at [10] has its BPM stored at [10] in the beats array.
   	    Object[] ticks = tickWithBPMChanges.keySet().toArray();
   	    Object[] beats = tickWithBPMChanges.values().toArray();
-  	    
+  	    */
   	    /*
   	     * This loops finds where the currentTick fits in with the ticks. This gives the time, tick and BPM of the last
   	     * BPM change which is used to calculate the time for this tick. IE: 
@@ -330,7 +318,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
   	     * (56,90),(90,100) and (100,123), which is the interval it fits in. At this point lastTick = 100, lastBPM = 150
   	     * and the lastTime for the lastTick is grabbed. Only now can the time for the currentTick be calculated.
   	     */
-  	    for( int z = 0; z < ticks.length; z++ )
+  	   /* for( int z = 0; z < ticks.length; z++ )
   	    {
   	    	if( z + 1 < ticks.length )
   	    	{
@@ -351,7 +339,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
   	    	}
   	    }
   	    return ( 60 *( ( currentTick - lastRelativeTick ) / lastRelativeBPM / sequence.getResolution() ) ) + lastRelativeTime;
-	}
+	}*/
 	
 	/**
 	 * This method groups the sorted notes together. In the calling-method, every time a new note is created
@@ -454,19 +442,13 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	{
 		setProgress(0);
 		GUI gui = controller.getGUI();
-		//gui.getAnimator().pause();
-		gui.pauseAnimator();
+		//gui.pauseAnimator();
 		gui.setEnabledPlayerFrame(false);
 		
 		Track singleTrack;
 		MidiMessage midiMessage;
-		byte[] midiByte;
 		int status;
 		int channel;	
-		int currentNote;
-		MidiEvent midiEvent;
-		
-		processMidiMetaEvents();
 		
 		setProgress(10);
 		
@@ -474,308 +456,66 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 		
 		setProgress(25);
 		
-		/*
-		 * A quick and efficient way to randomly grab information from an array is by the 
-		 * index of an array. So to store the amount of note changes in an array that a song has at a certain
-		 * interval, we divide the length of the song in seconds by a certain threshold (to give us the amount
-		 * of intervals) then take the floor of the resultant number. This number is the size of the array.
-		 * For example: Just say the length of the song is 176 seconds and we have a threshold of 10, which means
-		 * 10 intervals. Therefore takes these steps:
-		 * 		1. 176/10 = 17.6
-		 * 		2. Math.floor(17.6) = 17
-		 * Therefore we have 17 intervals of 10 seconds. Now there is another problem to solve; a size 17 array
-		 * has numbers 0 to 16. This means that we can only go to 160 seconds, but what about notes in the 
-		 * range of 170seconds to 176? The way to solve this is to make the array one size bigger; therefore the
-		 * size of the array is 18 and goes from index 0 to 17.
-		 */
-		int secondLength = Utils.microSecondsToSeconds(sequence.getMicrosecondLength());
-		int intervals = secondLength/threshold + 1;
-		noteChangesInInterval = new int[intervals][16];
-		noteChangesInIntervalString = new String[intervals][16];
-		noteChangesInIntervalInteger = new int[intervals][16];
-		
-		
-		/*
-		 * Please look at the comments for processMidiMetaEvents(...) to learn about the types of midi files. This next loop processes
-		 * the note on/off and program change events.
-		 * 
-		 */
 		for( int i = 0; i < allMidiTracks.length; i++)
 		{
 			singleTrack = allMidiTracks[i];
 			for( int j = 0; j < singleTrack.size(); j++ )
 			{
 				midiMessage = singleTrack.get(j).getMessage();
-				midiEvent = singleTrack.get(j);
-	      		midiByte = midiMessage.getMessage();
 	      		status = midiMessage.getStatus();
-	      		currentNote = midiByte[1] & 0xff;
-	      		
-	    	    // if the status is a note on event then 144 is minused other wise its 128
-    	    	// able to find the lowest and highest notes in the channels on the fly because I don't care
-    	    	// about sorting the notes, only the max and min. O( nm ) running time for this. 
-	    	    channel = status > 143 ? status - 144 : status - 128;
-	    	    
-	    	    int position;
-	    	    
-	    	    if( channel == 9 )
-	    	    {
-	    	    	channelsUsed.put(channel, true);
-	    	    }
-	    	    
-	      		//if the status indicates that it is a note on we do preprocessing
-	    	    if ( status >= 144 && status <= 159 && channel != 9 )
-   	    	    {
-	    	    	double startTime; 
-	    	    	if( (midiByte[2] & 0xff) != 0 )
-	    	    	{
-	   	    	    	channelsUsed.put(channel, true);
-	   	    	    	/*
-	   	    	    	 * Keeping Track of all the note changes
-	   	    	    	 */  	
-	   	    	    	int pipe = 0;
-	   	    			pipe = TonalProcessor.getPipe(currentNote);
-	   	    	    	
-	   	    			/*
-	   	    			 * If the current note is not the last note, then there was a pitch change
-	   	    			 * and the changes for that pipe and channel are incremented.
-	   	    			 */
-	   	    	    	if (currentNote != lastNote[channel][pipe])
-	   	    	    	{
-	   	    	    		changes[channel][pipe]++;
-	   	    	    	}
-	   	    	    	
-	   	    	    	startTime = calculateTime( midiEvent.getTick() );
-	   	    	    	
-	   	    	    	//For hong's looming idea (the initial placement of the pipes)
-	   	    	    	if( (currentNote - lastNote[channel][pipe]) >= 10 )
-	   	    	    	{
-	   	    	    		changesByAmount[channel]++;
-		   	   	    	    position = (int) (startTime/threshold);
-		   	   	    	    noteChangesInInterval[position][channel]++;
-	   	    	    	}
-	   	    	    	lastNote[channel][pipe] = currentNote;
-	   	    	    	
-	   	    	    	//This is for the note groupings
-		   	    	    //Note n = new Note();
-	   	   	    	    //n.setFirstEvent(midiEvent);
-	   	   	    	    //n.setChannel(channel);
-	   	   	    	    //now we need to set the beginning time
-	   	   	    	    //startTime = calculateTime( midiEvent.getTick() );
-	   	   	    	    //n.setStartTimeInSeconds(startTime);
-	   	   	    	    //notes.add(n);
-	   	   	    	    
-   	   	    	    	/* The next part is to calculate the amount of note changes in a 10 second interval.
-   	   	    	    	 * In order to figure out what "threshold" second interval a note belongs to, the time (in seconds)
-   	   	    	    	 * is divided by "threshold" and the floor of that is taken, this tells us what position in the array 
-   	   	    	    	 * the note change should be recorded by. The reason why this can be done is because the 
-   	   	    	    	 * noteChangesInInterval array size depends on the length of the song in seconds. Please look
-   	   	    	    	 * at the code just before these nested loops.
-   	   	    	    	 */
-	   	   	    	    //position = (int) (startTime/threshold);
-	   	   	    	    //noteChangesInInterval[position][channel]++;
-	    	    	}
-	    	    	else
-	    	    	{
-   	    	    		//position = (int)( calculateTime(midiEvent.getTick()) /threshold );
-   	    	    		//noteChangesInInterval[position][channel]++;
-	    	    		//when a note on with a velocity of 0 is used, that is considered a note off. Therefore it's the end of the note.
-	    	    		//findCorrespondingFirstNote((midiByte[1] & 0xff), channel, midiEvent);
-	    	    	}
-	    	    	//findNoteChangesInBarAndChannel(midiEvent, channel);
-   	    	    }	  
-	    		else if( status >= 128 && status <= 143 && channel != 9) 
-	    		{
-	    			//Keep track of note changes
-	    			currentNote = 0;
-	    	     	channel = status - 128;
-	    	    	if (currentNote != lastNote[channel][0])
-	   		    	{
-	   		    		changes[channel][0]++;
-	   		    	}
-	   		    	lastNote[channel][0] = currentNote;
-	   		    	
-	    	    	//position = (int)( calculateTime(midiEvent.getTick()) /threshold );
-   	    	    	//noteChangesInInterval[position][channel]++;
-	   		    	
-	   		    	//an actual note off event that we need to pair.
-	   		    	//findCorrespondingFirstNote((midiByte[1] & 0xff), channel, midiEvent);
-	   		    	//findNoteChangesInBarAndChannel(midiEvent, channel);
-	    		}
-	    	    else if( status >= 192 && status <= 207 )//instrument event 
-	    	    {
-	    	    	if ((status - 192) != 9 )
-   	      			{
-	    	    		instruments[(status - 192)] = ChannelProcessor.getChannelName((midiByte[1] & 0xff));
-	    	    		ChannelProcessor.setMinMax((midiByte[1] & 0xff), (status - 192), instrumentMinMax);
-   	      			}
-	    	    	else
-	    	    	{
-	    	    		instruments[(status - 192)] = "drums";
-	    	    	}
-	    	    }
-			}
-		}
-		
-		/**
-		 * This next part is for changing the position of the pipes based on an interval, NOT
-		 * bars. Changing position based on musical bars does not always work because Midi
-		 * does not work like real music. Therefore, interval changing gives the perceived 
-		 * image of bar changing but actually works and is more efficient because of array
-		 * indexing.
-		 */
-		String[] tempArrayForChannels = new String[16];
-		StringComparator sc = new StringComparator();
-		for( int i = 0 ; i < noteChangesInInterval.length; i++ )
-		{
-			for( int j = 0; j < noteChangesInInterval[0].length; j++ )
-			{
-				if( channelsUsed.containsKey(j) )
-				{
-					tempArrayForChannels[j] = noteChangesInInterval[i][j] + "_" + j;
-				}
-				else
-				{
-					tempArrayForChannels[j] = defaultString;
-				}
-			}
-			Arrays.sort(tempArrayForChannels, sc );
-			noteChangesInIntervalString[i] = tempArrayForChannels.clone();
-		}
-		/*
-		 * The next loop now takes the sorted channels for each interval, strips the frequency of
-		 * note movements and stores only the channel. The channels with the most movements are 
-		 * at the beginning of the array, while the ones with less movements are found later in the array.
-		 * 
-		 * Please remember that the variable noteChangesInIntervalString is 2D and indexed like: [interval][channel]
-		 * meaning that the "0-m" in [0-n][0-m] corresponds to the channel. IE [0]=channel 0, [10]=channel 10. But after
-		 * it is sorted, "0-m" no longer represents the channels because at [0-n][0-m]=<movementAmount>_<channel> and the array
-		 * is sorted by <movementAmount>, hence that is why the channels are out of order. Please look at the comments above
-		 * the declaration of the variables to see an example of how this works if you still are confused, otherwise ask me!
-		 */
-		int c;
-		for(int i =0; i < noteChangesInIntervalInteger.length; i++ )
-		{
-			for( int j =0; j < noteChangesInIntervalInteger[0].length;j++)
-			{
-				c = Integer.parseInt( noteChangesInIntervalString[i][j].split("_")[1] );
-				noteChangesInIntervalInteger[i][j] = c;
-			}
-		}
-		
-		
-		setProgress(70);
-		//Sorts the notes by the tick in ascending order
-		//sortedNotes = notes.toArray(new Note[0]);
-		//Arrays.sort(sortedNotes);
 
-		//Once the notes are sorted, this method indexes the HashMap by the tick
-		//and if there are many notes to one tick then they are put into a List.
-		//groupNotesByTicks();
+	      		if( status > 143 && status < 160)
+	      		{
+	      			//channel = status > 143 ? status - 144 : status - 128;
+	      			channel = status - 144;
+	      			
+	      			channelsUsed.put(channel, true);
+	      		}
 
-		//Once the groupNotesByTicks method is finished, (which works on the variable "notesForTheCurrentSong")
-		//it is set in the receiver for further use.
-		//receiver.setNotesForTheCurrentSong(notesForTheCurrentSong);
-	
-		//Calculate which pipes will be played based on a percent threshold. Please see method description.
-		//double[][] calculatedNoteChangePercentage = calculateNoteChangePercentage();
-		//receiver.setChannelsToUse(0.0,calculatedNoteChangePercentage);
+			}	  
+		}
 		
 		setProgress(80);
 		
-		/**
-		 * This next part is for changing the position of the pipes based on a musical bar. This 
-		 * is not guaranteed to work because how Midi handles music. It handles music without
-		 * musical bars but still uses an absurd amount of time signature changes to give the sound of a song
-		 * (not always) therfore, changing the position of the pipes based on bars only intermittenly works
-		 * and when it does, not very well. Which is probably because some songs change time signatures 25 times
-		 * therefore having a bar of length 0.* bars doesn't make logical sense. That song technically had zero bars
-		 * which caused crashes.
-		 * 
-		 * Need to uncomment: findNoteChangesInBarAndChannel(midiEvent, channel); for it work work
-		 */
-		
-		/*
-		 * The following for loop is used to create changesByAmountString. The reason why I loop through
-		 * the keyset is because it holds (as keys in the TreeMap) the channels that are used. Therefore,
-		 * channelsUsed variable allows us to access ONLY the used channels. So if channels 1,2,3 are used
-		 * then we can access in O( 1 ) positions 1,2,3 in the arrays without having to worry about the other 
-		 * positions. 
-		 */
-		for( Integer i : channelsUsed.keySet() )
-		{
-			//get the changes in channel i
-			int count = changesByAmount[i];
-			//create a string <count>_<channel> in this fashion. Then we can sort with our
-			//own comparator and still have reference to the change count. Only used to set up pipes
-			changesByAmountString[i] = Integer.toString(count) + "_" + i;
-		}
-		//Sort the array in descending order so the channels with the highest changes are at the top.
-		Arrays.sort(changesByAmountString, new StringComparator() );
-		
-		setProgress(90);
-		
-		/*
-		 *At this point, since we want to move the pipes every time the bar changes based on how many movements it has,
-		 *we have to sort it, but how must we do this? Makes me wonder at the challenges people faced when first
-		 *making TRON, might have been difficult. So to overcome a program, we create a string with <amountOfChanges>_<channel>
-		 *and sort by the number of changes. 
-		 *because just for the sake of having more loops! LOOPS EVERYWHERE. OMG IT's FULL OF STARS
-		 *
-		 *In all seriousness, you might be asking "isn't this next loop the same thing as the one before?", the answer is no.
-		 *To give a quick overview, the loop works with the overall amount of changes over a threshold for a WHOLE channel. This
-		 *Loop works with the changes that occur in a BAR. Although, it does work in the same idea as the loop above.
-		 */
-		Integer[] temp;
-		String[] labels = new String[16];
-		for( long l : startOfBarsWithChangesInBarTree.keySet() )
-		{
-			temp = startOfBarsWithChangesInBarTree.get(l);
-			for(int i = 0; i < temp.length; i++ )
-			{
-				if( temp[i] == null )
-				{
-					temp[i]=0;
-				}
-				labels[i] = temp[i] +"_"+i;
-			}
-			Arrays.sort(labels, new StringComparator() );
-			startOfBarsWithChangesInBarTreeString.put(l, labels);
-			labels = new String[16];
-		}
-		
-		/*
-		 * tickWithLengthOfBarInTicks is the data structure that holds as a value, the tick where
-		 * the bar changed and at its value, the length of a bar. This length will hold until the 
-		 * next position in the song where the time signature changes. This data structure is used
-		 * to create the variable startOfBarsWithChangesInBarTree which holds as a key, the point 
-		 * where the bar changes no matter what. Just to clarify, just say this tickWithLengthOfBarInTicks
-		 * has such values like 0->4000 means that the only time the time signature changes is at tick 0 
-		 * and a bar length is 4000 ticks. This means a bar changes every 4000 ticks, therefore 
-		 * startOfBarsWithChangesInBarTree will hold values such as: 0,4000,8000,12000 etc and the value
-		 * at tick 0 will be the amount of changes in bar 0-4000. etc. The running time of the next
-		 * algorithm is a simple "search for largest element", therefore has a running time of 
-		 * O( n ). THis is much faster than running a sorting algorithm which is O( n long n ).
-		 */
-		Object[] o = tickWithLengthOfBarInTicks.values().toArray();
-		for(int i =0 ; i < o.length; i++)
-		{
-			if( (Long)o[i] < smallestLengthOfBarInSong ){ smallestLengthOfBarInSong = (Long)o[i];}
-		}
-		//receiver.smallestBarInSong = smallestLengthOfBarInSong;
-
-		//Set the data structure in the receiver
-		//receiver.setStartOfBarsWithChangesInBarTreeString(startOfBarsWithChangesInBarTreeString);
-		
-		//receiver.setRangeOfPitchValuesInChannels(rangeOfPitchValues);
-		//receiver.setInitialPitchSettingsInChannels(initialPitchSettings);
 		receiver.setPitchData(initialPitchSettings, rangeOfPitchValues);
-
 		this.setUpVisualizer();
 	
 		setProgress(100);
 		return null;
 	}
+	
+	/**
+	 * This method specifically sets up the visualization. It handles initial pipes placement, colour 
+	 * and dimensions. Please note that the partSize handles the max length of the pipes. An overview of 
+	 * how the pipes are as follows: The pipes are set up in order by most amount of movements at the front.
+	 * The changesByAmountString variables is what holds the channel number and the amount of movements
+	 * which are sorted. So if the movements are: 300_0, 299_10, 200_11, 199_14 etc, then the channels are
+	 * set up in this order: 0,10,11,14 etc
+	 */
+	private void setUpVisualizer()
+	{
+		GUI gui = controller.getGUI();
+		Object[] channels =  channelsUsed.keySet().toArray();
+		int[] c = new int[channels.length];
+		for( int i = 0; i < channels.length; i++ )
+		{
+			c[i] = ((Integer)channels[i]).intValue();
+			//System.out.println(c[i]);
+		}
+		gui.getVisualizer().setChannelsUsed(c);
+		gui.getVisualizer().resetVisualizer();
+	}
+	
+    public void done() 
+    {
+    	GUI gui = controller.getGUI();
+    	Player player = controller.getPlayer();
+    	gui.setEnabledPlayerFrame(true);
+    	//gui.getAnimator().resume();
+    	//gui.resumeAnimator();
+		closeButton.setEnabled(true);
+		if( autoPlayAfterPreprocessing ){ player.play();}
+    }
 
 	/**
 	 * This method does exactly what it says; it processes controller events. Although, the controller events 
@@ -970,7 +710,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * This method is vital to time calculations because it finds where all the beats change (beat changes
 	 * are vital to midi timing calculations). This also figures out where the bars are in a song.
 	 */
-	private void processMidiMetaEvents()
+	/*private void processMidiMetaEvents()
 	{	
 		MidiMessage midiMessage;
 		MidiEvent midiEvent;
@@ -1020,9 +760,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
       		}
 		}
 		
-		/*
-		 * For time signature calculations. Set the default values first if non existed
-		 */
+		//For time signature calculations. Set the default values first if non existed
 		if( tickWithTimeSignatureChanges.keySet().isEmpty() )
 		{
 			Float[] a = {4.0f,4.0f};
@@ -1052,7 +790,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 			long lengthOfBarInTicks = (long) ((((double)lengthOfBarInSeconds*1000000) * sequence.getResolution()) / beatInterval);
 			tickWithLengthOfBarInTicks.put(l,lengthOfBarInTicks);			
 		}
-		
+		*/
 		/*
 		 * With this next part, we calculate the amount of bars in each interval. Atm, we have the ticks where
 		 * the time signatures changed and I also stored the length of a bar in midi ticks, which are stored in
@@ -1072,7 +810,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 		 * bars are in that interval. The math goes: (<ceiling Tick> - <floor tick>)/<length of bar in ticks>. This gives us
 		 * the amount of bars tick length 3840 between interval 39360 and 960.
 		 */
-		Object[] ticksWhereSignatureChanged = tickWithTimeSignatureChanges.keySet().toArray();
+		/*Object[] ticksWhereSignatureChanged = tickWithTimeSignatureChanges.keySet().toArray();
 		long ceiling;
 		long floor;
 		long tickChunk;
@@ -1111,7 +849,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 				resultant = resultant + lengthOfBarInInterval;
 			}
 		}
-	}
+	}*/
 	
 	/**
 	 * This method is used to figure out where the parameter "long timeSignatureTick", which is a Midi tick, belongs 
@@ -1132,7 +870,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 	 * @param timeSignatureTick
 	 * @return
 	 */
-	private Long findCorrespondingBeatInterval( long timeSignatureTick )
+	/*private Long findCorrespondingBeatInterval( long timeSignatureTick )
 	{
 		Object[] ticks = tickWithBPMChanges.keySet().toArray();
 		Object[] mpq = tickWithMPQChanges.values().toArray();
@@ -1156,7 +894,7 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
   	    	}
   	    }
   	    return lastRelativeMPQ;
-	}
+	}*/
 	
 	/**
 	 * The method that calls this, figures out the amount of changes that each pipe has. When this method 
@@ -1258,36 +996,6 @@ public class ThreadPreprocessor extends SwingWorker<Void,Void>
 		return changesByAmountString;
 	}*/
 	
-	/**
-	 * This method specifically sets up the visualization. It handles initial pipes placement, colour 
-	 * and dimensions. Please note that the partSize handles the max length of the pipes. An overview of 
-	 * how the pipes are as follows: The pipes are set up in order by most amount of movements at the front.
-	 * The changesByAmountString variables is what holds the channel number and the amount of movements
-	 * which are sorted. So if the movements are: 300_0, 299_10, 200_11, 199_14 etc, then the channels are
-	 * set up in this order: 0,10,11,14 etc
-	 */
-	private void setUpVisualizer()
-	{
-		GUI gui = controller.getGUI();
-		Object[] channels =  channelsUsed.keySet().toArray();
-		int[] c = new int[channels.length];
-		for( int i = 0; i < channels.length; i++ )
-		{
-			c[i] = ((Integer)channels[i]).intValue();
-		}
-		gui.getVisualizer().setChannelsUsed(c);
-		gui.getVisualizer().resetVisualizer();
-	}
-	
-    public void done() 
-    {
-    	GUI gui = controller.getGUI();
-    	Player player = controller.getPlayer();
-    	gui.setEnabledPlayerFrame(true);
-    	//gui.getAnimator().resume();
-    	gui.resumeAnimator();
-		closeButton.setEnabled(true);
-		if( autoPlayAfterPreprocessing ){ player.play();}
-    }
+
 }
 
