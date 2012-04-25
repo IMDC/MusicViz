@@ -113,6 +113,10 @@ public class Player
 		controlTransmitter.setReceiver(controlReceiver);
 		pitchTransmitter.setReceiver(pitchReceiver);
 		
+		( (Thread) instrumentReceiver).start();
+		( (Thread) beatReceiver).start();
+		( (Thread) pitchReceiver).start();
+		
 		sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );
 	}
 	
