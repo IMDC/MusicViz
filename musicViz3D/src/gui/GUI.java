@@ -46,22 +46,17 @@ import visualizer.ConcurrentVisualizer;
 import com.jogamp.opengl.util.FPSAnimator;
 
 /**
- * GUIs allow easy communication with the program. They allow users with little technical experience 
- * communicate by creating objects that run code and/or commands that would take some learning. I.E Take
- * Windows 3.1 for example. It was a shell placed over DOS with a GUI, whenever the user ran a file
- * the interpreter translated the command into a DOS command for the system. 
- * 
- * This GUI acts as a simple CD or MP3 player. By offering Play, Pause, Stop and Open song buttons plus menu items
- * for saving and loading play lists. There is also a slider
- * used for simple song indexing.
+ * This class represents the GUIs for the program. There are 2 main screens.
+ * The 2 screens are the visualization screen and the player control GUIs.
+ * There main player screen contains the controls for MIDI playback. There
+ * are also menu items for saving/loading playlists; adding MIDIs; changing
+ * colours, changing the display and changing the volume.
  * 
  * @author Michael Pouris
  *
  */
 public class GUI 
 {
-	//private boolean isInitialized;
-	
 	//This is for the MidiPlayer
 	private JFrame frame;
 	
@@ -86,18 +81,15 @@ public class GUI
 	private JMenuItem loadMenuItem;
 	private JMenuItem openMidiItem;
 	private JMenuItem changeColourMenuItem;
-	private JMenuItem changeDisplayMenuItem;// = new JMenuItem("Viz Display");
-	private JMenuItem changeVolumes;// = new JMenuItem("Change Volume");
+	private JMenuItem changeDisplayMenuItem;
+	private JMenuItem changeVolumes;
 	
 	private String totalTime;
-	
-	//private Controller controller;
 	
 	//This is for the OpenGL visualizers.
 	private Frame openGLFrame;
 	private FPSAnimator animator;
 	private GLCanvas canvas;
-	//private Visualizer visualizer;
 	private ConcurrentVisualizer visualizer;
 	
 	/**
@@ -111,18 +103,8 @@ public class GUI
 	 * @param height
 	 * @param c
 	 */
-	public GUI(int width, int height)
+	public GUI()
 	{
-		//isInitialized = false;
-        /*Runnable playerGui = new Runnable()
-        		{
-        			public void run()
-        			{
-        				startPlayerGUI();
-        			}
-        		};
-        new Thread(playerGui).start();
-         */
         Runnable openGL = new Runnable()
         		{
         			public void run()
@@ -222,20 +204,15 @@ public class GUI
         sliderPanel.add(slider);
         playListPanel.add(scrollPane);
         
-       // isInitialized = true;
-        //notify();
         frame.setEnabled(false);
+        
+        System.out.println("Variables for Player Initialized Correctly");
         frame.setVisible(true);
 	}
 	
-	public   void  addListeners(Controller controller) throws InterruptedException
+	public void addListeners(Controller controller) throws InterruptedException
 	{
-		//if( !isInitialized  )
-		//{
-		//	wait();
-		//}
-		stopButton.addActionListener( 
-				new StopButtonListener(controller) );
+		stopButton.addActionListener( new StopButtonListener(controller) );
         
         playList.addMouseListener(new ListMouseListener(controller));
         playList.addKeyListener( new ListKeyListener(controller) );
@@ -257,8 +234,8 @@ public class GUI
 		slider.addMouseListener( sml );
 		slider.addMouseMotionListener( sml );
 		slider.addChangeListener( new SliderTimeChangeListener(controller) );
+		System.out.println("Player GUI: Initialized Correctly");
 		frame.setEnabled(true);
-		System.out.println("Initialized Correctly");
 	}
 	
 	private void startVisualizer()
@@ -294,6 +271,7 @@ public class GUI
 	    			}
 	    		});
 	    animator.start();
+	    System.out.println("Concurrent Visualizer Initialized Correctly");
 	    openGLFrame.setVisible(true);
 	}
 	
@@ -376,19 +354,9 @@ public class GUI
 		SwingUtilities.invokeLater(setEnabled);
 	}
 	
-	/*public Visualizer getVisualizer()
-	{
-		return visualizer;
-	}*/
-	
 	public ConcurrentVisualizer getVisualizer()
 	{
 		return visualizer;
-	}
-	
-	//public FPSAnimator getAnimator()
-	{
-		//return animator;
 	}
 	
 	public void pauseAnimator()
@@ -457,14 +425,5 @@ public class GUI
 	public void updateTotalTime( String time )
 	{
 		totalTime = time;
-	}
-	
-	/*private void addSliderChangeListener()
-	{
-		SlideMouseListener sml = new SlideMouseListener(controller);
-		slider.addMouseListener( sml );
-		slider.addMouseMotionListener( sml );
-		slider.addChangeListener( new SliderTimeChangeListener(controller) );
-	}*/
-	
+	}	
 }

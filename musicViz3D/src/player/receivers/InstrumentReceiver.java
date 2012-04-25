@@ -10,6 +10,17 @@ import processors.TonalProcessor;
 
 import controller.Controller;
 
+/**
+ * This class acts as the receiver for all MIDI messages. However,
+ * this only processes note on/off events for all channels but the
+ * beat channel. 
+ * 
+ * MIDI messages are described here:
+ * http://www.midi.org/techspecs/midimessages.php
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class InstrumentReceiver implements Receiver
 {
 	private Controller controller;
@@ -27,6 +38,12 @@ public class InstrumentReceiver implements Receiver
 	{
 	}
 
+	/**
+	 * This method processes MIDI note on/off events for all channels
+	 * but the beat channel. If the status is note on, then to convert
+	 * the status to a channel, minus 128 from the status.
+	 * If the status is note off, then minus 144. 
+	 */
 	public void send(MidiMessage message, long timeStamp) 
 	{
 		int channel;

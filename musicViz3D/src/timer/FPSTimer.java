@@ -52,7 +52,7 @@ public class FPSTimer implements ITimer {
 	private long timePassedNanos = 0;
 	private long lastTime = -1;		//Previous time
 
-	private long accumulatedTimeNanos = 0;
+	//private long accumulatedTimeNanos = 0;
 	
 	/* FPS calculation */
 	private float fps = 60;
@@ -105,7 +105,7 @@ public class FPSTimer implements ITimer {
 			//Update last time, it is now the current for next frame calculation
 			lastTime = currentTime;
 			//Accumulate time
-			accumulatedTimeNanos += timePassedNanos;
+			//accumulatedTimeNanos += timePassedNanos;
 
 			//FPS
 			frames++;
@@ -167,7 +167,7 @@ public class FPSTimer implements ITimer {
 
 		lastTime = -1;
 		timePassedNanos = 0;
-		accumulatedTimeNanos = 0;
+		//accumulatedTimeNanos = 0;
 
 		fps = 0;
 		frames = 0;

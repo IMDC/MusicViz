@@ -16,7 +16,7 @@ public class MainExecutable
 			//new Controller();
 			Controller controller = new Controller();
 			Player player = new Player();
-			GUI gui = new GUI(400,400);
+			GUI gui = new GUI();
 			
 			controller.initController(player, gui);
 			

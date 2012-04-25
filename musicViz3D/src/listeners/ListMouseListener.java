@@ -50,9 +50,9 @@ public class ListMouseListener implements MouseListener
 		{
 			Player player = controller.getPlayer();
 			GUI gui = controller.getGUI();
-			//player.stop();
+
 			Song song = (Song) listModel.getElementAt(firstIndex);
-			//controller.stop();
+	
 			
 			//finds the index of the current song in the list based on the song info in the player
 			//and sets it to false, therefore giving the system the clue that it wont be played anymore
@@ -66,7 +66,6 @@ public class ListMouseListener implements MouseListener
   			//loads it into the player
   			song.setIsPlaying(true);
   			player.openMidiFile(song,true);
-			//controller.play();
 			
 			//Now i have to make the JToggleButton toggle to show this change.
 			gui.setSelectedJToggleButton(true);

@@ -6,7 +6,14 @@ import javax.swing.JOptionPane;
 
 import controller.Controller;
 
-
+/**
+ * This class opens a JOptionPane that allows the user to select how
+ * to change what is displaying in the visualizer. The user can
+ * display all beats and pipes, or just the beats or just the pipes.
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class ChangeVisualDisplay implements MouseListener
 {
 	private Controller controller;
@@ -51,7 +58,7 @@ public class ChangeVisualDisplay implements MouseListener
 		                            null,
 		                            possibilities,
 		                            possibilities[0]);
-		        //If a string was returned, say so.
+		       
 			if( ((String) possibilities[0]).equalsIgnoreCase(choice) )
 			{
 				this.controller.getPlayer().getIsPlayingBeats().set(true);

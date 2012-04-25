@@ -7,6 +7,15 @@ import player.messages.OpenGLMessagePitchChange;
 
 import controller.Controller;
 
+/**
+ * This class receives all incoming MIDI messages; however, it only
+ * processes pitch bend messages. Pitch bend messages have statuses
+ * from 224 to 239. The MIDI messages are explained here:
+ * http://www.midi.org/techspecs/midimessages.php
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class PitchReceiver implements Receiver
 {
 	public final static int MINVALUE = 0x0000;

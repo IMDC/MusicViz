@@ -13,6 +13,20 @@ import javax.swing.event.ChangeListener;
 
 import controller.Controller;
 
+/**
+ * This class handles user volume changes for the volume. Each instrument in
+ * MIDI has its own channel and therefore its own volume. This class splits
+ * the volume into 2 constructs: volume for the pipes and volume for the drums.
+ * Therefore the user can play with the volume pertaining to the pipes and
+ * alter the volume for the drums.
+ * 
+ * This class initializes the JFrame that holds the volume sliders and hides
+ * them whenever the user does not want to see it. When the use clicks to open
+ * the volume controls, the JFrame is displayed.
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class ChangeVolumeListener implements MouseListener
 {
 	private JFrame volumeChangeFrame;
