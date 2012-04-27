@@ -1,8 +1,6 @@
 package player;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -14,7 +12,6 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -42,26 +39,19 @@ public class Player
 {
 	private Sequence sequence = null;
 	private Sequencer sequencer = null;
-	//private Transmitter transmitter = null;
-	//private Receiver receiver = null;
 	private Controller controller = null;
-	//private ThreadPreprocessor threadedPreprocessor = null;
 	private LightThreadPreprocessor threadedPreprocessor = null;
 	private Song currentSong=null;
-	int colourSetToUse;
-	JFrame frame;
-	//Synthesizer synthesizer;
-	//Receiver synthReceiver;
 	
 	
-	BeatReceiver beatReceiver;
-	InstrumentReceiver instrumentReceiver;
-	ControlReceiver controlReceiver;
-	PitchReceiver pitchReceiver;
-	Transmitter instrumentTransmitter;
-	Transmitter beatTransmitter;
-	Transmitter controlTransmitter;
-	Transmitter pitchTransmitter;
+	private BeatReceiver beatReceiver;
+	private InstrumentReceiver instrumentReceiver;
+	private ControlReceiver controlReceiver;
+	private PitchReceiver pitchReceiver;
+	private Transmitter instrumentTransmitter;
+	private Transmitter beatTransmitter;
+	private Transmitter controlTransmitter;
+	private Transmitter pitchTransmitter;
 	/**
 	 * Gives the class the program controller for back end to front end communication.
 	 * 
@@ -72,25 +62,11 @@ public class Player
 	{
 
 		sequencer = MidiSystem.getSequencer();
-		//transmitter = sequencer.getTransmitter();
+		
 		instrumentTransmitter = sequencer.getTransmitter();
 		beatTransmitter = sequencer.getTransmitter();
 		controlTransmitter = sequencer.getTransmitter();
 		pitchTransmitter = sequencer.getTransmitter();
-		
-		colourSetToUse = 0;
-		/*receiver = new MidiNoteReceiver(controller,sequencer);
-		transmitter.setReceiver(receiver);
-		sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );*/
-		
-		/*synthesizer = MidiSystem.getSynthesizer(false);
-		synthReceiver = synthesizer.getReceiver();
-		transmitter = sequencer.getTransmitter();
-		transmitter.setReceiver(synthReceiver);
-		synthesizer.open();
-		Soundbank soundBank = MidiSystem.getSoundbank(new File("C:\\Program Files (x86)\\Java\\jre6\\lib\\audio\\soundbank-deluxe.gm"));
-		synthesizer.loadAllInstruments(soundBank);
-		System.out.println( synthesizer.getDefaultSoundbank() );*/
 		
 		sequencer.open();
 	}
@@ -98,10 +74,6 @@ public class Player
 	public void init( Controller controller )
 	{
 		this.controller = controller;
-		
-		//receiver = new MidiNoteReceiver(controller,sequencer);
-		//transmitter.setReceiver(receiver);
-		
 
 		beatReceiver = new BeatReceiver(controller);
 		instrumentReceiver = new InstrumentReceiver(controller);
@@ -146,7 +118,6 @@ public class Player
 			sequence = MidiSystem.getSequence( song );
 			sequencer.setSequence(sequence);	
 			startProgressBarEnabledPreprocessor(song,autoPlayAfterPreprocessing);
-			//controller.getSlider().setMaximum( getSongLengthInSeconds() );
 			gui.setMaximumValueForSlider( getSongLengthInSeconds());
 			setTotalTime();
 			currentSong = song;
@@ -179,48 +150,14 @@ public class Player
 	 */
 	private void startProgressBarEnabledPreprocessor(Song song,boolean autoPlayAfterPreprocessing)
 	{
-		if(frame != null )
-		{
-			frame.dispose();
-		}
-		//Set up the main window where the JProgressBar and JButton is placed.
-		//The x button (top right in Windows OS and left in MAC OS X)
-		//is set to be disabled. Therefore, forcing the user to let
-		//the preprocessor finish.
-		//JFrame frame = new JFrame("Processing: " + song.getName());
-		frame = new JFrame("Processing: " + song.getName());
+		JFrame frame = new JFrame("Processing: " + song.getName());
 		frame.setSize(400,120);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(false);
 		
-		/**
-		 * Main and only use of this class is to close the JFrame that contains
-		 * the progress bar. The JButton called closeButton has an instance of this
-		 * class as its actionListener.
-		 * 
-		 * @author Michael Pouris
-		 *
-		 */
-		class CloseButtonActionListener implements ActionListener 
-		{
-			JFrame progressFrame;
-			public CloseButtonActionListener(JFrame progressFrame)
-			{
-				this.progressFrame = progressFrame;
-			}
-			public void actionPerformed(ActionEvent event)
-			{
-				progressFrame.dispose();
-			}	
-		}
-		JButton closeButton = new JButton("Close");
-		closeButton.setEnabled(false);
-		closeButton.addActionListener(new CloseButtonActionListener(frame));
-		
 		JPanel panel = new JPanel();
-		panel.add(closeButton);
 		JProgressBar progressBar = new JProgressBar(0,100);
 		progressBar.setValue(0);
 		progressBar.setStringPainted(true);
@@ -228,14 +165,7 @@ public class Player
 		frame.add(progressBar, BorderLayout.NORTH);
 		frame.add(panel, BorderLayout.SOUTH);
 		
-		closeButton.revalidate();
-		
-		/*
-		 * Create a new ThreadedPreprocessor and give it all the information it needs to process the Midi file.
-		 * I also give the SwingWorker a property change listener which will listen to property change events.
-		 * Property change events are triggered by the build in method in the SwingWorker called "setProgress()" method
-		 */
-		threadedPreprocessor = new LightThreadPreprocessor(controller, pitchReceiver, sequence.getTracks(), sequence, sequencer.getTempoInBPM(),closeButton,colourSetToUse);
+		threadedPreprocessor = new LightThreadPreprocessor(controller, pitchReceiver, sequence.getTracks(), sequencer.getTempoInBPM(), frame); 
 		threadedPreprocessor.addPropertyChangeListener(new PreprocessorPropertyChangeListener(progressBar));
 		threadedPreprocessor.autoPlayAfterPreprocessing = autoPlayAfterPreprocessing;
 		threadedPreprocessor.execute();
@@ -383,48 +313,6 @@ public class Player
 	public boolean isRunning()
 	{
 		return sequencer.isRunning();
-	}
-	
-	/**
-	 * Returns the current position in ticks of where we are in the song. This is used by the
-	 * SlideMouseListener object to find the beat interval the current tick belongs in.
-	 * @return
-	 */
-	public long getCurrentTickPositionOfSong()
-	{
-		return sequencer.getTickPosition();
-	}
-	
-	/**
-	 * Returns a TreeMap (guaranteed O( log n ) running time for get()/remove()/add() ). The TreeMap
-	 * holds Midi Ticks as a key and BPM as a value. The key is where the BPM changed and the value
-	 * is the BPM that the song was changed to at that tick.
-	 * @return
-	 */
-	/*public TreeMap<Long, Float> getTicksWithBPMChanges()
-	{
-		return threadedPreprocessor.getTicksWithBPMChanges();
-	}*/
-	
-	/**
-	 * The HashMap has Midi ticks as keys and the ticks turned to time as values. The ticks
-	 * are where the BPM changed and the values are those ticks converted to time.
-	 * @return
-	 */
-	/*public HashMap<Long, Double> getTicksWithBPMChangesToTime()
-	{
-		return threadedPreprocessor.getTicksWithBPMChangesToTime();
-	}*/
-	
-	/*public void setLastBPMChangeData( long tickWhereBPMChanged, double timeWhereBPMChanged )
-	{
-		MidiNoteReceiver temp = (MidiNoteReceiver) receiver;
-		temp.setLastBPMChangeData(tickWhereBPMChanged, timeWhereBPMChanged);
-	}*/
-	
-	public void setColourSetToUse( int colourSet )
-	{
-		colourSetToUse = colourSet;
 	}
 	
 	public AtomicBoolean getIsPlayingInstruments()

@@ -25,22 +25,6 @@ public class BeatProcessor
 	 * @param velocity
 	 * @return
 	 */
-	/*public String processBeat( int note, int velocity )
-	{
-		String message = null;
-		int pipe = getCorrespondingPipeFromNote(note);
-		
-		if( velocity == 0 )
-		{
-			return null;
-		}
-
-		message = "beatEvent_pipe_" + pipe + "_velcoity_" + velocity;
-		
-		OpenGLMessageBeat beat = new OpenGLMessageBeat(pipe, velocity);
-		
-		return message;		
-	}*/
 	public OpenGLMessageBeat processBeat( int note, int velocity )
 	{
 		int pipe = getCorrespondingPipeFromNote(note);

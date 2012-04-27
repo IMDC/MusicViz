@@ -13,7 +13,6 @@ public class MainExecutable
 	{
 		try 
 		{
-			//new Controller();
 			Controller controller = new Controller();
 			Player player = new Player();
 			GUI gui = new GUI();

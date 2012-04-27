@@ -72,13 +72,11 @@ public class MidiMetaEventListener implements MetaEventListener
 				}
 			}
 			gui.getVisualizer().resetVisualizer();
-			//player.stop();
 
 			//sets the first item as selected/
 			gui.getPlaylist().setSelectedIndex(0);
 			
 			//Resets processors for new song
-			//controller.resetProcessors();
 			//Gets the list the JList Displays and the name of the song playing atm along with its index
 			DefaultListModel dlm = (DefaultListModel) gui.getPlaylist().getModel();
 

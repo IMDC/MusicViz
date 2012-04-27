@@ -1,8 +1,5 @@
 package controller;
 
-
-import javax.sound.midi.MidiUnavailableException;
-
 import gui.GUI;
 import player.Player;
 
@@ -23,15 +20,6 @@ public class Controller
 {
 	private Player player; 
 	private GUI gui;
-	
-	/**
-	 * Creates a new GUI, FlashServer and MidiPlayer. The front end and back end respectively.
-	 * @throws InterruptedException 
-	 * @throws MidiUnavailableException 
-	 */
-	public Controller()
-	{		
-	}
 	
 	public void initController( Player player, GUI gui )
 	{

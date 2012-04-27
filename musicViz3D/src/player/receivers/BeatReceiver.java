@@ -48,20 +48,6 @@ public class BeatReceiver extends Thread implements Receiver
 	 */
 	public void send(MidiMessage message, long timeStamp)
 	{
-		/*byte[] m;
-
-		if( !this.playBeats.get() )
-		{
-			return;
-		}
-
-		//First check for note ons. There is no need to handle note offs
-		if ( message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 144) == 9 )
-		{
-			m = message.getMessage();
-			OpenGLMessageBeat beat = beatProcessor.processBeat(m[1] & 0xff, m[2] & 0xff);
-			this.controller.getGUI().getVisualizer().concurrentMessageQueue.get(9).add(beat);
-		}*/
 		try 
 		{
 			this.handOffQueue.put(message);

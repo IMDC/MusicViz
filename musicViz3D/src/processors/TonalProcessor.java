@@ -20,33 +20,6 @@ public class TonalProcessor
 	 * @param channel
 	 * @return
 	 */
-	/*public String processNote(int currentNote, int velocity, int channel )
-	{
-		OpenGLMessageTonal tonalMessage;
-		
-		String noteMessage = null;
-		int pipe = 0;
-		String message = null;
-
-		pipe = getPipe(currentNote);
-		
-		if( velocity == 0 )
-		{ 
-			noteMessage = "noteOff";
-			tonalMessage = new OpenGLMessageTonal(OpenGLMessageTonal.NOTEOFF, 0, pipe, currentNote);
-		}
-		else
-		{
-			noteMessage = "noteOn";
-			tonalMessage = new OpenGLMessageTonal(OpenGLMessageTonal.NOTEON, velocity, pipe, currentNote);
-		}
-		
-		
-		
-		message =  noteMessage + "_" + "fan_" + channel + "_" + pipe + "_" + velocity + "_" + currentNote;
-		return message;
-	}*/
-	
 	public OpenGLMessageTonal processNote(int currentNote, int velocity, int channel )
 	{
 		OpenGLMessageTonal tonalMessage = null;
@@ -67,18 +40,6 @@ public class TonalProcessor
 	public static int getPipe( int currentNote )
 	{
 		int pipe = -10;
-		/*if( currentNote >= 0 && currentNote <= 41 )
-		{
-			pipe = 0;
-		}
-		else if( currentNote >= 42 && currentNote <= 83 )
-		{
-			pipe = 1;
-		}
-		else if( currentNote >= 83 && currentNote <= 127 )
-		{
-			pipe = 2;
-		}*/
 		if( currentNote >= 0 && currentNote <= 41 )
 		{
 			pipe = 0;

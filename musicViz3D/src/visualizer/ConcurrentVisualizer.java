@@ -135,40 +135,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
         camera.update();
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
         gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition0, 0);
-        
-	    /*for( int j = 0 ; j < 20; j++ )
-	    {
-		    for( int i = 0; i < 16; i++ )
-		    {
-		    	//LinkedList<OpenGLMessage> queue = messageQueue.get(i);
-		    	ConcurrentLinkedQueue<OpenGLMessage> queue = concurrentMessageQueue.get(i);
-		    	if( queue.peek() != null )
-		    	{
-		    		OpenGLMessage message = queue.poll();
-		    		if( message.getMessage() == OpenGLMessage.NOTEON || message.getMessage() == OpenGLMessage.NOTEOFF )
-		    		{
-		    			processTones((OpenGLMessageTonal)message, drawable);
-		    		}
-		    		else if( message.getMessage() == OpenGLMessage.BEAT )
-		    		{
-		    			beats[((OpenGLMessageBeat)message).getPipe()].draw(drawable, true);
-		    			gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
-		    		}
-		    		else if( message.getMessage() == OpenGLMessage.PITCHCHANGES )
-		    		{
-		    			processPitchChanges( (OpenGLMessagePitchChange)message );
-		    		}
-		    	}
-		    }
-	    }*/
-	    
-	    /*for( int i = 0; i < pipesToUse.length ; i++ )
-	    {	
-	    	for( int j = 0; j < MAX_PIPES_PER_CHANNEL; j++ )
-	    	{
-	    		pipes[ pipesToUse[i] ][j].draw(drawable);
-	    	}
-	    } */
+
 	    for( Integer i : this.pipesToUse.keySet() )
 	    {
 	    	for( int j = 0; j < MAX_PIPES_PER_CHANNEL; j++ )
@@ -179,7 +146,6 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	    
 	    for( int i = 0; i < MAX_BEAT_PIPES; i++ )
 	    {
-	    	//beats[i].draw(drawable, false);
 	    	beats[i].draw(drawable, activatedBeat[i].get());
 	    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
 	    	activatedBeat[i].set(false);
@@ -200,13 +166,11 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 					    	OpenGLMessage message = queue.poll();
 					    	if( message.getMessage() == OpenGLMessage.NOTEON  || message.getMessage() == OpenGLMessage.NOTEOFF )
 					    	{
-					    		processTones((OpenGLMessageTonal)message );//, drawable);
+					    		processTones((OpenGLMessageTonal)message );
 					    	}
 					    	else if( message.getMessage() == OpenGLMessage.BEAT )
 					    	{
-					    		//beats[((OpenGLMessageBeat)message).getPipe()].draw(drawable, true);
 					    		activatedBeat[((OpenGLMessageBeat)message).getPipe()].set(true);
-					    		//gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
 					    	}
 					    	else if( message.getMessage() == OpenGLMessage.PITCHCHANGES )
 					    	{
@@ -227,7 +191,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		}
 	}
 	
-	private void processTones( OpenGLMessageTonal message )//, GLAutoDrawable drawable )
+	private void processTones( OpenGLMessageTonal message )
 	{
 		int channel = message.getChannel();
 		int pipe = message.getPipe();

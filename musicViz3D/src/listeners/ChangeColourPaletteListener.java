@@ -3,18 +3,14 @@ package listeners;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.JOptionPane;
-
-import player.Player;
-
 import controller.Controller;
 
 public class ChangeColourPaletteListener implements MouseListener
 {
-	private Controller controller;
+	//private Controller controller;
 	public ChangeColourPaletteListener( Controller controller )
 	{
-		this.controller = controller;
+		//this.controller = controller;
 	}
 
 	public void mouseClicked(MouseEvent e) {}
@@ -26,7 +22,7 @@ public class ChangeColourPaletteListener implements MouseListener
 	public void mousePressed(MouseEvent e) {}
 
 	public void mouseReleased(MouseEvent e) {
-        Object[] possibilities = {1, 2, 3};
+        /*Object[] possibilities = {1, 2, 3};
         Player player = controller.getPlayer();
         try
         {
@@ -47,11 +43,11 @@ public class ChangeColourPaletteListener implements MouseListener
 	                            possibilities[0]);
 	
 	        //If a string was returned, say so.
-	        player.setColourSetToUse(choice);
+	        //player.setColourSetToUse(choice);
         }
         catch(NullPointerException ex)
         {
-        	player.setColourSetToUse((Integer)possibilities[0]);
-        }
+        	//player.setColourSetToUse((Integer)possibilities[0]);
+        }*/
 	}
 }

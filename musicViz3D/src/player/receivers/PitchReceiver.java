@@ -43,20 +43,6 @@ public class PitchReceiver extends Thread implements Receiver
 
 	public void send(MidiMessage message, long timeStamp)
 	{
-	    /*if( message.getStatus() >= 224 && message.getStatus() <= 239 )
-	    {
-	    	int channel = message.getStatus() - 224;
-	    	byte[] m = message.getMessage();
-	    	int pitchBend = (m[2] & 0xff) << 7 | (m[1] & 0xff);
-	    	double offset =(((double)pitchBend - (double)initialPitchSettings[channel])/(double)MAXVALUE)*rangeOfPitchValues[channel];
-	    	OpenGLMessagePitchChange pitchChange = new OpenGLMessagePitchChange(offset, channel,rangeOfPitchValues[channel]);
-	    	
-		    if( Math.abs(pitchBend - (double)initialPitchSettings[channel]) > 0.5)
-		    {
-		    	this.controller.getGUI().getVisualizer().concurrentMessageQueue.get(channel).add(pitchChange);
-		    }
-	    	
-	    }*/
 		try 
 		{
 			this.handOffQueue.put(message);

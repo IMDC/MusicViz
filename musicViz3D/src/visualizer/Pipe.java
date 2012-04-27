@@ -508,9 +508,9 @@ public class Pipe
 	{
 		float alpha = -1;
 		
-		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j =0 ; 
+		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS;//, j =0 ; 
     	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS);
-    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j++ )
+    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS )//, j++ )
 		{
 			alpha = buffer.get((i + 6));
 		}
@@ -529,9 +529,9 @@ public class Pipe
 	 */
 	private void setAlphaForFace( FloatBuffer buffer, float alpha, int face )
 	{
-		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j =0 ; 
+		for( int i = face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS;//, j =0 ; 
     	i < face * AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS + (AMOUNT_OF_VERTS * SIZE_OF_VERTEX_INFORMATION_IN_FLOATS);
-    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS, j++ )
+    	i+=SIZE_OF_VERTEX_INFORMATION_IN_FLOATS )//, j++ )
 		{
 			buffer.put((i+6),alpha);
 		}

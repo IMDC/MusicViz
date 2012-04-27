@@ -3,9 +3,8 @@ package processors.threads;
 import java.util.TreeMap;
 
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Sequence;
 import javax.sound.midi.Track;
-import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
 import controller.Controller;
@@ -30,11 +29,6 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	 * THE FOLLOWING VARIABLES ARE USED ONLY IN THE PREPROCESSOR AND HAVE USE ONLY IN THE PREPROCESSOR.
 	 * THESE ARE NOT USED IN THE VISUALIZATION.
 	 * 
-	 * The reason for the defaultString = -10_-10 is to set a non existing channel and a non existing amount, which 
-	 * consequently would never occur in midi for sorting the first number in descending order. This means that
-	 * -10_-10 would appear towards the end of a sorted array; the highest amount of changes would be closest to
-	 * the beginning of the array. Main use is for the initial positioning of the channels.
-	 * 
 	 *  autoPlayAfterPreprocessing is set to true if the song should be played DIRECTLY after it is processed. This means that
 	 *  if it is true, in the overridden done() method the player is told to play. Anything that must be done after the preprocessor,
 	 *  MUST be put in the done() method to guarantee that those processes DO NOT interfere with the doInBackground() method which is the heart
@@ -44,7 +38,6 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	 * 
 	 * COARSE: is the integer value that denotes a coarse pitch change (by music measurement of semitones)
 	 */
-	public final static String defaultString = "-10_-10";
 	public boolean autoPlayAfterPreprocessing = false;
 	public final static int FINE = 1;
 	public final static int COARSE = 2;
@@ -67,7 +60,8 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	 * closeButton is used with the JProgressBar to show the progess of loading a song.
 	 * channelsUsed holds the channels used, so if channel 6 is used then 6->true. 6 <maps to> true.
 	 */
-	private JButton closeButton;
+	//private JButton closeButton;
+	private JFrame frame;
 	private TreeMap<Integer, Boolean> channelsUsed = new TreeMap<Integer, Boolean>();
 	
 	 
@@ -106,8 +100,7 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	 * @param firstBPMInSong
 	 * @param closeButton
 	 */
-	public LightThreadPreprocessor( Controller controller, PitchReceiver receiver, Track allMidiTracks[], 
-								Sequence sequence, float firstBPMInSong, JButton closeButton, int colourSetToUse )
+	public LightThreadPreprocessor( Controller controller, PitchReceiver receiver, Track allMidiTracks[], float firstBPMInSong, JFrame frame )//JButton closeButton )
 	{
 		this.allMidiTracks = allMidiTracks;
 		this.controller = controller;
@@ -118,7 +111,8 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 			initialPitchSettings[i] = Integer.MIN_VALUE;
 			typeOfTuningInChannel[i] = Integer.MIN_VALUE;
 		}
-		this.closeButton = closeButton;
+		//this.closeButton = closeButton;
+		this.frame = frame;
 	}
 	
 	/**
@@ -200,7 +194,8 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
     	Player player = controller.getPlayer();
     	gui.setEnabledPlayerFrame(true);
     	//gui.resumeAnimator();
-		closeButton.setEnabled(true);
+		//closeButton.setEnabled(true);
+    	frame.dispose();
 		if( autoPlayAfterPreprocessing ){ player.play();}
     }
 
