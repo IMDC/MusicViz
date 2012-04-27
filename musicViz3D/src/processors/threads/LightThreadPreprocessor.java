@@ -4,7 +4,6 @@ import java.util.TreeMap;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Track;
-import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
 import controller.Controller;
@@ -61,7 +60,7 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	 * channelsUsed holds the channels used, so if channel 6 is used then 6->true. 6 <maps to> true.
 	 */
 	//private JButton closeButton;
-	private JFrame frame;
+	//private JFrame frame;
 	private TreeMap<Integer, Boolean> channelsUsed = new TreeMap<Integer, Boolean>();
 	
 	 
@@ -100,7 +99,7 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 	 * @param firstBPMInSong
 	 * @param closeButton
 	 */
-	public LightThreadPreprocessor( Controller controller, PitchReceiver receiver, Track allMidiTracks[], float firstBPMInSong, JFrame frame )//JButton closeButton )
+	public LightThreadPreprocessor( Controller controller, PitchReceiver receiver, Track allMidiTracks[], float firstBPMInSong )//, JFrame frame )//JButton closeButton )
 	{
 		this.allMidiTracks = allMidiTracks;
 		this.controller = controller;
@@ -112,7 +111,7 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
 			typeOfTuningInChannel[i] = Integer.MIN_VALUE;
 		}
 		//this.closeButton = closeButton;
-		this.frame = frame;
+		//this.frame = frame;
 	}
 	
 	/**
@@ -195,7 +194,7 @@ public class LightThreadPreprocessor extends SwingWorker<Void,Void>
     	gui.setEnabledPlayerFrame(true);
     	//gui.resumeAnimator();
 		//closeButton.setEnabled(true);
-    	frame.dispose();
+    	//frame.dispose();
 		if( autoPlayAfterPreprocessing ){ player.play();}
     }
 

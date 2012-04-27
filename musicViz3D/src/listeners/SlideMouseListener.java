@@ -49,7 +49,7 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 		Player player = controller.getPlayer();
 		isRunning = player.isRunning();
 		player.pause();
-		
+		gui.getVisualizer().resetVisualizer();
 		if( ((DefaultListModel) gui.getPlaylist().getModel()).getSize() != 0 )
 		{
 			//used when the slider is clicked, but the small button isnt.

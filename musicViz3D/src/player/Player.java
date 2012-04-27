@@ -1,6 +1,5 @@
 package player;
 
-import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,16 +10,11 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 
 import controller.Controller;
 import gui.GUI;
 import listeners.MidiMetaEventListener;
-import listeners.PreprocessorPropertyChangeListener;
 import player.receivers.BeatReceiver;
 import player.receivers.ControlReceiver;
 import player.receivers.InstrumentReceiver;
@@ -150,7 +144,7 @@ public class Player
 	 */
 	private void startProgressBarEnabledPreprocessor(Song song,boolean autoPlayAfterPreprocessing)
 	{
-		JFrame frame = new JFrame("Processing: " + song.getName());
+		/*JFrame frame = new JFrame("Processing: " + song.getName());
 		frame.setSize(400,120);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setVisible(true);
@@ -163,10 +157,10 @@ public class Player
 		progressBar.setStringPainted(true);
 		progressBar.setBorder(BorderFactory.createTitledBorder("Progress"));
 		frame.add(progressBar, BorderLayout.NORTH);
-		frame.add(panel, BorderLayout.SOUTH);
+		frame.add(panel, BorderLayout.SOUTH);*/
 		
-		threadedPreprocessor = new LightThreadPreprocessor(controller, pitchReceiver, sequence.getTracks(), sequencer.getTempoInBPM(), frame); 
-		threadedPreprocessor.addPropertyChangeListener(new PreprocessorPropertyChangeListener(progressBar));
+		threadedPreprocessor = new LightThreadPreprocessor(controller, pitchReceiver, sequence.getTracks(), sequencer.getTempoInBPM() );//, frame); 
+		//threadedPreprocessor.addPropertyChangeListener(new PreprocessorPropertyChangeListener(progressBar));
 		threadedPreprocessor.autoPlayAfterPreprocessing = autoPlayAfterPreprocessing;
 		threadedPreprocessor.execute();
 	}
