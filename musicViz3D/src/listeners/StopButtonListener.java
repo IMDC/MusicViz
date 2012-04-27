@@ -23,6 +23,7 @@ public class StopButtonListener implements ActionListener
 		player.stop();
 		gui.setSelectedJToggleButton(false);
 		gui.setTextJToggleButton("Play ");
+		gui.getVisualizer().resetVisualizer();
 	}
 
 }

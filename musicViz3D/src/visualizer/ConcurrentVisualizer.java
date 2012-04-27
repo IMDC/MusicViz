@@ -23,6 +23,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import player.messages.OpenGLMessage;
 import player.messages.OpenGLMessageBeat;
@@ -31,7 +32,7 @@ import player.messages.OpenGLMessageTonal;
 import visualizer.camera.Camera;
 
 
-public class ConcurrentVisualizer implements GLEventListener, MouseMotionListener, KeyListener, MouseWheelListener
+public class ConcurrentVisualizer extends Thread implements GLEventListener, MouseMotionListener, KeyListener, MouseWheelListener
 {
 	public static final int MAX_CHANNELS = 16;
 	public static final int MAX_BEAT_PIPES = 5;
@@ -79,11 +80,17 @@ public class ConcurrentVisualizer implements GLEventListener, MouseMotionListene
 	
 	//public HashMap<Integer, LinkedList<OpenGLMessage>> messageQueue;
 	public ConcurrentHashMap<Integer, ConcurrentLinkedQueue<OpenGLMessage>> concurrentMessageQueue;
+	private AtomicBoolean[] activatedBeat;
 
 	public ConcurrentVisualizer()
 	{
 		//this.messageQueue = new HashMap<Integer, LinkedList<OpenGLMessage>>();
 		this.concurrentMessageQueue = new ConcurrentHashMap<Integer, ConcurrentLinkedQueue<OpenGLMessage>>();
+		this.activatedBeat = new AtomicBoolean[MAX_BEAT_PIPES];
+		for( int i = 0; i < MAX_BEAT_PIPES; i++  )
+		{
+			this.activatedBeat[i] = new AtomicBoolean(false);
+		}
 		
 		this.lastPitchInChannelAndPipe = new int[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
 		this.lastVolumeInChannelAndPipe = new int[MAX_CHANNELS][MAX_PIPES_PER_CHANNEL];
@@ -129,7 +136,7 @@ public class ConcurrentVisualizer implements GLEventListener, MouseMotionListene
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
         gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition0, 0);
         
-	    for( int j = 0 ; j < 20; j++ )
+	    /*for( int j = 0 ; j < 20; j++ )
 	    {
 		    for( int i = 0; i < 16; i++ )
 		    {
@@ -153,7 +160,7 @@ public class ConcurrentVisualizer implements GLEventListener, MouseMotionListene
 		    		}
 		    	}
 		    }
-	    }
+	    }*/
 	    
 	    /*for( int i = 0; i < pipesToUse.length ; i++ )
 	    {	
@@ -172,13 +179,55 @@ public class ConcurrentVisualizer implements GLEventListener, MouseMotionListene
 	    
 	    for( int i = 0; i < MAX_BEAT_PIPES; i++ )
 	    {
-	    	beats[i].draw(drawable, false);
+	    	//beats[i].draw(drawable, false);
+	    	beats[i].draw(drawable, activatedBeat[i].get());
 	    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
+	    	activatedBeat[i].set(false);
 	    }
 	}
 
+	public void run()
+	{
+		while(true)
+		{
+			for( int i = 0; i < 10; i++ )
+			{
+				for( int j = 0; j < 16; j++ )
+				{
+					 ConcurrentLinkedQueue<OpenGLMessage> queue = concurrentMessageQueue.get(i);
+					    if( queue.peek() != null )
+					    {
+					    	OpenGLMessage message = queue.poll();
+					    	if( message.getMessage() == OpenGLMessage.NOTEON  || message.getMessage() == OpenGLMessage.NOTEOFF )
+					    	{
+					    		processTones((OpenGLMessageTonal)message );//, drawable);
+					    	}
+					    	else if( message.getMessage() == OpenGLMessage.BEAT )
+					    	{
+					    		//beats[((OpenGLMessageBeat)message).getPipe()].draw(drawable, true);
+					    		activatedBeat[((OpenGLMessageBeat)message).getPipe()].set(true);
+					    		//gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
+					    	}
+					    	else if( message.getMessage() == OpenGLMessage.PITCHCHANGES )
+					    	{
+					    		processPitchChanges( (OpenGLMessagePitchChange)message );
+					    	}
+					    }
+				}
+			}
+			
+			try 
+			{
+				Thread.sleep(100);
+			} 
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
 	
-	private void processTones( OpenGLMessageTonal message, GLAutoDrawable drawable )
+	private void processTones( OpenGLMessageTonal message )//, GLAutoDrawable drawable )
 	{
 		int channel = message.getChannel();
 		int pipe = message.getPipe();

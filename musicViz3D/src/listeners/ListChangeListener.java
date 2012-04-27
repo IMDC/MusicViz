@@ -47,6 +47,7 @@ public class ListChangeListener implements ListSelectionListener
 	 */
 	public void valueChanged(ListSelectionEvent e) 
 	{
+		System.out.println("list change listener");
 		list = (JList) e.getSource();
 		dlm = (DefaultListModel) list.getModel();
 		Player player = controller.getPlayer();

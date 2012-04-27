@@ -37,6 +37,7 @@ public class ListKeyListener implements KeyListener
 	 */
 	public void keyPressed(KeyEvent event) 
 	{
+		System.out.println("ListKeyListener");
 		//Checks for delete and backspace
 		if( event.getKeyCode() == KeyEvent.VK_DELETE || event.getKeyCode() == KeyEvent.VK_BACK_SPACE ) 
 		{			

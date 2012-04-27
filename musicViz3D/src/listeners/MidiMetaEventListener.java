@@ -71,7 +71,7 @@ public class MidiMetaEventListener implements MetaEventListener
 					}
 				}
 			}
-		
+			gui.getVisualizer().resetVisualizer();
 			//player.stop();
 
 			//sets the first item as selected/

@@ -62,7 +62,8 @@ public class FileCellRenderer extends JLabel implements ListCellRenderer
 				setBackground(isSelected ? Color.gray : Color.white);
 
 			}
-			 list.repaint();
+			System.out.println("FileCellRenderer");
+			// list.repaint();
 	         return this;
 	     }
 

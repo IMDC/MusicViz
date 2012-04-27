@@ -253,7 +253,7 @@ public class GUI
 	    canvas.addKeyListener(visualizer);
 	    openGLFrame.add(canvas);
 	    openGLFrame.setSize(1024, 768);
-	    animator = new FPSAnimator(canvas,150);
+	    animator = new FPSAnimator(canvas,60);
 	    //animator.setRunAsFastAsPossible(true);
 	    openGLFrame.addWindowListener(
 	    		new WindowAdapter()
@@ -270,6 +270,7 @@ public class GUI
 	    						}).start();
 	    			}
 	    		});
+	    ((Thread) visualizer).start();
 	    animator.start();
 	    System.out.println("Concurrent Visualizer Initialized Correctly");
 	    openGLFrame.setVisible(true);

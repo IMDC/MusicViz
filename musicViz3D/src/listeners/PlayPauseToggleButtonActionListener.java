@@ -46,6 +46,7 @@ public class PlayPauseToggleButtonActionListener implements ActionListener
 			{
 				tb.setText("Play ");
 				player.pause();
+				this.controller.getGUI().getVisualizer().resetVisualizer();
 			}
 		}
 		else

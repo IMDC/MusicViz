@@ -113,7 +113,7 @@ public class ListTransferHandler extends TransferHandler
         Object obj = new Object();
         //If the file is an playlist, then they are thrown into this arraylist for addition later.
         ArrayList<File> playlists = new ArrayList<File>();
-        
+        System.out.println("ListTransferHandler");
         try
         {
 	        //dragging file from OS
