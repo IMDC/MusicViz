@@ -1,5 +1,8 @@
+import java.io.IOException;
+
 import gui.GUI;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import javax.swing.JOptionPane;
 
@@ -34,6 +37,16 @@ public class MainExecutable
 					"and restart the program. If you are in Windows7, " +
 					"please plug in speakers or headphones because windows "+ 
 					"thinks there is no sound card on your machine until you do so.");
+			System.exit(0);
+		} 
+		catch (InvalidMidiDataException e)
+		{
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the midi data.");
+			System.exit(0);
+		}
+		catch (IOException e)
+		{
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because the file cannot be open or read.");
 			System.exit(0);
 		}
 	}

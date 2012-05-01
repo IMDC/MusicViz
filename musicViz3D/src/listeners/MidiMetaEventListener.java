@@ -1,13 +1,8 @@
 package listeners;
 
 import java.awt.event.ActionListener;
-
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Transmitter;
 import javax.swing.DefaultListModel;
 
 import controller.Controller;
@@ -25,12 +20,12 @@ import player.Song;
 public class MidiMetaEventListener implements MetaEventListener
 {
 	private Controller controller;
-	private Sequencer sequencer;
+	//private Sequencer sequencer;
 	
-	public MidiMetaEventListener( Controller controller, Sequencer sequencer )
+	public MidiMetaEventListener( Controller controller )//, Sequencer sequencer )
 	{
 		this.controller = controller;
-		this.sequencer = sequencer;
+		//this.sequencer = sequencer;
 	}
 
 	/**
@@ -52,7 +47,7 @@ public class MidiMetaEventListener implements MetaEventListener
 			 *this doesn't occur which consequently leaves the last note constantly playing. So, to counter-act
 			 *this problem, I send sound off events to all channels on all receivers that the sequencer has.
 			 */
-			Object[] transmitters = sequencer.getTransmitters().toArray();
+			/*Object[] transmitters = sequencer.getTransmitters().toArray();
 			ShortMessage myMsg = new ShortMessage();
 			for( int i = 0; i < transmitters.length; i++)
 			{
@@ -70,7 +65,8 @@ public class MidiMetaEventListener implements MetaEventListener
 						System.exit(1);
 					}
 				}
-			}
+			}*/
+			controller.getPlayer().allSoundOff();
 			gui.getVisualizer().resetVisualizer();
 
 			//sets the first item as selected/

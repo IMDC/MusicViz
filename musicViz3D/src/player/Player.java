@@ -1,5 +1,6 @@
 package player;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -8,7 +9,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
-import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Synthesizer;
 import javax.sound.midi.Transmitter;
 import javax.swing.JOptionPane;
 
@@ -46,26 +47,37 @@ public class Player
 	private Transmitter beatTransmitter;
 	private Transmitter controlTransmitter;
 	private Transmitter pitchTransmitter;
+	private Transmitter synthTransmitter;
+	
+	private Synthesizer synthesizer;
+	
 	/**
 	 * Gives the class the program controller for back end to front end communication.
 	 * 
 	 * @param c
 	 * @throws MidiUnavailableException 
+	 * @throws IOException 
+	 * @throws InvalidMidiDataException 
 	 */
-	public Player() throws MidiUnavailableException 
+	public Player() throws MidiUnavailableException, InvalidMidiDataException, IOException 
 	{
 
-		sequencer = MidiSystem.getSequencer();
+		sequencer = MidiSystem.getSequencer(false);
+		synthesizer = MidiSystem.getSynthesizer();
+		
+		synthesizer.loadAllInstruments(MidiSystem.getSoundbank(new File("soundbank-deluxe.gm")));
 		
 		instrumentTransmitter = sequencer.getTransmitter();
 		beatTransmitter = sequencer.getTransmitter();
 		controlTransmitter = sequencer.getTransmitter();
 		pitchTransmitter = sequencer.getTransmitter();
+		synthTransmitter = sequencer.getTransmitter();
 		
+		synthesizer.open();
 		sequencer.open();
 	}
 	
-	public void init( Controller controller )
+	public void init( Controller controller ) throws MidiUnavailableException
 	{
 		this.controller = controller;
 
@@ -78,12 +90,13 @@ public class Player
 		beatTransmitter.setReceiver(beatReceiver);
 		controlTransmitter.setReceiver(controlReceiver);
 		pitchTransmitter.setReceiver(pitchReceiver);
+		synthTransmitter.setReceiver(synthesizer.getReceiver());
 		
 		( (Thread) instrumentReceiver).start();
 		( (Thread) beatReceiver).start();
 		( (Thread) pitchReceiver).start();
 		
-		sequencer.addMetaEventListener( new MidiMetaEventListener(controller, sequencer ) );
+		sequencer.addMetaEventListener( new MidiMetaEventListener(controller ));//, sequencer ) );
 	}
 	
 	/**
@@ -232,6 +245,7 @@ public class Player
 				sequencer.setMicrosecondPosition(0);
 				gui.setCurrentValueForSlider(0);
 				gui.updateTimer("0:00");
+				this.allSoundOff();
 			}
 		}
 		catch(NullPointerException e){
@@ -254,6 +268,7 @@ public class Player
 			if( sequencer.isRunning() )
 			{
 				sequencer.stop();
+				this.allSoundOff();
 			}
 		}
 		catch(NullPointerException e){
@@ -319,7 +334,7 @@ public class Player
 		return this.beatReceiver.getIsPlayingBeats();
 	}
 	
-	public void changeVolume( int channel, int volume )
+	/*public void changeVolume( int channel, int volume )
 	{
 		Object[] transmitters = sequencer.getTransmitters().toArray();
 		ShortMessage myMsg = new ShortMessage();
@@ -337,7 +352,17 @@ public class Player
 				System.err.println("Problem when clearing Controllers, turning off all notes and turning off sounds");
 				System.exit(1);
 			}
-		}
+		}*/
+	public void changeVolume( int channel, int volume )
+	{
+		synthesizer.getChannels()[channel].controlChange(7, volume);
+	}
 	
+	public void allSoundOff()
+	{
+		for( int i = 0; i < 16; i++ )
+		{
+			synthesizer.getChannels()[i].controlChange(120, 0);
+		}
 	}
 }
