@@ -4,6 +4,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -59,13 +60,16 @@ public class ConcurrentPipe
 	
 	private boolean isCreated = false;
 	
-	private float[][] lastFace;
+	//private float[][] lastFace;
+	private AtomicReference<float[][]> lastFace;
 	private ConcurrentLinkedQueue<float[][]> positionAnimationQueue;
 	
-	private float lastAlpha;
+	//private float lastAlpha;
+	private AtomicReference<Float> lastAlpha;
 	private ConcurrentLinkedQueue<Float> alphaAnimationQueue;
 	
-	private float currentRadius;
+	//private float currentRadius;
+	private AtomicReference<Float> currentRadius;
 	private ConcurrentLinkedQueue<Float> radiusAnimationQueue;
 	private int amountOfFacesNotDrawn;
 	
@@ -192,14 +196,15 @@ public class ConcurrentPipe
 				eZ = eZ + AMOUNT_BETWEEN_FACES;
 			}
 			
-			float lf[][] = getFace(floatBuffer, 0);
+			/*float lf[][] = getFace(floatBuffer, 0);
 			for( int i = 0; i < lf.length; i++ )
 			{
 				for( int j = 0; j < lf[0].length; j++ )
 				{
 					lastFace[i][j] = lf[i][j];
 				}
-			}
+			}*/
+			lastFace.set(getFace(floatBuffer, 0));
 			
 			gl.glUnmapBuffer(GL2.GL_ARRAY_BUFFER);
 			
@@ -274,8 +279,10 @@ public class ConcurrentPipe
 		this.positionAnimationQueue = new ConcurrentLinkedQueue<float[][]>();
 		this.alphaAnimationQueue = new ConcurrentLinkedQueue<Float>();
 		
-		this.lastFace= new float[AMOUNT_OF_VERTS][FLOATS_USED_PER_3D_POINT];
-		this.lastAlpha = 1f;
+		//this.lastFace= new float[AMOUNT_OF_VERTS][FLOATS_USED_PER_3D_POINT];
+		this.lastFace = new AtomicReference<float[][]>(new float[AMOUNT_OF_VERTS][FLOATS_USED_PER_3D_POINT]);
+		//this.lastAlpha = 1f;
+		this.lastAlpha = new AtomicReference<Float>(1f);
 		
 		this.glu = new GLU();
 		this.quadric = this.glu.gluNewQuadric();
@@ -285,7 +292,8 @@ public class ConcurrentPipe
 		
 		this.minValueAlphaFading = (int) (PERCENTAGE_OF_PIPE_TO_FADE * this.amountOfFaces);
 		
-		this.currentRadius = 0;
+		//this.currentRadius = 0;
+		this.currentRadius = new AtomicReference<Float>(0f);
 		this.radiusAnimationQueue = new ConcurrentLinkedQueue<Float>();
 		this.amountOfFacesNotDrawn = 0;
 	}
@@ -304,10 +312,10 @@ public class ConcurrentPipe
 		//If there are whole pipes not being shown, then do not drawn them.
 		if( radiusAnimationQueue.isEmpty() )
 		{
-			radiusAnimationQueue.add(currentRadius);
+			radiusAnimationQueue.add(currentRadius.get());
 		}
-		currentRadius = radiusAnimationQueue.poll();
-		if(currentRadius < Visualizer.MIN_SIZE_FOR_RADIUS)
+		currentRadius.set(radiusAnimationQueue.poll());
+		if(currentRadius.get() < Visualizer.MIN_SIZE_FOR_RADIUS)
 		{
 			amountOfFacesNotDrawn++;
 		}
@@ -324,12 +332,12 @@ public class ConcurrentPipe
 		animate(drawable);
 		
 		//Used to cap off the end so it doesn't look empty. Only do this when the pipe is drawn
-		if( currentRadius > Visualizer.MIN_SIZE_FOR_RADIUS )
+		if( currentRadius.get() > Visualizer.MIN_SIZE_FOR_RADIUS )
 		{
 			gl.glPushMatrix();
-				gl.glTranslatef(lastFace[0][0], lastFace[0][1]-(currentRadius), lastFace[0][2]);
+				gl.glTranslatef( lastFace.get()[0][0],  lastFace.get()[0][1]-(currentRadius.get()),  lastFace.get()[0][2]);
 				gl.glColor4f(initialColor[0], initialColor[1], initialColor[2], 1);
-				glu.gluSphere(quadric, currentRadius+1, 10, 10);
+				glu.gluSphere(quadric, currentRadius.get()+1, 10, 10);
 			gl.glPopMatrix();
 		}
 		
@@ -405,22 +413,22 @@ public class ConcurrentPipe
 		//Therefore something is always in the queue
 		if(positionAnimationQueue.isEmpty())
 		{
-			positionAnimationQueue.add(lastFace);
+			positionAnimationQueue.add(lastFace.get());
 		}
 		if(alphaAnimationQueue.isEmpty())
 		{
-			alphaAnimationQueue.add(lastAlpha);
+			alphaAnimationQueue.add(lastAlpha.get());
 		}
 		
 		//Remove what must be played next and set it to the
 		//last face. This is in case of the queue being empty 
 		float[][] newFace = positionAnimationQueue.poll();
-		lastFace = newFace;
+		lastFace.set( newFace );
 		setFace(floatBuffer,newFace,0);
 		
 		//Do the same for the alpha
 		float newAlpha = alphaAnimationQueue.poll();
-		lastAlpha = newAlpha;
+		lastAlpha.set( newAlpha );
 		setAlphaForFace(floatBuffer, newAlpha, 0);
 		
 		gl.glUnmapBuffer(GL2.GL_ARRAY_BUFFER);
@@ -641,12 +649,12 @@ public class ConcurrentPipe
 	 */
 	public void resetPipeAnimation()
 	{
+		lastFace.set( createNewFace(INITIAL_RADIUS, initialPlacement[0], initialPlacement[1], initialPlacement[2]) );
+		lastAlpha.set( 1f );	
+		currentRadius.set( 0f );
 		positionAnimationQueue.clear();
 		alphaAnimationQueue.clear();
 		radiusAnimationQueue.clear();
-		lastFace = createNewFace(INITIAL_RADIUS, initialPlacement[0], initialPlacement[1], initialPlacement[2]);
-		lastAlpha = 1;	
-		currentRadius = 0;
 	}
 	
 	/**

@@ -81,7 +81,7 @@ public class InstrumentReceiver extends Thread implements Receiver
 					OpenGLMessageTonal tonalMessage = this.tonalProcessor.processNote( m[1] & 0xff, 0, channel );
 					this.controller.getGUI().getVisualizer().concurrentMessageQueue.get( channel ).add( tonalMessage );
 				}
-				else if(message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 128) != 9 && this.playInstuments.get() )
+				else if(message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 144) != 9 && this.playInstuments.get() )
 				{
 					channel = message.getStatus() - 144;
 					m = message.getMessage();

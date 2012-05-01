@@ -160,10 +160,15 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 			{
 				for( int j = 0; j < 16; j++ )
 				{
-					 ConcurrentLinkedQueue<OpenGLMessage> queue = concurrentMessageQueue.get(i);
-					    if( queue.peek() != null )
-					    {
+					 ConcurrentLinkedQueue<OpenGLMessage> queue = concurrentMessageQueue.get(j);
+					    //if( queue.peek() != null )
+					    //{
+					    	
 					    	OpenGLMessage message = queue.poll();
+					    	if(message == null )
+					    	{
+					    		continue;
+					    	}
 					    	if( message.getMessage() == OpenGLMessage.NOTEON  || message.getMessage() == OpenGLMessage.NOTEOFF )
 					    	{
 					    		processTones((OpenGLMessageTonal)message );
@@ -176,7 +181,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 					    	{
 					    		processPitchChanges( (OpenGLMessagePitchChange)message );
 					    	}
-					    }
+					    //}
 				}
 			}
 			
@@ -443,7 +448,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	public void setChannelsUsed(int[] pipesToUse)
 	{
 		//this.pipesToUse = pipesToUse.clone();
-		this.pipesToUse.clear();
+		//this.pipesToUse.clear();
 		for( int i = 0; i < 16; i++ )
 		{
 			this.pipesToUse.remove(i);
