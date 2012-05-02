@@ -133,19 +133,71 @@ public class MaxMSPCommunication extends Thread implements Receiver
 	{
 		if( this.sendBeats.get() && this.sendInstruments.get() )
 		{
-			processInstrumentAndBeat( message );
+			//processInstrumentAndBeat( message );
+			this.processInstrument( message, this.midiInstSimultaneous );
+			this.processBeat(message, this.midiBeatSimultaneous);
 		}
 		else if( this.sendInstruments.get() && !this.sendBeats.get() )
 		{
-			processInstrument( message );
+			//processInstrument( message );
+			this.processInstrument(message, this.midiInstrumentToMaxMapping);
 		}
 		else if( !this.sendInstruments.get() && this.sendBeats.get() )
 		{
-			processBeat( message );
+			//processBeat( message );
+			this.processBeat(message, this.midiBeatToMaxMapping);
 		}
 	}
 	
-	private void processInstrument( MidiMessage message ) throws IOException
+	private void processInstrument( MidiMessage message, HashMap<Integer, Integer> midiToMaxMappings ) throws IOException
+	{
+		int channel;
+		byte[] m;
+		
+		//Process All messages not for a beat
+		if ( message.getStatus() > 127 && message.getStatus() < 144 && (message.getStatus() - 128) != 9 )
+		{
+			channel = message.getStatus() - 128;
+			m = message.getMessage();
+			this.sendMessage( midiToMaxMappings.get(channel), 0, 0);
+		}
+		else if(message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 144) != 9 )
+		{
+			channel = message.getStatus() - 144;
+			m = message.getMessage();
+			this.sendMessage( midiToMaxMappings.get(channel), midiNoteToFreq(m[1] & 0xFF), m[2] & 0xFF);
+		}
+	}
+	
+	private void processBeat(  MidiMessage message, HashMap<Integer, Integer> midiBeatToMaxMappings ) throws IOException
+	{
+		byte[] m;
+		
+		//Process note off messages first then note on
+		if( message.getStatus() > 127 && message.getStatus() < 144 && (message.getStatus() - 128) == 9 )
+		{
+			m = message.getMessage();
+			int drum = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
+			this.sendMessage(midiBeatToMaxMappings.get(drum), 0, 0);
+		}
+		else if(message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 144) == 9 )
+		{
+			m = message.getMessage();
+			int drum = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
+			
+			this.sendMessage(midiBeatToMaxMappings.get(drum), midiBeatToFreq(m[1] & 0xFF), m[2] & 0xFF);
+		}
+	}
+	
+	private void sendMessage(int maxMspChannel, int frequency, int volume) throws IOException
+	{
+		String transmission = this.messageString + maxMspChannel;
+		Object[] transmissionObject = {frequency,volume};
+		OSCMessage oscMsg = new OSCMessage(transmission, transmissionObject);
+		this.sender.send(oscMsg);
+	}
+	
+	/*private void processInstrument( MidiMessage message ) throws IOException
 	{
 		int channel;
 		byte[] m;
@@ -183,7 +235,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 	private void processBeat( MidiMessage message ) throws IOException
 	{
 		byte[] m;
-		int instance;
+		int drum;
 		OSCMessage oscMsg;
 		String transmission = "";
 		Object[] transmissionObject = {null,null};
@@ -192,9 +244,9 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		if( message.getStatus() > 127 && message.getStatus() < 144 && (message.getStatus() - 128) == 9 )
 		{
 			m = message.getMessage();
-			instance = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
+			drum = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
 			
-			transmission = this.messageString + this.midiBeatToMaxMapping.get(instance);
+			transmission = this.messageString + this.midiBeatToMaxMapping.get(drum);
 			transmissionObject[0] = 0;
 			transmissionObject[1] = 0;
 			
@@ -204,10 +256,10 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		else if(message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 144) == 9 )
 		{
 			m = message.getMessage();
-			instance = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
+			drum = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
 			
-			transmission = this.messageString + this.midiBeatToMaxMapping.get(instance);
-			transmissionObject[0] = midiBeatToFreq(instance);
+			transmission = this.messageString + this.midiBeatToMaxMapping.get(drum);
+			transmissionObject[0] = midiBeatToFreq(drum);
 			transmissionObject[1] = m[2] & 0xFF;
 			
 			oscMsg = new OSCMessage(transmission, transmissionObject);
@@ -279,7 +331,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			oscMsg = new OSCMessage(transmission, transmissionObject);
 			this.sender.send(oscMsg);
 		}
-	}
+	}*/
 	
 	private int midiNoteToFreq( int note )
 	{
@@ -290,13 +342,13 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		return freq;
 	}
 	
-	private int midiBeatToFreq( int instance )
+	private int midiBeatToFreq( int drum )
 	{
 		int oldMax = 47,  oldMin = 34;
 		int newMax = 200, newMin = 100;
 		int oldRange = (oldMax - oldMin);
 		int newRange = (newMax - newMin);
-		int newValue = (((instance - oldMin) * newRange) / oldRange) + newMin;
+		int newValue = (((drum - oldMin) * newRange) / oldRange) + newMin;
 		return newValue;
 	}
 	
