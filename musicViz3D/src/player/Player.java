@@ -2,6 +2,8 @@ package player;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -19,6 +21,7 @@ import listeners.MidiMetaEventListener;
 import player.receivers.BeatReceiver;
 import player.receivers.ControlReceiver;
 import player.receivers.InstrumentReceiver;
+import player.receivers.MaxMSPCommunication;
 import player.receivers.PitchReceiver;
 import processors.threads.LightThreadPreprocessor;
 import utilities.Utils;
@@ -49,6 +52,9 @@ public class Player
 	private Transmitter pitchTransmitter;
 	private Transmitter synthTransmitter;
 	
+	private MaxMSPCommunication maxReceiver;
+	private Transmitter maxTransmitter;
+	
 	private Synthesizer synthesizer;
 	
 	/**
@@ -72,12 +78,13 @@ public class Player
 		controlTransmitter = sequencer.getTransmitter();
 		pitchTransmitter = sequencer.getTransmitter();
 		synthTransmitter = sequencer.getTransmitter();
+		maxTransmitter = sequencer.getTransmitter();
 		
 		synthesizer.open();
 		sequencer.open();
 	}
 	
-	public void init( Controller controller ) throws MidiUnavailableException
+	public void init( Controller controller ) throws MidiUnavailableException, UnknownHostException, SocketException
 	{
 		this.controller = controller;
 
@@ -85,16 +92,19 @@ public class Player
 		instrumentReceiver = new InstrumentReceiver(controller);
 		controlReceiver = new ControlReceiver(controller, sequencer);
 		pitchReceiver = new PitchReceiver(controller);
+		maxReceiver = new MaxMSPCommunication();
 		
 		instrumentTransmitter.setReceiver(instrumentReceiver);
 		beatTransmitter.setReceiver(beatReceiver);
 		controlTransmitter.setReceiver(controlReceiver);
 		pitchTransmitter.setReceiver(pitchReceiver);
 		synthTransmitter.setReceiver(synthesizer.getReceiver());
+		maxTransmitter.setReceiver(maxReceiver);
 		
 		( (Thread) instrumentReceiver).start();
 		( (Thread) beatReceiver).start();
 		( (Thread) pitchReceiver).start();
+		( (Thread) maxReceiver ).start();
 		
 		sequencer.addMetaEventListener( new MidiMetaEventListener(controller ));//, sequencer ) );
 	}
@@ -332,6 +342,16 @@ public class Player
 	public AtomicBoolean getIsPlayingBeats()
 	{
 		return this.beatReceiver.getIsPlayingBeats();
+	}
+	
+	public void enableMaxMSPInstruments()
+	{
+		
+	}
+	
+	public void disableMaxMSPInstruments()
+	{
+		
 	}
 	
 	/*public void changeVolume( int channel, int volume )
