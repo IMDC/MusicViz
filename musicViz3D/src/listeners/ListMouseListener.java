@@ -46,7 +46,7 @@ public class ListMouseListener implements MouseListener
 
 	public void mouseReleased(MouseEvent event)
 	{
-		System.out.println("ListMouseListener");
+		//System.out.println("ListMouseListener");
 		if( event.getClickCount() == 2 && event.getButton() == 1 && firstIndex != -1)
 		{
 			Player player = controller.getPlayer();
