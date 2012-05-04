@@ -137,6 +137,7 @@ public class Player
 		( (Thread) beatReceiver).start();
 		( (Thread) pitchReceiver).start();
 		( (Thread) maxReceiver ).start();
+		( (Thread) controlReceiver ).start();
 		
 		sequencer.addMetaEventListener( new MidiMetaEventListener(controller ));
 	}
