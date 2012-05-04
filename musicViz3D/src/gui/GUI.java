@@ -20,9 +20,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+
 
 import controller.Controller;
 import handlers.ListTransferHandler;
@@ -35,6 +37,7 @@ import listeners.ListKeyListener;
 import listeners.ListMouseListener;
 import listeners.LoadPlayListMouseListener;
 import listeners.LoopingCheckBoxListener;
+import listeners.MaxMSPSettingsListener;
 import listeners.PlayPauseToggleButtonActionListener;
 import listeners.SavePlaylistMouseListener;
 import listeners.SlideMouseListener;
@@ -46,18 +49,17 @@ import visualizer.ConcurrentVisualizer;
 import com.jogamp.opengl.util.FPSAnimator;
 
 /**
- * This class represents the GUIs for the program. There are 2 main screens.
- * The 2 screens are the visualization screen and the player control GUIs.
- * There main player screen contains the controls for MIDI playback. There
- * are also menu items for saving/loading playlists; adding MIDIs; changing
- * colours, changing the display and changing the volume.
+ * This class initialises and displays the {@link ConcurrentVisualizer} and the MIDI
+ * player GUI. It also contains thread-safe methods for altering GUI objects during 
+ * runtime. This consists of requesting the {@link SwingUtilities} to invoke threads
+ * to update the GUI during runtime in a thread-safe way. Please see Swing's threading
+ * policy.
  * 
  * @author Michael Pouris
  *
  */
 public class GUI 
 {
-	//This is for the MidiPlayer
 	private JFrame frame;
 	
 	private JPanel buttonPanel;
@@ -82,28 +84,31 @@ public class GUI
 	private JMenuItem openMidiItem;
 	private JMenuItem changeColourMenuItem;
 	private JMenuItem changeDisplayMenuItem;
+	private JMenuItem changeMaxMSPCommunication;
 	private JMenuItem changeVolumes;
 	
 	private String totalTime;
 	
-	//This is for the OpenGL visualizers.
 	private Frame openGLFrame;
 	private FPSAnimator animator;
 	private GLCanvas canvas;
 	private ConcurrentVisualizer visualizer;
 	
 	/**
-	 * Constructor for the GUI class. Sets up a JFrame object with the width and height parameters given for the frame size.
-	 * The frame, which has a border layout object, allows panel object to be easily placed within the frame.  There are 2 panel
-	 * created in the constructor, one for the top of the window and one for the bottom. The top panel contains the buttons for Opening,
-	 * playing and stopping the play back and the bottom panel contains a single slider for song indexing. This also sets the program controller
-	 * so the button components can communicate with the back end such as the Player.
+	 * The default and only constructor. 
+	 * <p>
+	 * This creates the 2 GUI windows, which
+	 * are the MIDI player controls and the {@link ConcurrentVisualizer}.
+	 * Swing is not thread-safe, therefore the last call when initialising a GUI
+	 * must always be {@code setVisible(boolean)}. Therefore, the {@link ConcurrentVisualizer}
+	 * is created by its own thread and the {@code playerGUI} is created in its own thread.
+	 * To keep the program initialisation n a predictable fashion as well as thread-safe,
+	 * the threads are joined, such that the constructor does not complete before
+	 * the threads do.
 	 * 
-	 * @param width
-	 * @param height
-	 * @param c
+	 * @throws InterruptedException
 	 */
-	public GUI()
+	public GUI() throws InterruptedException
 	{
         Runnable openGL = new Runnable()
         		{
@@ -112,12 +117,32 @@ public class GUI
         				startVisualizer();
         			}
         		};
-        new Thread(openGL).start();
+        Thread t1 = new Thread(openGL);//new Thread(openGL).start();
+        t1.start();
+		t1.join();
+
         
-        startPlayerGUI();
+        //startPlayerGUI();
+        Runnable playerGUI = new Runnable()
+		{
+			public void run()
+			{
+				startPlayerGUI();
+			}
+		};
+		Thread t2 = new Thread(playerGUI);//new Thread(openGL).start();
+		t2.start();
+		t2.join();
 	}
 	
-	private  void startPlayerGUI()
+	/**
+	 * Creates the {@link JFrame}, which contains the MIDI player controls.
+	 * <p>
+	 * This is invoked by {@line #GUI()} during initialisation in a thread. 
+	 * Swing is not thread-safe, therefore a thred is used such that the last
+	 * call is always {@link JFrame}'s {@code setVisible(boolean)}.
+	 */
+	private void startPlayerGUI()
 	{
 		//Sets up the JFrame and adds a border layout, so panels can be easily arranged.
 		frame = new JFrame();
@@ -181,6 +206,7 @@ public class GUI
         openMidiItem = new JMenuItem("Load Midi");
         changeColourMenuItem = new JMenuItem("Change Colours");
         changeDisplayMenuItem = new JMenuItem("Change Display");
+        changeMaxMSPCommunication = new JMenuItem("MaxMSP Communication Settings");
         changeVolumes = new JMenuItem("Change Volume");
         
         //Adds the menus to menus and to the frame
@@ -190,6 +216,7 @@ public class GUI
         fileMenu.add(loadMenuItem);
         optionsMenu.add(changeColourMenuItem);
         optionsMenu.add(changeDisplayMenuItem);
+        optionsMenu.add(changeMaxMSPCommunication);
         optionsMenu.add(changeVolumes);
         menuBar.add(fileMenu);
         menuBar.add(optionsMenu);
@@ -228,6 +255,7 @@ public class GUI
         loopCheckBox.addActionListener( new LoopingCheckBoxListener() );
         changeColourMenuItem.addMouseListener(new ChangeColourPaletteListener(controller));
         changeDisplayMenuItem.addMouseListener( new ChangeVisualDisplay(controller) );
+        changeMaxMSPCommunication.addMouseListener( new MaxMSPSettingsListener(controller));
         changeVolumes.addMouseListener( new ChangeVolumeListener(controller) );
         
 		SlideMouseListener sml = new SlideMouseListener(controller);
@@ -238,14 +266,17 @@ public class GUI
 		frame.setEnabled(true);
 	}
 	
+	/**
+	 * Creates the OpenGL visualiser.
+	 * <p>
+	 * This is invoked by {@line #GUI()} during initialisation in a thread. 
+	 * Swing is not thread-safe, therefore a thred is used such that the last
+	 * call is always {@link JFrame}'s {@code setVisible(boolean)}.
+	 */
 	private void startVisualizer()
 	{
-        /**
-         * This is all for the OpenGL part of the program
-         */
         openGLFrame = new Frame("Visualizer");
         canvas = new GLCanvas();
-        //visualizer = new Visualizer();
         visualizer = new ConcurrentVisualizer();
 	    canvas.addGLEventListener(visualizer);
 	    canvas.addMouseMotionListener(visualizer);
@@ -254,7 +285,6 @@ public class GUI
 	    openGLFrame.add(canvas);
 	    openGLFrame.setSize(1024, 768);
 	    animator = new FPSAnimator(canvas,60);
-	    //animator.setRunAsFastAsPossible(true);
 	    openGLFrame.addWindowListener(
 	    		new WindowAdapter()
 	    		{
@@ -276,6 +306,15 @@ public class GUI
 	    openGLFrame.setVisible(true);
 	}
 	
+	/**
+	 * Updates the maximum value for the {@code JSlider}.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * 
+	 * @param maxTimeInSeconds the maximum value the slider has
+	 */
 	public void setMaximumValueForSlider( final int maxTimeInSeconds )
 	{
 		Runnable setMaximum = 
@@ -289,6 +328,15 @@ public class GUI
 		SwingUtilities.invokeLater(setMaximum);
 	}
 
+	/**
+	 * Updates the current value for the {@code JSlider}.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * 
+	 * @param maxTimeInSeconds the maximum value the slider has
+	 */
 	public void setCurrentValueForSlider( final int currentValue )
 	{
 		Runnable setCurrentValue = 
@@ -302,6 +350,15 @@ public class GUI
 		SwingUtilities.invokeLater(setCurrentValue);
 	}
 	
+	/**
+	 * Enables the {@code JSlider}, such that it can be used.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * 
+	 * @param maxTimeInSeconds the maximum value the slider has
+	 */
 	public void enableSlider()
 	{
 		Runnable enableSlider = 
@@ -315,6 +372,15 @@ public class GUI
 		SwingUtilities.invokeLater(enableSlider);
 	}
 	
+	/**
+	 * Disables the {@code JSlider}, such that it cannot be used.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * 
+	 * @param maxTimeInSeconds the maximum value the slider has
+	 */
 	public void disableSlider()
 	{
 		Runnable disableSlider = 
@@ -328,7 +394,14 @@ public class GUI
 		SwingUtilities.invokeLater(disableSlider);
 	}
 	
-
+	/**
+	 * Updates the {@link JTextField} to display the current time value.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * @param time the current time
+	 */
 	public void updateTimer(final String time)
 	{
 		Runnable updateTimer = 
@@ -342,6 +415,14 @@ public class GUI
 		SwingUtilities.invokeLater(updateTimer);
 	}
 	
+	/**
+	 * Enables/Disables {@link #frame}.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * @param enabled
+	 */
 	public void setEnabledPlayerFrame(final boolean enabled )
 	{
 		Runnable setEnabled = 
@@ -355,11 +436,25 @@ public class GUI
 		SwingUtilities.invokeLater(setEnabled);
 	}
 	
+	/**
+	 * Returns the {@link #visualizer} object.
+	 * 
+	 * @return the {@link #visualizer} object
+	 */
 	public ConcurrentVisualizer getVisualizer()
 	{
 		return visualizer;
 	}
 	
+	/**
+	 * Pauses the {@link #visualizer}'s {@link #animator}.
+	 * <p>
+	 * The {@link #animator} is the main object that times the {@link #visualizer}.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 */
 	public void pauseAnimator()
 	{
 		Runnable pauseAnimator = 
@@ -373,6 +468,15 @@ public class GUI
 		SwingUtilities.invokeLater(pauseAnimator);
 	}
 	
+	/**
+	 * Resumes the {@link #visualizer}'s {@link #animator}.
+	 * <p>
+	 * The {@link #animator} is the main object that times the {@link #visualizer}.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 */
 	public void resumeAnimator()
 	{
 		Runnable resumeAnimator = 
@@ -386,11 +490,27 @@ public class GUI
 		SwingUtilities.invokeLater(resumeAnimator);
 	}
 	
+	/**
+	 * Returns the {@link #loopCheckBox} object, which can be altered.
+	 * <p>
+	 * This is not a thread-safe call, when changing the object. However,
+	 * this object is only read, therefore it is okay.
+	 * 
+	 * @return the checkbox, which states if the playlist should repeat.
+	 */
 	public JCheckBox getLoopCheckBox()
 	{
 		return loopCheckBox;
 	}
 
+	/**
+	 * Selects or deselect the {@link GUI#playPauseButton}.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * @param isSelected true to select the {@link #playPauseButton}, false to deselect
+	 */
 	public void setSelectedJToggleButton(final boolean isSelected )
 	{
 		Runnable setSelected = 
@@ -404,6 +524,14 @@ public class GUI
 		SwingUtilities.invokeLater(setSelected);
 	}
 	
+	/**
+	 * Sets the text for the {@link GUI#playPauseButton}.
+	 * <p>
+	 * This is done through a call to the {@link SwingUtilities},
+	 * which queues an update thread. This is needed for updates to
+	 * {@link JFrame} to be thread-safe.
+	 * @param text the text to update the {@link GUI#playPauseButton}
+	 */
 	public void setTextJToggleButton(final String text )
 	{
 		Runnable setText = 
@@ -417,12 +545,22 @@ public class GUI
 		SwingUtilities.invokeLater(setText);
 	}
 	
-	
+	/**
+	 * Returns the object, which represents the playlist.
+	 * 
+	 * @return {@link #playList}
+	 */
 	public JList getPlaylist()
 	{
 		return playList;
 	}
 	
+	/**
+	 * Updates the total time displayed. This does not update the {@link #frame}.
+	 * To update the {@link #frame}, call {@link #updateTimer(String)}.
+	 * 
+	 * @param time the total time
+	 */
 	public void updateTotalTime( String time )
 	{
 		totalTime = time;

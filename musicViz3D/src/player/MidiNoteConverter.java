@@ -5,9 +5,9 @@ public class MidiNoteConverter
 	/**
 	 * Takes a midi note as input, the midi note is between 0-127 and converts it to the real note and
 	 * octave.
-	 * 
+	 * <p>
 	 * From: http://stackoverflow.com/questions/712679/convert-midi-note-numbers-to-name-and-octave
-	 * 
+	 * <p>
 	 * @param midiNote which ranges between 0-127 inclusive.
 	 * @return An Object array of size 2. In the first position, is the real note such as C, C#, etc and
 	 * in the second position is the octave.

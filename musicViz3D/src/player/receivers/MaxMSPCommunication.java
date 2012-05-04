@@ -5,8 +5,10 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -18,16 +20,81 @@ import processors.BeatProcessor;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
 
+/**
+ * This class receives all MIDI messages played; however, it 
+ * differs from the other receivers by having a connection to
+ * a UDP port for communication over an {@link OSCPortOut}.
+ * <p>
+ * This class allows for the socket to be enabled and disabled
+ * as needed such that the socket will not always be transmitting.
+ * One can also enable and disable the transmission of different
+ * constructs. The issue with enabling and disabling the MAX/MSP
+ * socket is that it cannot be closed. The OSC:<p>
+ * http://www.illposed.com/software/javaosc.html
+ * does not provide enough functionality to do this. Therefore the only
+ * way to do it is to close (cannot reopen it), set the variable to null
+ * and do a check.
+ * <p>
+ * Using atomic variables are not enough either, the threads accessing this
+ * class must be synchronised. Therefore there are three synchronised methods:
+ * {@link #sendMessage(int, int, int)}, {@link #enableMaxMSPCommunication()} and
+ * {@link #disableMaxMSPCommunication()}. The reason for synchronisation is that the
+ * socket can be disabled after a check to see if it is enabled passes. Therefore
+ * a thread will attempt to send a message when it is disabled. Synchronisation stops this.
+ * <p>
+ * There are different cases as to what can be transmitted. The Emoti-Chair
+ * has 8 channels and MIDI has 16. Therefore they have to be mapped. There are
+ * 3 cases: (1) all messages sent to the chair. (2) beats sent to the chair and
+ * (3) beats sent to the chair. To create these mappings, three {@link HashMap}s
+ * are used.
+ * <p>
+ * Each receiver connected to the java sequencer receives the MIDI messages
+ * through the {@link #send(MidiMessage, long)} method. This method runs
+ * on the sound thread, therefore any processing within this method will
+ * slow down the sound thread and therefore cause bugs. Therefore this class
+ * is also a thread. 
+ * <p>
+ * As {@link #send(MidiMessage, long)} receives the messages, they are automatically
+ * added into {@link ConcurrentLinkedQueue}, which allows for more than one thread to
+ * safely add and remove from the queue. Therefore the java sound thread can add all
+ * messages to the concurrent queue and then the {@link #run()} thread can dequeue 
+ * messages and process them without slowing the sequencer thread.
+ * <p>
+ * Please refer to the synchronized keyword and {@link AtomicReference} for 
+ * more information on concurrency. 
+ * @author Michael Pouris
+ *
+ */
 public class MaxMSPCommunication extends Thread implements Receiver
 {
-	private InetAddress address;
-	private OSCPortOut sender;
+	/*
+	 * The basic message sent through the OSC port. The channel is appended.
+	 */
 	private final String messageString = "/element/ChannelNoteVol/";
 	
+	private InetAddress address;
+	private AtomicReference<OSCPortOut> sender;
+	
+	/*
+	 * Mapping of MIDI Channels to MAX/MSP when only the instruments are sent.
+	 */
 	private HashMap<Integer, Integer> midiInstrumentToMaxMapping;
+	
+	/*
+	 * Mapping of MIDI Channels to MAX/MSP when only the beats are sent.
+	 */
 	private HashMap<Integer, Integer> midiBeatToMaxMapping;
 	
+	/*
+	 * Mapping of MIDI Channels to MAX/MSP when Both the instruments 
+	 * and beats are sent to the chair.
+	 */
 	private HashMap<Integer, Integer> midiInstSimultaneous;
+	
+	/*
+	 * Mapping of MIDI Channels to MAX/MSP when Both the instruments 
+	 * and beats are sent to the chair.
+	 */
 	private HashMap<Integer, Integer> midiBeatSimultaneous;
 	
 	private LinkedBlockingQueue<MidiMessage> handOffQueue;
@@ -38,7 +105,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			throws UnknownHostException, SocketException
 	{
 		this.address = InetAddress.getByName("localhost");
-		this.sender = new OSCPortOut(this.address,6601);
+		this.sender = new AtomicReference<OSCPortOut>(null);
 		this.handOffQueue = new LinkedBlockingQueue<MidiMessage>();
 		this.sendBeats = new AtomicBoolean(true);
 		this.sendInstruments = new AtomicBoolean(true);
@@ -54,7 +121,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		this.midiBeatToMaxMapping = new HashMap<Integer, Integer>();
 		for( int i = 0; i < 5; i++ )
 		{
-			this.midiBeatToMaxMapping.put(0, i+1);
+			this.midiBeatToMaxMapping.put(i, i+1);
 		}
 		
 		//Mapping of the instruments and beats when both are sent to the chair
@@ -89,10 +156,14 @@ public class MaxMSPCommunication extends Thread implements Receiver
 
 	public void close() 
 	{
-		this.resetMaxMSP();
-		this.sender.close();
 	}
 
+	/**
+	 * This method runs on the java sound thread, therefore it 
+	 * passes all messages into queue, which then allows another
+	 * thread to safely access and process the messages.
+	 * See {@link ConcurrentLinkedQueue} for more details.
+	 */
 	public void send(MidiMessage message, long timestamp)
 	{
 		try 
@@ -107,6 +178,10 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		}
 	}
 	
+	/**
+	 * This method is the thread that dequeues the {@link #handOffQueue}, and processes
+	 * the MIDI messages without doing any processing on the sound thread.
+	 */
 	public void run()
 	{
 		MidiMessage message;
@@ -129,26 +204,37 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		}
 	}
 	
+	/**
+	 * Process the MIDI message differently depending on what is being sent to the chair.
+	 * 
+	 * @param message the message to be processed
+	 * @throws IOException thrown when the socket cannot be written to
+	 */
 	private void processMessage( MidiMessage message ) throws IOException
 	{
 		if( this.sendBeats.get() && this.sendInstruments.get() )
 		{
-			//processInstrumentAndBeat( message );
 			this.processInstrument( message, this.midiInstSimultaneous );
 			this.processBeat(message, this.midiBeatSimultaneous);
 		}
 		else if( this.sendInstruments.get() && !this.sendBeats.get() )
 		{
-			//processInstrument( message );
 			this.processInstrument(message, this.midiInstrumentToMaxMapping);
 		}
 		else if( !this.sendInstruments.get() && this.sendBeats.get() )
 		{
-			//processBeat( message );
 			this.processBeat(message, this.midiBeatToMaxMapping);
 		}
 	}
 	
+	/**
+	 * Process the message as an instrument with a specific mapping. This mapping must be
+	 * selected from one of the global variables.
+	 * 
+	 * @param message message to process
+	 * @param midiToMaxMappings the mapping to use from MIDI to MAX/MSP
+	 * @throws IOException
+	 */
 	private void processInstrument( MidiMessage message, HashMap<Integer, Integer> midiToMaxMappings ) throws IOException
 	{
 		int channel;
@@ -169,6 +255,14 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		}
 	}
 	
+	/**
+	 * Process the message as a beat with a specific mapping. This mapping must be select from one of the 
+	 * global variables above.
+	 * 
+	 * @param message
+	 * @param midiBeatToMaxMappings
+	 * @throws IOException
+	 */
 	private void processBeat(  MidiMessage message, HashMap<Integer, Integer> midiBeatToMaxMappings ) throws IOException
 	{
 		byte[] m;
@@ -185,16 +279,161 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			m = message.getMessage();
 			int drum = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
 			
-			this.sendMessage(midiBeatToMaxMappings.get(drum), midiBeatToFreq(m[1] & 0xFF), m[2] & 0xFF);
+			this.sendMessage(midiBeatToMaxMappings.get(drum),midiBeatToFreq(m[1] & 0xFF), m[2] & 0xFF);
 		}
 	}
 	
-	private void sendMessage(int maxMspChannel, int frequency, int volume) throws IOException
+	/**
+	 * Send a message through the OSC port.
+	 * <p>
+	 * Considering the port can be closed and opened at any time, it is of 
+	 * importance to have this method synchronised. For example, a calling
+	 * thread may call this method and the check for null allows the method to run.
+	 * At the same time another method can disable the socket and the first thread at that
+	 * point send an OSC packet. Therefore cauing a null pointer exception. Hence it must
+	 * be synchronised on this method and the following 3:
+	 * {@link #enableMaxMSPCommunication()}, {@link #disableMaxMSPCommunication()} and
+	 * {@link #resetMaxMSP()}.
+	 * 
+	 * @param maxMspChannel
+	 * @param frequency
+	 * @param volume
+	 * @throws IOException
+	 */
+	private synchronized void sendMessage(int maxMspChannel, int frequency, int volume) throws IOException
 	{
+		if( this.sender.get() == null )
+		{
+			return;
+		}
+		
 		String transmission = this.messageString + maxMspChannel;
 		Object[] transmissionObject = {frequency,volume};
 		OSCMessage oscMsg = new OSCMessage(transmission, transmissionObject);
-		this.sender.send(oscMsg);
+		this.sender.get().send(oscMsg);
+	}
+	
+	/**
+	 * Resets the frequency and volume of each channel in MAX/MSP,
+	 * there are 8 channels. It sets all volumes and frequencies to 0.
+	 */
+	public synchronized void resetMaxMSP()
+	{		
+		for( int i = 0; i < 8; i++ )
+		{
+			try {
+				this.sendMessage(i, 0, 0);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Enable the MAX/MSP port.
+	 * <p>
+	 * Creates a new UDP port and considering this is a synchronized method,
+	 * all calls to send a message while this method is running, must wait until
+	 * this method is finished.
+	 * 
+	 * @throws SocketException
+	 */
+	public synchronized void enableMaxMSPCommunication() throws SocketException
+	{
+		if( this.sender.get() == null )
+		{
+			this.sender.set(new OSCPortOut(this.address,6601));
+		}
+	}
+	
+	/**
+	 * Disables the MAX/MSP port.
+	 * <p>
+	 * Disables the port by first closing it and then setting the variable to NULL.
+	 * All other calls to reopen the port and close the port must wait until this
+	 * method is finished in order to maintain Atomicity.
+	 */
+	public synchronized void disableMaxMSPCommunication()
+	{
+		if( this.sender.get() != null )
+		{
+			this.sender.get().close();
+			this.sender.set(null);
+		}
+	}
+	
+	/**
+	 * Enables sending instrument messages to be sent to MAX/MSP.
+	 * <p>
+	 * Instruments are all channels but channel 9.
+	 */
+	public void enableInstrumentCommunication()
+	{
+		this.sendInstruments.set(true);
+	}
+
+	/**
+	 * Disables sending instrument messages to be sent to MAX/MSP.
+	 * <p>
+	 * Instruments are all channels but channel 9.
+	 */
+	public void disableInstrumentCommunication()
+	{
+		this.sendInstruments.set(false);
+	}
+	
+	/**
+	 * Enables sending beat messages to be sent to MAX/MSP.
+	 * <p>
+	 * Beats are channel 9.
+	 */
+	public void enableBeatCommunication()
+	{
+		this.sendBeats.set(true);
+	}
+	
+	/**
+	 * Disables sending beat messages to be sent to MAX/MSP.
+	 * <p>
+	 * Beats are channel 9.
+	 */
+	public void disableBeatCommunication()
+	{
+		this.sendBeats.set(false);
+	}
+	
+	/**
+	 * Converts a normal instrument (not beat, see {@link #midiBeatToFreq(int)} for beat)
+	 * to frequency.
+	 * 
+	 * @param note MIDI instrument note (all by channel 9) to convert from
+	 * @return frequency a new frequency
+	 */
+	private int midiNoteToFreq( int note )
+	{
+		int freq;
+		
+		freq = note*800/127;
+		
+		return freq;
+	}
+	
+	/**
+	 * Converts a drum note to a specific frequency by altering the
+	 * minimum and maximum yet keeping the same ratios.
+	 * 
+	 * @param drumNote MIDI channel 9 note to convert from
+	 * @return a new frequency
+	 */
+	private int midiBeatToFreq( int drumNote )
+	{
+		int oldMax = 47,  oldMin = 34;
+		int newMax = 200, newMin = 100;
+		int oldRange = (oldMax - oldMin);
+		int newRange = (newMax - newMin);
+		int newValue = (((drumNote - oldMin) * newRange) / oldRange) + newMin;
+		return newValue;
 	}
 	
 	/*private void processInstrument( MidiMessage message ) throws IOException
@@ -332,55 +571,4 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			this.sender.send(oscMsg);
 		}
 	}*/
-	
-	private int midiNoteToFreq( int note )
-	{
-		int freq;
-		
-		freq = note*800/127;
-		
-		return freq;
-	}
-	
-	private int midiBeatToFreq( int drum )
-	{
-		int oldMax = 47,  oldMin = 34;
-		int newMax = 200, newMin = 100;
-		int oldRange = (oldMax - oldMin);
-		int newRange = (newMax - newMin);
-		int newValue = (((drum - oldMin) * newRange) / oldRange) + newMin;
-		return newValue;
-	}
-	
-	private void resetMaxMSP()
-	{
-		OSCMessage oscMsg;
-		String transmission = "";
-		Object[] transmissionObject = {0,0};
-		
-		
-		for( int i = 0; i < 8; i++ )
-		{
-			transmission = this.messageString + i;
-			oscMsg = new OSCMessage(transmission, transmissionObject);
-			try 
-			{
-				this.sender.send(oscMsg);
-			} 
-			catch (IOException e)
-			{
-				System.err.println("Could Not Reset MaxMSP");
-			}
-		}
-	}
-	
-	public AtomicBoolean getSendInstrumentsToMaxMSP()
-	{
-		return sendInstruments;
-	}
-	
-	public AtomicBoolean getSendBeatsToMaxMSP()
-	{
-		return sendBeats;
-	}
 }

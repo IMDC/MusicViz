@@ -1,10 +1,10 @@
 package player.messages;
 
 /**
- * Contains the attributes used to display a beat even in the visualizer. Since this
+ * Contains the attributes used to display a beat even in the visualizer. <p> Since this
  * class inherits from the OpenGLMessage class, it will have a message type that is automatically set 
  * in the constructor which is used to identify that this is a beat event. 
- * 
+ * <p>
  * @author Michael Pouris
  *
  */

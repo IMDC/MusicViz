@@ -1,6 +1,7 @@
 package listeners;
 
 import java.awt.event.ActionListener;
+
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.swing.DefaultListModel;
@@ -41,32 +42,9 @@ public class MidiMetaEventListener implements MetaEventListener
 		{	
 			
 			GUI gui = controller.getGUI();
-			/*
-			 * The next 2 for loops are actually here for a good reason. Throughout the development of this
-			 *program, when a end of a song occurs, all the notes are turned off. Although, in some midi files,
-			 *this doesn't occur which consequently leaves the last note constantly playing. So, to counter-act
-			 *this problem, I send sound off events to all channels on all receivers that the sequencer has.
-			 */
-			/*Object[] transmitters = sequencer.getTransmitters().toArray();
-			ShortMessage myMsg = new ShortMessage();
-			for( int i = 0; i < transmitters.length; i++)
-			{
-				for( int j = 0 ; j < 16; j++ )
-				{
-					try
-					{
-					   	myMsg = new ShortMessage();
-					   	myMsg.setMessage(ShortMessage.CONTROL_CHANGE,j,120,0);//sounds off
-					   ((Transmitter)transmitters[i]).getReceiver().send(myMsg, -1);
-					}
-					catch (InvalidMidiDataException e)
-					{
-						System.err.println("Problem when clearing Controllers, turning off all notes and turning off sounds");
-						System.exit(1);
-					}
-				}
-			}*/
+			
 			controller.getPlayer().allSoundOff();
+			controller.getPlayer().resetMaxMSPCommunication();
 			gui.getVisualizer().resetVisualizer();
 
 			//sets the first item as selected/

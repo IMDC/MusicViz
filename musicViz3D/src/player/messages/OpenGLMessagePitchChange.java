@@ -1,10 +1,10 @@
 package player.messages;
 
 /**
- * Message is specifically used to send a Pitch change message. This alerts the visualizer that
+ * Message is specifically used to send a Pitch change message.<p> This alerts the visualizer that
  * a pitch change has happened for a certain channel, the pitch offset and range of the midi
  * pitch wheel for the affected channel.
- * 
+ * <p>
  * @author Michael Pouris
  *
  */

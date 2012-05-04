@@ -3,7 +3,7 @@ package player.messages;
 
 /**
  * Can be used as a NoteOn or NoteOff event for tones (every channel but channel 9).
- * 
+ * <p>
  * @author Michael Pouris
  *
  */

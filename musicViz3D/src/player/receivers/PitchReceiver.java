@@ -1,5 +1,6 @@
 package player.receivers;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.sound.midi.MidiMessage;
@@ -15,7 +16,19 @@ import controller.Controller;
  * processes pitch bend messages. Pitch bend messages have statuses
  * from 224 to 239. The MIDI messages are explained here:
  * http://www.midi.org/techspecs/midimessages.php
- * 
+ * <p>
+ * Each receiver connected to the java sequencer receives the MIDI messages
+ * through the {@link #send(MidiMessage, long)} method. This method runs
+ * on the sound thread, therefore any processing within this method will
+ * slow down the sound thread and therefore cause bugs. Therefore this class
+ * is also a thread. 
+ * <p>
+ * As {@link #send(MidiMessage, long)} receives the messages, they are automatically
+ * added into {@link ConcurrentLinkedQueue}, which allows for more than one thread to
+ * safely add and remove from the queue. Therefore the java sound thread can add all
+ * messages to the concurrent queue and then the {@link #run()} thread can dequeue 
+ * messages and process them without slowing the sequencer thread.
+ * <p>
  * @author Michael Pouris
  *
  */
@@ -41,6 +54,12 @@ public class PitchReceiver extends Thread implements Receiver
 	{
 	}
 
+	/**
+	 * This method runs on the java sound thread, therefore it 
+	 * passes all messages into queue, which then allows another
+	 * thread to safely access and process the messages.
+	 * See {@link ConcurrentLinkedQueue} for more details.
+	 */
 	public void send(MidiMessage message, long timeStamp)
 	{
 		try 
@@ -55,6 +74,10 @@ public class PitchReceiver extends Thread implements Receiver
 		}
 	}
 	
+	/**
+	 * This method is the thread that dequeues the {@link #handOffQueue}, and processes
+	 * the MIDI messages without doing any processing on the sound thread.
+	 */
 	public void run()
 	{
 		MidiMessage message;
@@ -87,10 +110,18 @@ public class PitchReceiver extends Thread implements Receiver
 		}
 	}
 	
+	/**
+	 * This class handles pitch change messages. Please see the MIDI standard and
+	 * {@link MidiMessage} for more explanation. However, in order to process
+	 * these messages, the initial values must be known and the range of values 
+	 * must be known as well. This must be set.
+	 * <p>
+	 * @param initialPitchSettings
+	 * @param rangeOfPitchValues
+	 */
 	public void setPitchData(int[] initialPitchSettings,int[] rangeOfPitchValues)
 	{
 		this.initialPitchSettings = initialPitchSettings;
 		this.rangeOfPitchValues = rangeOfPitchValues;
 	}
-
 }
