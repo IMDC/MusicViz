@@ -12,7 +12,7 @@ import controller.Controller;
  * chosen to be implemented.
  * <p>
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class ChangeColourPaletteListener implements MouseListener
 {

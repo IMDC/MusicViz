@@ -16,9 +16,13 @@ import utilities.Utils;
 /**
  * An implementation of selecting a single MIDI song to add to
  * the playlist. Please see {@link GUI} for this class's use.
- * 
+ * <p>
+ * When {@link #mouseReleased(MouseEvent)} is triggered on the related
+ * JComponent, the window is displayed. It is hidden when the user closes it.
+ * The window is never disposed of until the end of the program.
+ * <p>
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class AddMidiSongMouseListener implements MouseListener
 {
@@ -28,7 +32,7 @@ public class AddMidiSongMouseListener implements MouseListener
 	/**
 	 * Creates a file chooser without displaying it.
 	 * 
-	 * @param controller
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
 	 */
 	public AddMidiSongMouseListener( Controller controller )
 	{

@@ -11,17 +11,25 @@ import player.Player;
  * This class stops the MIDI player.
  * 
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class StopButtonListener implements ActionListener 
 {
 	private Controller controller;
 	
-	public StopButtonListener( Controller c )
+	/**
+	 * Initialises the object to handle button pushes on the "Stop" button on the GUI.
+	 * <p>
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 */
+	public StopButtonListener( Controller controller )
 	{
-		controller = c;
+		this.controller = controller;
 	}
 	
+	/**
+	 * Handles all button pushes to stop the song.
+	 */
 	public void actionPerformed(ActionEvent e)
 	{
 		GUI gui = controller.getGUI();

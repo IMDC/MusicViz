@@ -28,7 +28,7 @@ import player.Player;
  * and drags, the dragged method isn't called. On a Mac machine, both get called at the same time. 
  * 
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class SlideMouseListener implements MouseListener, MouseMotionListener
 {
@@ -37,11 +37,23 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 	private JSlider slider;
 	private boolean isRunning;
 	
+	/**
+	 * Initialises a {@link MouseListener} and {@link MouseMotionListener}.
+	 * <p>
+	 * This class allows for all actions on a slider to be performed.
+	 * <p>
+	 * @param controller
+	 */
 	public SlideMouseListener( Controller controller )
 	{
 		this.controller = controller;
 	}
 
+	/**
+	 * The first action to be performed is always a mouse pressed.
+	 * <p>
+	 * This will jump the slider to the appropriate position for use.
+	 */
 	public void mousePressed(MouseEvent e)
 	{
 		slider = (JSlider) e.getSource();
@@ -65,6 +77,10 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 
 	}
 	
+	/**
+	 * The second method to be called. The slider must be completely set at 
+	 * this point.
+	 */
 	public void mouseReleased(MouseEvent e) 
 	{	
 		Player player = controller.getPlayer();
@@ -79,6 +95,10 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 		}
 	}
 	
+	/**
+	 * This is not a mouse pressed or release event, therefore when the mouse
+	 * is dragged, the slider must be updated.
+	 */
 	public void mouseDragged(MouseEvent e)
 	{
 		GUI gui = controller.getGUI();

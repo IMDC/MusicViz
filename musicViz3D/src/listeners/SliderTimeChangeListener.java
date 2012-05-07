@@ -14,17 +14,28 @@ import gui.GUI;
  * class.
  * 
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class SliderTimeChangeListener implements ChangeListener
 {
 	private Controller controller;
 	
+	/**
+	 * Initialises the object to handle {@link JSlider} changes.
+	 * <p>
+	 * The changes are to change the current position of the song.
+	 * <p>
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 */
 	public SliderTimeChangeListener(Controller controller)
 	{
 		this.controller = controller;
 	}
 	
+	/**
+	 * When the slider is changed or altered by dragging. The slider updates
+	 * the current song position.
+	 */
 	public void stateChanged(ChangeEvent e) 
 	{
 		JSlider slider = (JSlider) e.getSource();

@@ -15,17 +15,26 @@ import player.Player;
  * Pause and if the song is paused, then the button will display play. Each state will act accordingly
  * 
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class PlayPauseToggleButtonActionListener implements ActionListener
 {
 	private Controller controller;
 	
+	/**
+	 * Creates a new listener for the play/pause toggle button in the GUI.
+	 * <p>
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 */
 	public PlayPauseToggleButtonActionListener ( Controller controller )
 	{
 		this.controller = controller;
 	}
 	
+	/**
+	 * When the button is clicked and there is a song in the playlist,
+	 * the song plays or becomes paused.
+	 */
 	public void actionPerformed(ActionEvent event)
 	{
 		JToggleButton tb = (JToggleButton) event.getSource();

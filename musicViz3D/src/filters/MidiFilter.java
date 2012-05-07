@@ -6,9 +6,19 @@ import javax.swing.filechooser.FileFilter;
 
 import utilities.Utils;
 
+/**
+ * Filters all files but the MIDI files. This is used within a {@link javax.swing.JFileChooser}
+ * to filter the types of files that are displayed.
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class MidiFilter extends FileFilter
 {
-
+	/**
+	 * Tests of the file can be displayed to the user. Makes sure all files
+	 * displayed are the MIDI files.
+	 */
     public boolean accept(File f) 
     {
     	//Gets the extention of the file.
@@ -40,7 +50,9 @@ public class MidiFilter extends FileFilter
     	
     }
 
-
+    /**
+     * Displays to the user the types of files displayed.
+     */
 	public String getDescription() 
 	{
 		return "Midi Files";

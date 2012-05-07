@@ -24,7 +24,7 @@ import utilities.Utils;
  * Song Objects. Otherwise, the object dragged into the list will be rejected. I like to look at this class as 
  * the mediator between the OS and my program. When objects go from the OS to this program, this class checks
  * if the object is suitable.
- * 
+ * <p>
  * @author Michael Pouris
  *
  */
@@ -34,6 +34,11 @@ public class ListTransferHandler extends TransferHandler
 	private Controller controller;
 	private PlaylistLoader playlistLoader;
 	
+	/**
+	 * Creates a new list transfer handler with the main controller that provides access.
+	 * <p>
+	 * @param controller
+	 */
 	public ListTransferHandler(Controller controller)
 	{
 		this.controller = controller;
@@ -78,7 +83,7 @@ public class ListTransferHandler extends TransferHandler
     }
     
     /**
-     * Tells the List that the supported actions are movements, at least I think.
+     * Tells the List that the supported actions are movements.
      */
     public int getSourceActions(JComponent c) 
     {

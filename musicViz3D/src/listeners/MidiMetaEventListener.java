@@ -16,12 +16,19 @@ import player.Song;
  * of the sequencer, they contain information such as EndOfSong events, lyrics, etc.
  * 
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
+ * @see http://www.midi.org/techspecs/midimessages.php
  */
 public class MidiMetaEventListener implements MetaEventListener
 {
 	private Controller controller;
 	
+	/**
+	 * Creates a new MIDI META event listener. Please look at the documentation
+	 * in the Java API for further explanation
+	 * <p>
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 */
 	public MidiMetaEventListener( Controller controller )
 	{
 		this.controller = controller;
@@ -58,7 +65,6 @@ public class MidiMetaEventListener implements MetaEventListener
 			//If there is a song that exsists in the next index, then its loaded.
 			if( index + 1 <  dlm.getSize() )
 			{
-				//controller.setSelectedIndex(index + 1);
 				gui.getPlaylist().setSelectedIndex( index + 1 );
 				
 				//finds the  current song in the list based on the song info in the player

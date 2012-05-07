@@ -18,7 +18,7 @@ import utilities.Utils;
  * it pressed, the selected items in the list are deleted.
  * 
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class ListKeyListener implements KeyListener
 {
@@ -26,6 +26,11 @@ public class ListKeyListener implements KeyListener
 	private JList list;
 	private DefaultListModel listModel;
 	
+	/**
+	 * Creates a new listener to receive action events from the keyboard.
+	 * <p>
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 */
 	public ListKeyListener(Controller controller)
 	{
 		this.controller = controller;
@@ -37,8 +42,6 @@ public class ListKeyListener implements KeyListener
 	 */
 	public void keyPressed(KeyEvent event) 
 	{
-		//System.out.println("ListKeyListener");
-		//Checks for delete and backspace
 		if( event.getKeyCode() == KeyEvent.VK_DELETE || event.getKeyCode() == KeyEvent.VK_BACK_SPACE ) 
 		{			
 			Player player = controller.getPlayer();

@@ -31,6 +31,7 @@ import player.Song;
  *  index, then the player wouldnt know if it should load the last song or the second. This class over comes that problem.
  *  
  *  @author Michael Pouris
+ *  @see gui.GUI#addListeners(Controller)
  */
 public class ListChangeListener implements ListSelectionListener
 {
@@ -54,7 +55,6 @@ public class ListChangeListener implements ListSelectionListener
 	 */
 	public void valueChanged(ListSelectionEvent e) 
 	{
-		//System.out.println("list change listener");
 		list = (JList) e.getSource();
 		dlm = (DefaultListModel) list.getModel();
 		Player player = controller.getPlayer();

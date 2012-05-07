@@ -9,9 +9,9 @@ import utilities.Utils;
 /**
  * This is a filter that is used by the saving and loading playlist classes. This filters the files shown
  * in such a way that only file of extension .mvp show to the user. 
- * 
+ * <p>
  * .mvp files are playlist files for this program only. It stands for music viz(ualization) playlist
- * 
+ * <p>
  * @author Michael Pouris
  *
  */

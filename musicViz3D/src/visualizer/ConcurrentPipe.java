@@ -315,7 +315,7 @@ public class ConcurrentPipe
 			radiusAnimationQueue.add(currentRadius.get());
 		}
 		currentRadius.set(radiusAnimationQueue.poll());
-		if(currentRadius.get() < Visualizer.MIN_SIZE_FOR_RADIUS)
+		if(currentRadius.get() < ConcurrentVisualizer.MIN_SIZE_FOR_RADIUS)
 		{
 			amountOfFacesNotDrawn++;
 		}
@@ -332,7 +332,7 @@ public class ConcurrentPipe
 		animate(drawable);
 		
 		//Used to cap off the end so it doesn't look empty. Only do this when the pipe is drawn
-		if( currentRadius.get() > Visualizer.MIN_SIZE_FOR_RADIUS )
+		if( currentRadius.get() > ConcurrentVisualizer.MIN_SIZE_FOR_RADIUS )
 		{
 			gl.glPushMatrix();
 				gl.glTranslatef( lastFace.get()[0][0],  lastFace.get()[0][1]-(currentRadius.get()),  lastFace.get()[0][2]);

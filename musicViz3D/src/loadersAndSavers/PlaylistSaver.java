@@ -85,16 +85,16 @@ public class PlaylistSaver
 			} 
 	    	catch (FileNotFoundException e) 
 			{
-				JOptionPane.showMessageDialog(null,"Die Datei besteht nicht.");
+				JOptionPane.showMessageDialog(null,"Cannot fine the file");
 			} 
 	    	catch (IOException e)
 			{
-	    		JOptionPane.showMessageDialog(null,"Kann nicht die Datei schreiben.");
+	    		JOptionPane.showMessageDialog(null,"Cannot write the data");
 			}
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(null,"Kann nicht die datei retten weil die Liste eine Groesse eins hat.");
+			JOptionPane.showMessageDialog(null,"Can not write anything because there is no list to save");
 		}
 	}
 }

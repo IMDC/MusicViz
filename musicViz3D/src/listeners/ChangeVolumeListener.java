@@ -20,12 +20,12 @@ import controller.Controller;
  * Therefore the user can play with the volume pertaining to the pipes and
  * alter the volume for the drums.
  * <p>
- * This class initializes the JFrame that holds the volume sliders and hides
+ * This class initialises the JFrame that holds the volume sliders and hides
  * them whenever the user does not want to see it. When the use clicks to open
  * the volume controls, the JFrame is displayed.
  * <p>
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class ChangeVolumeListener implements MouseListener
 {
@@ -39,8 +39,6 @@ public class ChangeVolumeListener implements MouseListener
 	private Font font1;
 	
 	/**
-	 * Initialises the object.
-	 * <p>
 	 * Creates the window, which contains the controls. It is hidden when the user
 	 * closes it and shown when the user opens the window.
 	 * <p>

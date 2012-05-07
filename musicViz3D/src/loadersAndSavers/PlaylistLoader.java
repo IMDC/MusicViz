@@ -82,17 +82,17 @@ public class PlaylistLoader
 		} 
     	catch (FileNotFoundException e) 
 		{
-    		JOptionPane.showMessageDialog(null,"Die Datei besteht nicht.");
+    		JOptionPane.showMessageDialog(null,"The file is not understood");
         	return false;
 		} 
     	catch (IOException e)
 		{
-    		JOptionPane.showMessageDialog(null,"Kann nicht die Datei lesen.");
+    		JOptionPane.showMessageDialog(null,"Cannot read the data");
         	return false;
 		} 
     	catch (ClassNotFoundException e)
 		{
-    		JOptionPane.showMessageDialog(null,"Kann nicht die Klasse finden");
+    		JOptionPane.showMessageDialog(null,"Cannot find the appropriate class");
         	return false;
 		}
     }

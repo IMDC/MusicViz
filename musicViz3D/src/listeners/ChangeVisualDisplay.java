@@ -13,7 +13,7 @@ import controller.Controller;
  * display all beats and pipes, or just the beats or just the pipes.
  * <p>
  * @author Michael Pouris
- *
+ * @see gui.GUI#addListeners(Controller)
  */
 public class ChangeVisualDisplay implements MouseListener
 {
@@ -36,7 +36,6 @@ public class ChangeVisualDisplay implements MouseListener
 	/**
 	 * The options displayed to the user allow
 	 * them to select what is visualised.
-	 * <p>
 	 */
 	public void mouseReleased(MouseEvent e) 
 	{
