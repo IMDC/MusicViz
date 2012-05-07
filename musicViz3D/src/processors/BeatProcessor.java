@@ -1,10 +1,18 @@
 package processors;
 
+import player.Player;
 import player.messages.OpenGLMessageBeat;
+import player.receivers.BeatReceiver;
+import visualizer.ConcurrentVisualizer;
 
 /**
- * This class is specifically used to process a beat note on/off event. The two main behaviors of this class 
- * is to calculate the starting interval of the beat object and to calculate which beat the note actually belongs to.
+ * This class provides information pertaining to the mappings of MIDI
+ * drums to the visualiser.
+ * <p>
+ * As the MIDI notes are played by the MIDI Sequencer in {@link Player},
+ * the notes are passed to each receiver. The {@link BeatReceiver} has
+ * an instance of this class and uses it to convert the MIDI beat notes
+ * to a construct that the {@link ConcurrentVisualizer} can use.
  * 
  * @author Michael Pouris
  *
@@ -18,12 +26,16 @@ public class BeatProcessor
 	public static final String HAT = "hat";
 	
 	/**
-	 * The main method in this class. It's used to calculate the intensity of the current beat and return 
-	 * the message that will be used.
+	 * Creates a new {@link OpenGLMessageBeat} based on the parameters.
+	 * <p>
+	 * The MIDI note is converted from a normal MIDI note to a specific
+	 * visual construct using the {@link #getCorrespondingPipeFromNote(int)}.
+	 * <p>
 	 * 
-	 * @param note
-	 * @param velocity
-	 * @return
+	 * @param note the note to use to convert from MIDI to a visualisation
+	 * @param velocity the volume the note was played at.
+	 * 
+	 * @return A message tailored for processing by the OpenGL visualiser.
 	 */
 	public OpenGLMessageBeat processBeat( int note, int velocity )
 	{
@@ -80,6 +92,17 @@ public class BeatProcessor
 		return null;
 	}
 	
+	/**
+	 * Converts from a MIDI note to a drum instance.
+	 * <p>
+	 * MIDI dedicates channel 9 to drums and each note for the channel
+	 * constitutes a drums. There are too many drums to map, therefore
+	 * they are condensed into 5 different groupings. The visualiser
+	 * uses these mappings.
+	 * 
+	 * @param note the MIDI note to convert into a visual construct
+	 * @return the specific index that the beat maps to
+	 */
 	public static int getCorrespondingPipeFromNote(int note)
 	{
 		int pipe = 3;

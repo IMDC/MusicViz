@@ -21,12 +21,10 @@ import player.Song;
 public class MidiMetaEventListener implements MetaEventListener
 {
 	private Controller controller;
-	//private Sequencer sequencer;
 	
-	public MidiMetaEventListener( Controller controller )//, Sequencer sequencer )
+	public MidiMetaEventListener( Controller controller )
 	{
 		this.controller = controller;
-		//this.sequencer = sequencer;
 	}
 
 	/**
@@ -104,13 +102,5 @@ public class MidiMetaEventListener implements MetaEventListener
 			
 			gui.getPlaylist().repaint();
 		}
-		else if( type == 81 )
-		{
-			//Sets the last tick and time in seconds in the MidiNoteReceiver so the time calculations can be correct.
-			//player.setLastTick(sequencer.getTickPosition());
-			//player.setLastTimeInSeconds(sequencer.getMicrosecondPosition()/1000000.0);
-			//player.setLastBPMChangeData(sequencer.getTickPosition(), sequencer.getMicrosecondPosition()/1000000.0);
-		}
 	}
-
 }

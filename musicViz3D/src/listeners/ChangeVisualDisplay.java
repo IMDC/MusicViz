@@ -4,13 +4,14 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JOptionPane;
 
+
 import controller.Controller;
 
 /**
- * This class opens a JOptionPane that allows the user to select how
+ * This class opens a {@link javax.swing.JOptionPane} that allows the user to select how
  * to change what is displaying in the visualizer. The user can
  * display all beats and pipes, or just the beats or just the pipes.
- * 
+ * <p>
  * @author Michael Pouris
  *
  */
@@ -18,33 +19,25 @@ public class ChangeVisualDisplay implements MouseListener
 {
 	private Controller controller;
 	
+	/**
+	 * Creates a new listener to receive action events. If invoked, the class
+	 * will show a {@link javax.swing.JOptionPane}. The user can select
+	 * the constructs which the {@link visualizer.ConcurrentVisualizer} will display.
+	 * 
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 * @see {@link player.receivers.BeatReceiver}
+	 * @see {@link player.receivers.InstrumentReceiver}
+	 */
 	public ChangeVisualDisplay( Controller controller )
 	{
 		this.controller = controller;
 	}
-	
-	
-	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-	}
 
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-	}
-
-	@Override
+	/**
+	 * The options displayed to the user allow
+	 * them to select what is visualised.
+	 * <p>
+	 */
 	public void mouseReleased(MouseEvent e) 
 	{
 		Object[] possibilities = {"Display Pipes and Beats", "Display Pipes Only", "Display Beats Only"};
@@ -52,8 +45,8 @@ public class ChangeVisualDisplay implements MouseListener
 		{
 			String choice = (String)JOptionPane.showInputDialog(	
 									null,
-		                            "Please choose a colour palette",
-		                            "Colour Palette",
+		                            "Please choose what to send to the visualization",
+		                            "Visual Constructs",
 		                            JOptionPane.PLAIN_MESSAGE,
 		                            null,
 		                            possibilities,
@@ -82,4 +75,15 @@ public class ChangeVisualDisplay implements MouseListener
 		}
 	}
 
+	@Override
+	public void mouseClicked(MouseEvent e){}
+
+	@Override
+	public void mouseEntered(MouseEvent e){}
+
+	@Override
+	public void mouseExited(MouseEvent e){}
+
+	@Override
+	public void mousePressed(MouseEvent e){}
 }

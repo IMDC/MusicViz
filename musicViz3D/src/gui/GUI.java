@@ -237,6 +237,16 @@ public class GUI
         frame.setVisible(true);
 	}
 	
+	/**
+	 * This method adds listeners for the GUI. 
+	 * <p>
+	 * The listeners are essential for the functionality because they
+	 * communicate with the front and back-ends of the program, therefore
+	 * they are given the {@link Controller} to use.
+	 * <p>
+	 * @param controller
+	 * @throws InterruptedException
+	 */
 	public void addListeners(Controller controller) throws InterruptedException
 	{
 		stopButton.addActionListener( new StopButtonListener(controller) );
@@ -356,7 +366,7 @@ public class GUI
 	 * This is done through a call to the {@link SwingUtilities},
 	 * which queues an update thread. This is needed for updates to
 	 * {@link JFrame} to be thread-safe.
-	 * 
+	 * <p>
 	 * @param maxTimeInSeconds the maximum value the slider has
 	 */
 	public void enableSlider()
@@ -378,7 +388,7 @@ public class GUI
 	 * This is done through a call to the {@link SwingUtilities},
 	 * which queues an update thread. This is needed for updates to
 	 * {@link JFrame} to be thread-safe.
-	 * 
+	 * <p>
 	 * @param maxTimeInSeconds the maximum value the slider has
 	 */
 	public void disableSlider()
@@ -400,6 +410,7 @@ public class GUI
 	 * This is done through a call to the {@link SwingUtilities},
 	 * which queues an update thread. This is needed for updates to
 	 * {@link JFrame} to be thread-safe.
+	 * <p>
 	 * @param time the current time
 	 */
 	public void updateTimer(final String time)
@@ -421,6 +432,7 @@ public class GUI
 	 * This is done through a call to the {@link SwingUtilities},
 	 * which queues an update thread. This is needed for updates to
 	 * {@link JFrame} to be thread-safe.
+	 * <p>
 	 * @param enabled
 	 */
 	public void setEnabledPlayerFrame(final boolean enabled )
@@ -438,7 +450,7 @@ public class GUI
 	
 	/**
 	 * Returns the {@link #visualizer} object.
-	 * 
+	 * <p>
 	 * @return the {@link #visualizer} object
 	 */
 	public ConcurrentVisualizer getVisualizer()
@@ -495,7 +507,7 @@ public class GUI
 	 * <p>
 	 * This is not a thread-safe call, when changing the object. However,
 	 * this object is only read, therefore it is okay.
-	 * 
+	 * <p>
 	 * @return the checkbox, which states if the playlist should repeat.
 	 */
 	public JCheckBox getLoopCheckBox()
@@ -509,6 +521,7 @@ public class GUI
 	 * This is done through a call to the {@link SwingUtilities},
 	 * which queues an update thread. This is needed for updates to
 	 * {@link JFrame} to be thread-safe.
+	 * <p>
 	 * @param isSelected true to select the {@link #playPauseButton}, false to deselect
 	 */
 	public void setSelectedJToggleButton(final boolean isSelected )
@@ -530,6 +543,7 @@ public class GUI
 	 * This is done through a call to the {@link SwingUtilities},
 	 * which queues an update thread. This is needed for updates to
 	 * {@link JFrame} to be thread-safe.
+	 * <p>
 	 * @param text the text to update the {@link GUI#playPauseButton}
 	 */
 	public void setTextJToggleButton(final String text )
@@ -547,7 +561,7 @@ public class GUI
 	
 	/**
 	 * Returns the object, which represents the playlist.
-	 * 
+	 * <p>
 	 * @return {@link #playList}
 	 */
 	public JList getPlaylist()
@@ -558,7 +572,7 @@ public class GUI
 	/**
 	 * Updates the total time displayed. This does not update the {@link #frame}.
 	 * To update the {@link #frame}, call {@link #updateTimer(String)}.
-	 * 
+	 * <p>
 	 * @param time the total time
 	 */
 	public void updateTotalTime( String time )

@@ -5,6 +5,15 @@ import java.awt.event.MouseListener;
 
 import controller.Controller;
 
+/**
+ * This class is used to select the colour scheme used by the visualiser.
+ * <p>
+ * At the moment it is not used; however, the functionality exists if it were
+ * chosen to be implemented.
+ * <p>
+ * @author Michael Pouris
+ *
+ */
 public class ChangeColourPaletteListener implements MouseListener
 {
 	//private Controller controller;

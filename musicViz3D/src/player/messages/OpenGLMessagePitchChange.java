@@ -14,6 +14,14 @@ public class OpenGLMessagePitchChange extends OpenGLMessage
 	private int channel;
 	private int rangeOfPitchValues;
 	
+	/**
+	 * Creates a new pitch bend message with the given pitch change offset
+	 * for the specific channel and the range of pitches allowed in the channel.
+	 * <p>
+	 * @param offset the offset to bend all pipes in the channel
+	 * @param channel the channel that the pitch bend is dedicated to
+	 * @param rangeOfPitchValues the range of pitch values allowed for the channel
+	 */
 	public OpenGLMessagePitchChange( double offset, int channel, int rangeOfPitchValues)
 	{
 		this.messageType = PITCHCHANGES;
@@ -22,16 +30,31 @@ public class OpenGLMessagePitchChange extends OpenGLMessage
 		this.rangeOfPitchValues = rangeOfPitchValues;
 	}
 	
+	/**
+	 * Returns the pitch offset.
+	 * 
+	 * @return The pitch offset
+	 */
 	public double getOffset()
 	{
 		return offset;
 	}
 	
+	/**
+	 * Returns the channel the message is meant for.
+	 * 
+	 * @return the channel the message affects
+	 */
 	public int getChannel()
 	{
 		return channel;
 	}
 	
+	/**
+	 * Returns the range of pitch values for a specific channel
+	 * 
+	 * @return the range of pitch channels for a channel
+	 */
 	public int getRangeOfPitchValues()
 	{
 		return rangeOfPitchValues;

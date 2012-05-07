@@ -3,7 +3,7 @@ package utilities;
 import java.io.File;
 
 /**
- * This class cannot be instantiated, its a static class with certain utilities for the programmer
+ * This class does not need be instantiated, its a static class with certain utilities for the programmer
  * 
  * @author Michael Pouris
  *

@@ -67,50 +67,10 @@ public class SlideMouseListener implements MouseListener, MouseMotionListener
 	
 	public void mouseReleased(MouseEvent e) 
 	{	
-		//long theTickWhereBeatWasChanged = 0;
-		
 		Player player = controller.getPlayer();
 		
 		//When mouse is released, the song position is set
 		player.setPosition( slider.getValue() );
-		
-		//When the beat changes, the ticks are converted to microseconds based on the tick where the last beat change was done.
-		//Therefore, in order to keep my manual calculations correct, I have to find the interval where the new time is in so I can
-		//use the proper interval for calculations. 
-		/*
-		 * Calculation is: 
-		 * 60*(currentTickPlayer - tickWhereBeatChangeOccured)/BPM/Resolution + timeWhereLastBeatChanged
-		 * 
-		 * This is all done by Delta time.We are setting the timeWhereLastBeatChanged and tickWhereBeatChangeOccured
-		 */
-		//The current tick that we use to figure out where the last beat change was, in order to do calculation properly. The Slider
-		//was just changed to this value. 
-		/*long currentTick = player.getCurrentTickPositionOfSong();
-		//<Tick>,<BPM> = at variable <tick> the beat changed to <BPM>
-		TreeMap<Long, Float> ticksWhereBeatChanged = player.getTicksWithBPMChanges();//controller.getTicksWithBPMChanges();
-		Object ticks[] = ticksWhereBeatChanged.keySet().toArray();
-		double theTimeWhereTheBeatChanged = 0;
-		for( int i = 0; i < ticks.length; i++ )
-		{
-			if( i + 1 < ticks.length )
-			{
-				if( currentTick >= (Long)ticks[i] && currentTick < (Long)ticks[i+1] )
-				{
-					theTickWhereBeatWasChanged = (Long)ticks[i];
-					theTimeWhereTheBeatChanged = player.getTicksWithBPMChangesToTime().get(theTickWhereBeatWasChanged);
-					break;
-				}
-			}
-			else
-			{
-				theTickWhereBeatWasChanged = (Long)ticks[i];
-				theTimeWhereTheBeatChanged = player.getTicksWithBPMChangesToTime().get(theTickWhereBeatWasChanged);
-				break;
-			}
-		}
-		//player.setLastTick(theTickWhereBeatWasChanged);
-		//player.setLastTimeInSeconds(theTimeWhereTheBeatChanged);
-		player.setLastBPMChangeData(theTickWhereBeatWasChanged, theTimeWhereTheBeatChanged);*/
 		
 		//Only start the song again, if the song was playing before the user changed position
 		if( isRunning )

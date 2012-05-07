@@ -26,6 +26,11 @@ public class Song extends File implements Transferable
 	private static DataFlavor songFlavor = new DataFlavor(Song.class,"Personal Song Object");
 	public static DataFlavor[] supportedFlavors = { songFlavor };
  	
+	/**
+	 * Creates a new song with the given file path.
+	 * 
+	 * @param pathname
+	 */
 	public Song(String pathname) 
 	{
 		super(pathname);
@@ -33,6 +38,11 @@ public class Song extends File implements Transferable
 		index = 0;
 	}
 	
+	/**
+	 * Creates a new song from a file.
+	 * 
+	 * @param song
+	 */
 	public Song( File song )
 	{
 		super( song.toString() );
@@ -40,6 +50,13 @@ public class Song extends File implements Transferable
 		index = 0;
 	}
 	
+	/**
+	 * Creates a new song object from the given file path and sets
+	 * the file as playing or not.
+	 * 
+	 * @param pathname
+	 * @param isPlaying
+	 */
 	public Song(String pathname, boolean isPlaying)
 	{
 		super(pathname);
@@ -105,7 +122,6 @@ public class Song extends File implements Transferable
 		{
 			list.add(this);
 			return list;
-			//return this;
 		}
 		else
 		{

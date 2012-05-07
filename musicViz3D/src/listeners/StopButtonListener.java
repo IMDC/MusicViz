@@ -7,6 +7,12 @@ import controller.Controller;
 import gui.GUI;
 import player.Player;
 
+/**
+ * This class stops the MIDI player.
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class StopButtonListener implements ActionListener 
 {
 	private Controller controller;

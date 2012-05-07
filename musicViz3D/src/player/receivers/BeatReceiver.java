@@ -27,6 +27,10 @@ import controller.Controller;
  * slow down the sound thread and therefore cause bugs. Therefore this class
  * is also a thread. 
  * <p>
+ * The {@link #send(MidiMessage, long)} method adds every {@link MidiMessage} into
+ * a {@link ConcurrentLinkedQueue}. This allows the other Thread, the processing
+ * thread, to take over.
+ * <p>
  * As {@link #send(MidiMessage, long)} receives the messages, they are automatically
  * added into {@link ConcurrentLinkedQueue}, which allows for more than one thread to
  * safely add and remove from the queue. Therefore the java sound thread can add all
@@ -45,6 +49,7 @@ public class BeatReceiver extends Thread implements Receiver
 	
 	/**
 	 * Initialises the object.
+	 * <p>
 	 * @param controller
 	 */
 	public BeatReceiver( Controller controller )
@@ -85,6 +90,9 @@ public class BeatReceiver extends Thread implements Receiver
 	/**
 	 * This method is the thread that dequeues the {@link #handOffQueue}, and processes
 	 * the MIDI messages without doing any processing on the sound thread.
+	 * <p>
+	 * This is a separate thread that is always running and waits for a message to be 
+	 * added into the queue, therefore not wasting CPU time.
 	 */
 	public void run()
 	{

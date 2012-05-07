@@ -19,11 +19,11 @@ import controller.Controller;
  * the volume into 2 constructs: volume for the pipes and volume for the drums.
  * Therefore the user can play with the volume pertaining to the pipes and
  * alter the volume for the drums.
- * 
+ * <p>
  * This class initializes the JFrame that holds the volume sliders and hides
  * them whenever the user does not want to see it. When the use clicks to open
  * the volume controls, the JFrame is displayed.
- * 
+ * <p>
  * @author Michael Pouris
  *
  */
@@ -38,6 +38,14 @@ public class ChangeVolumeListener implements MouseListener
 	private JSlider beatVolChanger;
 	private Font font1;
 	
+	/**
+	 * Initialises the object.
+	 * <p>
+	 * Creates the window, which contains the controls. It is hidden when the user
+	 * closes it and shown when the user opens the window.
+	 * <p>
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 */
 	public ChangeVolumeListener( final Controller controller )
 	{
 		
@@ -105,27 +113,9 @@ public class ChangeVolumeListener implements MouseListener
 		this.volumeChangeFrame.setVisible(false);
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) 
-	{
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) 
-	{	
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) 
-	{	
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) 
-	{	
-	}
-
-	@Override
+	/**
+	 * When the object is clicked, the window is displayed.
+	 */
 	public void mouseReleased(MouseEvent e) 
 	{
 		//Display the frame that displays the volume controls.
@@ -133,4 +123,16 @@ public class ChangeVolumeListener implements MouseListener
 		//prevents the recycling of frames.
 		volumeChangeFrame.setVisible(true);
 	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
+
+	@Override
+	public void mousePressed(MouseEvent e) {}
 }

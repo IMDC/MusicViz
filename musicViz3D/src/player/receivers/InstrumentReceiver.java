@@ -78,6 +78,9 @@ public class InstrumentReceiver extends Thread implements Receiver
 	/**
 	 * This method is the thread that dequeues the {@link #handOffQueue}, and processes
 	 * the MIDI messages without doing any processing on the sound thread.
+	 * <p>
+	 * This is a separate thread that is always running and waits for a message to be 
+	 * added into the queue, therefore not wasting CPU time.
 	 */
 	public void run()
 	{

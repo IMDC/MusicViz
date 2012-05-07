@@ -2,6 +2,16 @@ package player;
 
 import javax.sound.midi.MidiEvent;
 
+/**
+ * This class represents a MIDI note. This converts a MIDI
+ * signal into an object.
+ * <p>
+ * This class is not used at the moment; however, may prove to
+ * be useful in the future for further revisions.
+ * <p>
+ * @author Michael Pouris
+ *
+ */
 public class Note implements Comparable<Note>
 {
 	private int channel = -100;

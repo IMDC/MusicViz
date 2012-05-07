@@ -14,7 +14,8 @@ import player.Song;
 import utilities.Utils;
 
 /**
- * Class acts as a listener for the menu item: openMidiItem.
+ * An implementation of selecting a single MIDI song to add to
+ * the playlist. Please see {@link GUI} for this class's use.
  * 
  * @author Michael Pouris
  *
@@ -24,6 +25,11 @@ public class AddMidiSongMouseListener implements MouseListener
 	private Controller controller;
 	private  JFileChooser chooser;
 	
+	/**
+	 * Creates a file chooser without displaying it.
+	 * 
+	 * @param controller
+	 */
 	public AddMidiSongMouseListener( Controller controller )
 	{
 		chooser = new JFileChooser(); 
@@ -31,6 +37,10 @@ public class AddMidiSongMouseListener implements MouseListener
 		this.controller = controller;
 	}
 	
+	/**
+	 * When the item is clicked and the mouse is released, this method asks the user
+	 * to search through their file system for a MIDI file to load into the program.
+	 */
 	public void mouseReleased(MouseEvent event)
 	{
 		Song song = null;

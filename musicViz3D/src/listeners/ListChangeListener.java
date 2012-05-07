@@ -30,6 +30,7 @@ import player.Song;
  *  The problem occurrs when two of the same songs exsist. In the example above, if each song didnt keep track of it's own
  *  index, then the player wouldnt know if it should load the last song or the second. This class over comes that problem.
  *  
+ *  @author Michael Pouris
  */
 public class ListChangeListener implements ListSelectionListener
 {
@@ -37,6 +38,12 @@ public class ListChangeListener implements ListSelectionListener
 	private DefaultListModel dlm;
 	private Controller controller;
 	
+	/**
+	 * Creates a new {@link java.awt.event.ActionListener} that can communicate through
+	 * the intermediary {@link Controller} with both the front-end and back-end.
+	 * 
+	 * @param controller controller allowing the listener to communicate with the back-end and front-end
+	 */
 	public ListChangeListener(Controller controller)
 	{
 		this.controller = controller;

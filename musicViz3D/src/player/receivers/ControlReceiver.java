@@ -1,5 +1,6 @@
 package player.receivers;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.sound.midi.MidiMessage;
@@ -15,7 +16,11 @@ import controller.Controller;
  * This class receives all MIDI notes played; however, it only
  * processes MIDI ticks in order to keep track of the time using
  * the JSlider.
- * 
+ * <p>
+ * The {@link #send(MidiMessage, long)} method adds every {@link MidiMessage} into
+ * a {@link ConcurrentLinkedQueue}. This allows the other Thread, the processing
+ * thread to take over.
+ * <p>
  * @author Michael Pouris
  *
  */
@@ -44,17 +49,6 @@ public class ControlReceiver extends Thread implements Receiver
 	 */
 	public void send(MidiMessage message, long timeStamp)
 	{
-	    /*int seconds = Utils.microSecondsToSeconds(sequencer.getMicrosecondPosition());
-		if( (seconds - this.timeTracker) > 0 )
-		{
-			this.controller.getGUI().setCurrentValueForSlider(seconds);
-		    this.controller.getGUI().updateTimer(Utils.secondsToTime(seconds));
-		    this.timeTracker = seconds;
-		}
-		else if( (seconds - this.timeTracker ) < 0 )
-		{
-			this.timeTracker = seconds;
-		}*/
 		try 
 		{
 			this.handOffQueue.put(message);
@@ -67,6 +61,13 @@ public class ControlReceiver extends Thread implements Receiver
 		}
 	}
 	
+	/**
+	 * This method is the thread that dequeues the {@link #handOffQueue}, and processes
+	 * the MIDI messages without doing any processing on the sound thread.
+	 * <p>
+	 * This is a separate thread that is always running and waits for a message to be 
+	 * added into the queue, therefore not wasting CPU time.
+	 */
 	public void run()
 	{
 		while( true )

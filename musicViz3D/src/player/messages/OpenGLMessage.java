@@ -26,6 +26,11 @@ public class OpenGLMessage
 	
 	protected int messageType;
 	
+	/**
+	 * Returns the message type.
+	 * 
+	 * @return representing the message type
+	 */
 	public int getMessage()
 	{
 		return messageType;

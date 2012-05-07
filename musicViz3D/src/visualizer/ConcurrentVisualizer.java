@@ -36,7 +36,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 {
 	public static final int MAX_CHANNELS = 16;
 	public static final int MAX_BEAT_PIPES = 5;
-	public static final int MAX_PIPES_PER_CHANNEL = 2;//3;
+	public static final int MAX_PIPES_PER_CHANNEL = 2;
 	public static final int FLOATS_USED_PER_3D_POINT = 3;
 	public static final int FLOATS_USED_PER_COLOUR = 4;
 	public static final float MIN_SIZE_FOR_RADIUS = 1;
@@ -51,7 +51,6 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	
 	private ConcurrentPipe[][] pipes;
 	private Beat[] beats;
-	//private int[] pipesToUse;
 	private ConcurrentHashMap<Integer, Boolean> pipesToUse;
 	
 	private float[][] beatColours = {{1,0,0,1},{0,1,0,1},{0,0,1,1},{0,1,1,1},{1,1,0,1}};
@@ -63,7 +62,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 			};
 	
 	//Setting up the lights: the light position
-	private float lightPosition0[] = {30,0,-30,1};//{30,60,10,1};//{-200,50,200};//{100,75,200,1};
+	private float lightPosition0[] = {30,0,-30,1};
     private float[] lightAmbient0 = {0.1f,0.1f,0.1f,1.0f};
     private float[] lightDiffuse0 = {1.0f,1.0f,1.0f,1.0f};
     
@@ -78,13 +77,11 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	private float[][][] lastCoorindates;
 	private float[][] lastDimensions;
 	
-	//public HashMap<Integer, LinkedList<OpenGLMessage>> messageQueue;
 	public ConcurrentHashMap<Integer, ConcurrentLinkedQueue<OpenGLMessage>> concurrentMessageQueue;
 	private AtomicBoolean[] activatedBeat;
 
 	public ConcurrentVisualizer()
 	{
-		//this.messageQueue = new HashMap<Integer, LinkedList<OpenGLMessage>>();
 		this.concurrentMessageQueue = new ConcurrentHashMap<Integer, ConcurrentLinkedQueue<OpenGLMessage>>();
 		this.activatedBeat = new AtomicBoolean[MAX_BEAT_PIPES];
 		for( int i = 0; i < MAX_BEAT_PIPES; i++  )
@@ -116,12 +113,9 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		
 		for( int i = 0; i < MAX_CHANNELS; i++ )
 		{
-			//this.messageQueue.put(i, new LinkedList<OpenGLMessage>());
 			this.concurrentMessageQueue.put(i, new ConcurrentLinkedQueue<OpenGLMessage>() );
 		}
 		
-		//this.pipesToUse = new int[1];
-		//this.pipesToUse[0] = 0;
 		this.pipesToUse = new ConcurrentHashMap<Integer, Boolean>(2, 0.9f, 2);
 	}
 	
@@ -130,7 +124,6 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		final GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
-        //timer.update();
 
         camera.update();
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, lightEmissiveMaterial, 0);
@@ -158,30 +151,26 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		{
 			for( int i = 0; i < 10; i++ )
 			{
-				for( int j = 0; j < 16; j++ )
+				for( int j = 0; j < MAX_CHANNELS; j++ )
 				{
-					 ConcurrentLinkedQueue<OpenGLMessage> queue = concurrentMessageQueue.get(j);
-					    //if( queue.peek() != null )
-					    //{
-					    	
-					    	OpenGLMessage message = queue.poll();
-					    	if(message == null )
-					    	{
-					    		continue;
-					    	}
-					    	if( message.getMessage() == OpenGLMessage.NOTEON  || message.getMessage() == OpenGLMessage.NOTEOFF )
-					    	{
-					    		processTones((OpenGLMessageTonal)message );
-					    	}
-					    	else if( message.getMessage() == OpenGLMessage.BEAT )
-					    	{
-					    		activatedBeat[((OpenGLMessageBeat)message).getPipe()].set(true);
-					    	}
-					    	else if( message.getMessage() == OpenGLMessage.PITCHCHANGES )
-					    	{
-					    		processPitchChanges( (OpenGLMessagePitchChange)message );
-					    	}
-					    //}
+					ConcurrentLinkedQueue<OpenGLMessage> queue = concurrentMessageQueue.get(j);
+					OpenGLMessage message = queue.poll();
+				    if(message == null )
+				    {
+				    	continue;
+				    }
+				   if( message.getMessage() == OpenGLMessage.NOTEON  || message.getMessage() == OpenGLMessage.NOTEOFF )
+				   {
+					   processTones((OpenGLMessageTonal)message );
+				   }
+				   else if( message.getMessage() == OpenGLMessage.BEAT )
+				   {
+					   activatedBeat[((OpenGLMessageBeat)message).getPipe()].set(true);
+				   }
+				   else if( message.getMessage() == OpenGLMessage.PITCHCHANGES )
+				   {
+					   processPitchChanges( (OpenGLMessagePitchChange)message );
+				   }
 				}
 			}
 			
@@ -265,7 +254,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 			//Must set the firstFaceData in order for the pipe to show the animations.
 			p.getPositionAnimationList().add(newFace);
 			p.getAlphaAnimationList().add(alpha);
-			p.setFirstFaceData(0);//(xAndY);
+			p.setFirstFaceData(0);
 		}
 	}
 	
@@ -340,9 +329,6 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	    gl.glEnable(GL.GL_CULL_FACE);
 	    gl.glCullFace(GL.GL_BACK);
         
-	    //gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_EMISSION, emissiveLight0, 0);
-	    //gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, specularMaterial, 0);
-	    //gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL2.GL_SHININESS, 90.0f);
 	    gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_AMBIENT, brassAmbientMaterial,0);
 	    gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE, brassDiffuseMaterial,0);
 	    gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, brassSpecularMaterial,0);
@@ -386,7 +372,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		initialPosition[0] = 0;
 		initialPosition[1] = 0;
 		initialPosition[2] = 0;
-		//int positions[] = {-80,-40,-160,0,-120};
+
 		int positions[] = {-130,-60,-240,0,-200};
 		int sizes[] = {250,33,15,15,33};
 		int iSizes[] = {235,20,11,11,22};
@@ -396,9 +382,6 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 			initialPosition[0] = positions[i];
 			beats[i] = new Beat(initialPosition, beatColours[i], amountOfSections, sizes[i],iSizes[i]);
 		}
-		
-		
-		//timer = new FPSTimer();
 	}
 	
 	/**
@@ -435,20 +418,12 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	}
 	
 	/**
-	 * This method is not thread safe, in the sense that
-	 * it will block another thread from using it until
-	 * the current thread is finished. Therefore the 
-	 * access must be handled by the designer. One way
-	 * of handling accessing this method is to pause
-	 * the animator first before calling this method.
-	 * THis is done to ensure only one thread accesses this at a time.
+	 * Sets the channels to animate.
 	 * 
 	 * @param pipesToUse
 	 */
 	public void setChannelsUsed(int[] pipesToUse)
 	{
-		//this.pipesToUse = pipesToUse.clone();
-		//this.pipesToUse.clear();
 		for( int i = 0; i < 16; i++ )
 		{
 			this.pipesToUse.remove(i);
@@ -504,11 +479,7 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	}
 
 	/**
-	 * This method is not threads safe and will not lock certain threads that
-	 * need concurrent access to the data structure. As long as the thread that
-	 * needs the pipes[][] pauses the Visualizer's animator. This will ensure that
-	 * only one thread will access the pipes at a time. The method
-	 * clears the animation lists for the pipes.
+	 * Resets the animation
 	 */
 	public void resetVisualizer()
 	{
@@ -531,11 +502,6 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		camera.setZoom( 10 * e.getWheelRotation() );
 	}
 	
-	/*
-	 * These methods are not used for the time being.
-	 * (non-Javadoc)
-	 * @see javax.media.opengl.GLEventListener#dispose(javax.media.opengl.GLAutoDrawable)
-	 */
 	public void dispose(GLAutoDrawable drawable){}
 	public void keyReleased(KeyEvent e){}
 	public void keyTyped(KeyEvent e){}

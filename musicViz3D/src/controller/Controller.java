@@ -21,17 +21,33 @@ public class Controller
 	private Player player; 
 	private GUI gui;
 	
+	/**
+	 * Sets the front-end and back-end of the program.
+	 * 
+	 * @param player
+	 * @param gui
+	 */
 	public void initController( Player player, GUI gui )
 	{
 		this.player = player;
 		this.gui = gui;
 	}
 	
+	/**
+	 * Returns the back-end MIDI player.
+	 * 
+	 * @return the MIDI player
+	 */
 	public Player getPlayer()
 	{
 		return player;
 	}
 	
+	/**
+	 * Returns the front-end GUIs.
+	 * 
+	 * @return the GUI
+	 */
 	public GUI getGUI()
 	{
 		return gui;

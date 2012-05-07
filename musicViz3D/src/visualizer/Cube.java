@@ -2,7 +2,14 @@ package visualizer;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
-
+/**
+ * A simple class to draw a cube that can be textured and lighted.
+ * <p>
+ * This is used for testing and trouble shooting purposes.
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class Cube
 {
 	public static void draw( GLAutoDrawable gLDrawable, float size )

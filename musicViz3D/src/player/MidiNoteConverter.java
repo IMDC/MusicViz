@@ -1,5 +1,11 @@
 package player;
 
+/**
+ * Converts a MIDI note to a musical note.
+ * 
+ * @author Michael Pouris
+ *
+ */
 public class MidiNoteConverter 
 {
 	/**
