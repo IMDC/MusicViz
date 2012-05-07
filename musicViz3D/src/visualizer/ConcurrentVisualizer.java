@@ -145,6 +145,17 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	    }
 	}
 
+	/**
+	 * Considering the JOGL system runs the OpenGL thread on the EventDispatch thread, 
+	 * any calculations will slow the whole system down. The solution to this problem
+	 * is the same solution used with the receivers, where a thread is created that
+	 * handles the processing therefore to keep the GUI speed.
+	 * 
+	 * @see player.receivers.BeatReceiver
+	 * @see player.receivers.ControlReceiver
+	 * @see player.receivers.InstrumentReceiver
+	 * @see player.receivers.PitchReceiver
+	 */
 	public void run()
 	{
 		while(true)
@@ -185,6 +196,12 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		}
 	}
 	
+	/**
+	 * Processes all tonal messages {@link OpenGLMessageTonal} and creates
+	 * the proper animations.
+	 * <p>
+	 * @param message the message to process
+	 */
 	private void processTones( OpenGLMessageTonal message )
 	{
 		int channel = message.getChannel();
