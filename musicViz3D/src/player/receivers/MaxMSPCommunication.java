@@ -254,7 +254,15 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		{
 			channel = message.getStatus() - 144;
 			m = message.getMessage();
-			this.sendMessage( midiToMaxMappings.get(channel), midiNoteToFreq(m[1] & 0xFF), m[2] & 0xFF);
+			if(( m[2] & 0xFF) == 0 )
+			{
+				this.sendMessage( midiToMaxMappings.get(channel), midiNoteToFreq(m[1] & 0xFF), m[2] & 0xFF);
+			}
+			else
+			{
+				this.sendMessage( midiToMaxMappings.get(channel), midiNoteToFreq(m[1] & 0xFF), 127);
+			}
+			//this.sendMessage( midiToMaxMappings.get(channel), midiNoteToFreq(m[1] & 0xFF), m[2] & 0xFF);
 		}
 	}
 	
@@ -281,8 +289,15 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		{
 			m = message.getMessage();
 			int drum = BeatProcessor.getCorrespondingPipeFromNote(m[1] & 0xFF);
-			
-			this.sendMessage(midiBeatToMaxMappings.get(drum),midiBeatToFreq(m[1] & 0xFF), m[2] & 0xFF);
+			if( (m[2] & 0xff) == 0 )
+			{
+				this.sendMessage(midiBeatToMaxMappings.get(drum),midiBeatToFreq(m[1] & 0xFF), 0);
+			}
+			else
+			{
+				this.sendMessage(midiBeatToMaxMappings.get(drum),midiBeatToFreq(m[1] & 0xFF), 127);
+			}
+			//this.sendMessage(midiBeatToMaxMappings.get(drum),midiBeatToFreq(m[1] & 0xFF), m[2] & 0xFF);
 		}
 	}
 	
@@ -415,11 +430,43 @@ public class MaxMSPCommunication extends Thread implements Receiver
 	 */
 	private int midiNoteToFreq( int note )
 	{
-		int freq;
+		/*int freq;
 		
 		freq = note*800/127;
 		
-		return freq;
+		return freq;*/
+		int newValue = 50;
+		int oldMax, oldMin;
+		int newMax, newMin;
+		int oldRange, newRange;
+		if( note >= 0 && note <= 33 )
+		{
+			oldMax = 33;  oldMin = 0;
+			newMax = 149; newMin = 0;
+			oldRange = (oldMax - oldMin);
+			newRange = (newMax - newMin);
+			newValue = (((note - oldMin) * newRange) / oldRange) + newMin;
+		}
+		else if( note >= 34 && note <= 94 )
+		{
+			
+			oldMax = 94;  oldMin = 34;
+			newMax = 275; newMin = 150;
+			oldRange = (oldMax - oldMin);
+			newRange = (newMax - newMin);
+			newValue = (((note - oldMin) * newRange) / oldRange) + newMin;
+		}
+		else if( note >= 95 && note <= 127 )
+		{
+			
+			oldMax = 127;  oldMin = 95;
+			newMax = 350; newMin = 276;
+			oldRange = (oldMax - oldMin);
+			newRange = (newMax - newMin);
+			newValue = (((note - oldMin) * newRange) / oldRange) + newMin;
+		}
+		return newValue;
+		
 	}
 	
 	/**
@@ -432,7 +479,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 	private int midiBeatToFreq( int drumNote )
 	{
 		int oldMax = 47,  oldMin = 34;
-		int newMax = 200, newMin = 100;
+		int newMax = 290, newMin = 180;
 		int oldRange = (oldMax - oldMin);
 		int newRange = (newMax - newMin);
 		int newValue = (((drumNote - oldMin) * newRange) / oldRange) + newMin;
