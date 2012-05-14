@@ -310,6 +310,7 @@ public class GUI
 	    						}).start();
 	    			}
 	    		});
+	    visualizer.setDaemon(true);
 	    ((Thread) visualizer).start();
 	    animator.start();
 	    System.out.println("Concurrent Visualizer Initialized Correctly");

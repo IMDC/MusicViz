@@ -77,14 +77,21 @@ public class Player
 	 * @throws InvalidMidiDataException the MIDI soundbank cannot be loaded from file
 	 * @throws IOException the MIDI soundbank cannot be read because of an IO error
 	 */
-	public Player() throws MidiUnavailableException, InvalidMidiDataException, IOException 
+	public Player() throws MidiUnavailableException, IOException 
 	{
 		//Get the MIDI sequencer without it attached to the default sound synthesizer
 		sequencer = MidiSystem.getSequencer(false);
 		synthesizer = MidiSystem.getSynthesizer();
 		
 		//Get the synthesizer and load a default sound bank from file
-		synthesizer.loadAllInstruments(MidiSystem.getSoundbank(new File("soundbank-deluxe.gm")));
+		try 
+		{
+			synthesizer.loadAllInstruments(MidiSystem.getSoundbank(new File("soundbank-deluxe.gm")));
+		} 
+		catch (InvalidMidiDataException e)
+		{
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the soundbank.\n The program will run but there might not be sound.");
+		}
 		
 		//Get 5 transmitters from the sequencer. These will transmit
 		//MIDI messages in real-time as the sequencer plays them
@@ -133,10 +140,19 @@ public class Player
 		maxTransmitter.setReceiver(maxReceiver);
 		
 		//the thread method processes the midi notes as to note overload the sequencer.
+		instrumentReceiver.setDaemon(true);
 		( (Thread) instrumentReceiver).start();
+		
+		beatReceiver.setDaemon(true);
 		( (Thread) beatReceiver).start();
+		
+		pitchReceiver.setDaemon(true);
 		( (Thread) pitchReceiver).start();
+		
+		maxReceiver.setDaemon(true);
 		( (Thread) maxReceiver ).start();
+		
+		controlReceiver.setDaemon(true);
 		( (Thread) controlReceiver ).start();
 		
 		sequencer.addMetaEventListener( new MidiMetaEventListener(controller ));
