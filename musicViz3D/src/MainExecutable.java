@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.net.UnknownHostException;
 
 import gui.GUI;
 
@@ -52,7 +52,7 @@ public class MainExecutable
 		catch (InterruptedException e)
 		{
 			JOptionPane.showMessageDialog(null, "Could not initialize the GUI\n");
-			//System.exit(1);
+			System.exit(1);
 		} 
 		catch (MidiUnavailableException e)
 		{
@@ -61,17 +61,12 @@ public class MainExecutable
 					"and restart the program. If you are in Windows7, " +
 					"please plug in speakers or headphones because windows "+ 
 					"thinks there is no sound card on your machine until you do so.");
-			//System.exit(1);
+			System.exit(1);
 		} 
-		/*catch (InvalidMidiDataException e)
+		catch (UnknownHostException e)
 		{
-			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the midi data.");
-			//System.exit(1);
-		}*/
-		catch (IOException e)
-		{
-			JOptionPane.showMessageDialog(null, "Cannot load soundbank because the file cannot be open or read.");
-			//System.exit(1);
+			JOptionPane.showMessageDialog(null, "LocalHost Could not be Found. There might be a broader issue therefore the program will not run.\n");
+			System.exit(1);
 		}
 	}
 }

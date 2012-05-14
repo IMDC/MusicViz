@@ -101,8 +101,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 	private AtomicBoolean sendBeats;
 	private AtomicBoolean sendInstruments;
 	
-	public MaxMSPCommunication() 
-			throws UnknownHostException, SocketException
+	public MaxMSPCommunication() throws UnknownHostException 
 	{
 		this.address = InetAddress.getByName("localhost");
 		this.sender = new AtomicReference<OSCPortOut>(null);
@@ -202,7 +201,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			} 
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				System.err.println("The socket cannot be written to.");
 			}
 		}
 	}
@@ -262,7 +261,6 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			{
 				this.sendMessage( midiToMaxMappings.get(channel), midiNoteToFreq(m[1] & 0xFF), 127);
 			}
-			//this.sendMessage( midiToMaxMappings.get(channel), midiNoteToFreq(m[1] & 0xFF), m[2] & 0xFF);
 		}
 	}
 	
@@ -297,7 +295,6 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			{
 				this.sendMessage(midiBeatToMaxMappings.get(drum),midiBeatToFreq(m[1] & 0xFF), 127);
 			}
-			//this.sendMessage(midiBeatToMaxMappings.get(drum),midiBeatToFreq(m[1] & 0xFF), m[2] & 0xFF);
 		}
 	}
 	
@@ -334,17 +331,20 @@ public class MaxMSPCommunication extends Thread implements Receiver
 	/**
 	 * Resets the frequency and volume of each channel in MAX/MSP,
 	 * there are 8 channels. It sets all volumes and frequencies to 0.
+	 * @throws IOException 
 	 */
 	public synchronized void resetMaxMSP()
 	{		
-		for( int i = 0; i < 8; i++ )
+		try
 		{
-			try {
+			for( int i = 0; i < 8; i++ )
+			{
 				this.sendMessage(i, 0, 0);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		}
+		catch( IOException e )
+		{
+			System.err.println("Cannot reset the MAX/MSP because the socket I/O is not working.");
 		}
 	}
 	

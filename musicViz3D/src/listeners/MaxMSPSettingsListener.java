@@ -5,9 +5,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.SocketException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -64,7 +66,14 @@ public class MaxMSPSettingsListener implements MouseListener
 			{
 				if( e.getStateChange() == ItemEvent.SELECTED )
 				{
-					controller.getPlayer().enableMaxMSPCommunication();
+					try 
+					{
+						controller.getPlayer().enableMaxMSPCommunication();
+					} 
+					catch (SocketException e1)
+					{
+						JOptionPane.showMessageDialog(null, "Cannot enable the MaxMSP socket because of a SocketException");
+					}
 				}
 				else if( e.getStateChange() == ItemEvent.DESELECTED )
 				{

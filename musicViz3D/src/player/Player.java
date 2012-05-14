@@ -74,10 +74,8 @@ public class Player
 	 * for the initialisation of the receivers.
 	 * 
 	 * @throws MidiUnavailableException the MIDI seqencer is not available on your system
-	 * @throws InvalidMidiDataException the MIDI soundbank cannot be loaded from file
-	 * @throws IOException the MIDI soundbank cannot be read because of an IO error
 	 */
-	public Player() throws MidiUnavailableException, IOException 
+	public Player() throws MidiUnavailableException 
 	{
 		//Get the MIDI sequencer without it attached to the default sound synthesizer
 		sequencer = MidiSystem.getSequencer(false);
@@ -86,11 +84,16 @@ public class Player
 		//Get the synthesizer and load a default sound bank from file
 		try 
 		{
+			
 			synthesizer.loadAllInstruments(MidiSystem.getSoundbank(new File("soundbank-deluxe.gm")));
 		} 
 		catch (InvalidMidiDataException e)
 		{
-			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the soundbank.\n The program will run but there might not be sound.");
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the soundbank.\n The program will run but there might not be sound.\n This is a normal occurance with Java 7");
+		} 
+		catch (IOException e) 
+		{
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because the file cannot be open or read.\n The program will run but there might not be sound.\n This is a normal occurance with Java 7");
 		}
 		
 		//Get 5 transmitters from the sequencer. These will transmit
@@ -118,9 +121,8 @@ public class Player
 	 * @param controller
 	 * @throws MidiUnavailableException
 	 * @throws UnknownHostException
-	 * @throws SocketException
 	 */
-	public void init( Controller controller ) throws MidiUnavailableException, UnknownHostException, SocketException
+	public void init( Controller controller ) throws MidiUnavailableException, UnknownHostException
 	{
 		this.controller = controller;
 
@@ -378,17 +380,11 @@ public class Player
 	
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
+	 * @throws SocketException 
 	 */
-	public void enableMaxMSPCommunication()
+	public void enableMaxMSPCommunication() throws SocketException
 	{
-		try
-		{
-			this.maxReceiver.enableMaxMSPCommunication();
-		} 
-		catch (SocketException e) 
-		{
-			System.err.println("Cannot enable the MaxMSP socket because of a SocketException");
-		}
+		this.maxReceiver.enableMaxMSPCommunication();
 	}
 	
 	/**
