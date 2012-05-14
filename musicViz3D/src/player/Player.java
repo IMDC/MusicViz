@@ -81,21 +81,6 @@ public class Player
 		sequencer = MidiSystem.getSequencer(false);
 		synthesizer = MidiSystem.getSynthesizer();
 		
-		//Get the synthesizer and load a default sound bank from file
-		try 
-		{
-			
-			synthesizer.loadAllInstruments(MidiSystem.getSoundbank(new File("soundbank-deluxe.gm")));
-		} 
-		catch (InvalidMidiDataException e)
-		{
-			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the soundbank.\nThe program will run but there might not be sound.\n This is a normal occurance with Java 7. The program will function perfectly");
-		} 
-		catch (IOException e) 
-		{
-			JOptionPane.showMessageDialog(null, "Cannot load soundbank because the file cannot be open or read.\nThe program will run but there might not be sound.\n This is a normal occurance with Java 7. The program will function perfectly");
-		}
-		
 		//Get 5 transmitters from the sequencer. These will transmit
 		//MIDI messages in real-time as the sequencer plays them
 		instrumentTransmitter = sequencer.getTransmitter();
@@ -107,6 +92,20 @@ public class Player
 		
 		synthesizer.open();
 		sequencer.open();
+		
+		//Get the synthesizer and load a default sound bank from file
+		try 
+		{
+			synthesizer.loadAllInstruments(MidiSystem.getSoundbank(new File("soundbank-deluxe.gm")));
+		} 
+		catch (InvalidMidiDataException e)
+		{
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the soundbank.\nThe program will run but there might not be sound.\n This is a normal occurance with Java 7. The program will function perfectly");
+		} 
+		catch (IOException e) 
+		{
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because the file cannot be open or read.\nThe program will run but there might not be sound.\n This is a normal occurance with Java 7. The program will function perfectly");
+		}
 	}
 	
 	/**
