@@ -245,9 +245,8 @@ public class GUI
 	 * they are given the {@link Controller} to use.
 	 * <p>
 	 * @param controller
-	 * @throws InterruptedException
 	 */
-	public void addListeners(Controller controller) throws InterruptedException
+	public void addListeners(Controller controller)
 	{
 		stopButton.addActionListener( new StopButtonListener(controller) );
         

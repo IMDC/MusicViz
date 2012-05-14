@@ -197,7 +197,9 @@ public class MaxMSPCommunication extends Thread implements Receiver
 			}
 			catch (InterruptedException e)
 			{
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "MaxMSPCommunication::send. Could not place " +
+						"MidiMessage into LinkedBlockingQueue due to an interrupt exception." );
+				System.exit(0);
 			} 
 			catch (IOException e)
 			{

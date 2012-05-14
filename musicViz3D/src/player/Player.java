@@ -89,11 +89,11 @@ public class Player
 		} 
 		catch (InvalidMidiDataException e)
 		{
-			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the soundbank.\n The program will run but there might not be sound.\n This is a normal occurance with Java 7");
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because of a problem with the soundbank.\nThe program will run but there might not be sound.\n This is a normal occurance with Java 7. The program will function perfectly");
 		} 
 		catch (IOException e) 
 		{
-			JOptionPane.showMessageDialog(null, "Cannot load soundbank because the file cannot be open or read.\n The program will run but there might not be sound.\n This is a normal occurance with Java 7");
+			JOptionPane.showMessageDialog(null, "Cannot load soundbank because the file cannot be open or read.\nThe program will run but there might not be sound.\n This is a normal occurance with Java 7. The program will function perfectly");
 		}
 		
 		//Get 5 transmitters from the sequencer. These will transmit
