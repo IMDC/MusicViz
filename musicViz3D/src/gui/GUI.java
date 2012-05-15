@@ -35,11 +35,9 @@ import listeners.ChangeVolumeListener;
 import listeners.ListChangeListener;
 import listeners.ListKeyListener;
 import listeners.ListMouseListener;
-import listeners.LoadPlayListMouseListener;
 import listeners.LoopingCheckBoxListener;
 import listeners.MaxMSPSettingsListener;
 import listeners.PlayPauseToggleButtonActionListener;
-import listeners.SavePlaylistMouseListener;
 import listeners.SlideMouseListener;
 import listeners.SliderTimeChangeListener;
 import listeners.StopButtonListener;
@@ -79,8 +77,6 @@ public class GUI
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
 	private JMenu optionsMenu;
-	private JMenuItem saveMenuItem;
-	private JMenuItem loadMenuItem;
 	private JMenuItem openMidiItem;
 	private JMenuItem changeColourMenuItem;
 	private JMenuItem changeDisplayMenuItem;
@@ -201,8 +197,6 @@ public class GUI
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");   
         optionsMenu = new JMenu("Options");
-        saveMenuItem = new JMenuItem("Save Playlist");
-        loadMenuItem = new JMenuItem("Load Playlist");
         openMidiItem = new JMenuItem("Load Midi");
         changeColourMenuItem = new JMenuItem("Change Colours");
         changeDisplayMenuItem = new JMenuItem("Change Display");
@@ -211,9 +205,6 @@ public class GUI
         
         //Adds the menus to menus and to the frame
         fileMenu.add(openMidiItem);
-        fileMenu.addSeparator();
-        fileMenu.add(saveMenuItem);
-        fileMenu.add(loadMenuItem);
         optionsMenu.add(changeColourMenuItem);
         optionsMenu.add(changeDisplayMenuItem);
         optionsMenu.add(changeMaxMSPCommunication);
@@ -256,8 +247,8 @@ public class GUI
         playList.addListSelectionListener( new ListChangeListener(controller) );
         playList.setCellRenderer( new FileCellRenderer(controller) );
         
-        saveMenuItem.addMouseListener(new SavePlaylistMouseListener(controller));
-        loadMenuItem.addMouseListener( new LoadPlayListMouseListener(controller));
+        //saveMenuItem.addMouseListener(new SavePlaylistMouseListener(controller));
+        //loadMenuItem.addMouseListener( new LoadPlayListMouseListener(controller));
         
         openMidiItem.addMouseListener( new AddMidiSongMouseListener(controller) );
         playPauseButton.addActionListener( new PlayPauseToggleButtonActionListener(controller) );
