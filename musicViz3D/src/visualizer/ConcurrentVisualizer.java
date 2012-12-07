@@ -219,7 +219,8 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		ConcurrentPipe p = pipes[channel][pipe];
 		
 		//Calculate the alpha for the new face
-		alpha = 0.003937f*velocity +0.5f;
+		//alpha = 0.003937f*velocity +0.5f;
+		alpha = (0.5f/127f)*velocity + 0.5f;
 		
 		//Create a new position on the screen
 		relativeNoteOnGrid = 5.5f * (note - 64);
@@ -239,7 +240,8 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 		if( message.getMessage() == OpenGLMessageTonal.NOTEON )
 		{
 			//Calulate the size of the new face
-			xAndY = (0.03149f * (float) velocity + MIN_SIZE_FOR_RADIUS);
+			//xAndY = (0.03149f * (float) velocity + MIN_SIZE_FOR_RADIUS);
+			xAndY = (4f/127f)*velocity + MIN_SIZE_FOR_RADIUS;
 			
 			//lastLoomingPositionInChannelAndPipe[channel][pipe] = loomingPosition;
 			coordinates =  p.getInitialPlacement();
@@ -295,9 +297,9 @@ public class ConcurrentVisualizer extends Thread implements GLEventListener, Mou
 	{
 		//1. Set the pitch bends for that one channel
 		int channel = pitchMessage.getChannel();
-		double scale = (double)10/(double)(pitchMessage.getRangeOfPitchValues()/2);
+		double scale = (double)15/(double)(pitchMessage.getRangeOfPitchValues());
 		double pitchWheelValue =  scale * pitchMessage.getOffset();
-		pitchBends[channel] = (float)(pitchWheelValue*3.5);
+		pitchBends[channel] = (float)(pitchWheelValue);//*3.5);
 		
 		
 		//2. Apply same note for the channel affected

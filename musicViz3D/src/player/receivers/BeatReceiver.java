@@ -105,13 +105,13 @@ public class BeatReceiver extends Thread implements Receiver
 			{
 				message = handOffQueue.take();
 				
-				if( !this.playBeats.get() )
-				{
-					return;
-				}
+				//if( !this.playBeats.get() )
+				//{
+				//	return;
+				//}
 
 				//First check for note ons. There is no need to handle note offs
-				if ( message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 144) == 9 )
+				if ( this.playBeats.get() && message.getStatus() > 143 && message.getStatus() < 160 && (message.getStatus() - 144) == 9 )
 				{
 					m = message.getMessage();
 					OpenGLMessageBeat beat = beatProcessor.processBeat(m[1] & 0xff, m[2] & 0xff);

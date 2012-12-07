@@ -105,7 +105,7 @@ public class BeatProcessor
 	 */
 	public static int getCorrespondingPipeFromNote(int note)
 	{
-		int pipe = 3;
+		int pipe = 2;
 		
 		if( note == 35 || note == 36)
 		{

@@ -149,7 +149,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		this.midiBeatSimultaneous.put(0, 3);
 		this.midiBeatSimultaneous.put(1, 4);
 		this.midiBeatSimultaneous.put(2, 4);
-		this.midiBeatSimultaneous.put(3, 4);
+		this.midiBeatSimultaneous.put(3, 5);
 		this.midiBeatSimultaneous.put(4, 5);
 	}
 
@@ -444,7 +444,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		if( note >= 0 && note <= 33 )
 		{
 			oldMax = 33;  oldMin = 0;
-			newMax = 149; newMin = 0;
+			newMax = 174; newMin = 10;
 			oldRange = (oldMax - oldMin);
 			newRange = (newMax - newMin);
 			newValue = (((note - oldMin) * newRange) / oldRange) + newMin;
@@ -453,7 +453,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		{
 			
 			oldMax = 94;  oldMin = 34;
-			newMax = 275; newMin = 150;
+			newMax = 349; newMin = 175;
 			oldRange = (oldMax - oldMin);
 			newRange = (newMax - newMin);
 			newValue = (((note - oldMin) * newRange) / oldRange) + newMin;
@@ -462,7 +462,7 @@ public class MaxMSPCommunication extends Thread implements Receiver
 		{
 			
 			oldMax = 127;  oldMin = 95;
-			newMax = 350; newMin = 276;
+			newMax = 525; newMin = 350;
 			oldRange = (oldMax - oldMin);
 			newRange = (newMax - newMin);
 			newValue = (((note - oldMin) * newRange) / oldRange) + newMin;
