@@ -49,7 +49,7 @@ public class MidiMetaEventListener implements MetaEventListener
 			GUI gui = controller.getGUI();
 			
 			controller.getPlayer().allSoundOff();
-			controller.getPlayer().resetMaxMSPCommunication();
+			//controller.getPlayer().resetMaxMSPCommunication();
 			gui.getVisualizer().resetVisualizer();
 
 			//sets the first item as selected/

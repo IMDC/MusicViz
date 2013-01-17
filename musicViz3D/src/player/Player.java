@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -62,8 +63,8 @@ public class Player
 	private Transmitter pitchTransmitter;
 	private Transmitter synthTransmitter;
 	
-	private MaxMSPCommunication maxReceiver;
-	private Transmitter maxTransmitter;
+	//private MaxMSPCommunication maxReceiver;
+	//private Transmitter maxTransmitter;
 	
 	private Synthesizer synthesizer;
 	
@@ -89,7 +90,7 @@ public class Player
 		controlTransmitter = sequencer.getTransmitter();
 		pitchTransmitter = sequencer.getTransmitter();
 		synthTransmitter = sequencer.getTransmitter();
-		maxTransmitter = sequencer.getTransmitter();
+		//maxTransmitter = sequencer.getTransmitter();
 		
 		synthesizer.open();
 		sequencer.open();
@@ -135,7 +136,7 @@ public class Player
 		instrumentReceiver = new InstrumentReceiver(controller);
 		controlReceiver = new ControlReceiver(controller, sequencer);
 		pitchReceiver = new PitchReceiver(controller);
-		maxReceiver = new MaxMSPCommunication();
+		//maxReceiver = new MaxMSPCommunication();
 		
 		//Set the transmitters to transmit to the receivers
 		instrumentTransmitter.setReceiver(instrumentReceiver);
@@ -143,7 +144,7 @@ public class Player
 		controlTransmitter.setReceiver(controlReceiver);
 		pitchTransmitter.setReceiver(pitchReceiver);
 		synthTransmitter.setReceiver(synthesizer.getReceiver());
-		maxTransmitter.setReceiver(maxReceiver);
+		//maxTransmitter.setReceiver(maxReceiver);
 		
 		//the thread method processes the midi notes as to note overload the sequencer.
 		instrumentReceiver.setDaemon(true);
@@ -155,8 +156,8 @@ public class Player
 		pitchReceiver.setDaemon(true);
 		( (Thread) pitchReceiver).start();
 		
-		maxReceiver.setDaemon(true);
-		( (Thread) maxReceiver ).start();
+		//maxReceiver.setDaemon(true);
+		//( (Thread) maxReceiver ).start();
 		
 		controlReceiver.setDaemon(true);
 		( (Thread) controlReceiver ).start();
@@ -258,7 +259,7 @@ public class Player
 				gui.setCurrentValueForSlider(0);
 				gui.updateTimer("0:00");
 				this.allSoundOff();
-				this.resetMaxMSPCommunication();
+				//this.resetMaxMSPCommunication();
 			}
 		}
 		catch(NullPointerException e){
@@ -283,7 +284,7 @@ public class Player
 			{
 				sequencer.stop();
 				this.allSoundOff();
-				this.resetMaxMSPCommunication();
+				//this.resetMaxMSPCommunication();
 			}
 		}
 		catch(NullPointerException e){
@@ -377,59 +378,59 @@ public class Player
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
 	 */
-	public void disableMaxMSPCommunication()
+	/*public void disableMaxMSPCommunication()
 	{
 		this.maxReceiver.disableMaxMSPCommunication();
-	}
+	}*/
 	
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
 	 * @throws SocketException 
 	 */
-	public void enableMaxMSPCommunication() throws SocketException
+	/*public void enableMaxMSPCommunication() throws SocketException
 	{
 		this.maxReceiver.enableMaxMSPCommunication();
-	}
+	}*/
 	
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
 	 */
-	public void enableMaxMSPInstrumentCommunication()
+	/*public void enableMaxMSPInstrumentCommunication()
 	{
 		this.maxReceiver.enableInstrumentCommunication();
-	}
+	}*/
 	
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
 	 */
-	public void disableMaxMSPInstrumentCommunication()
+	/*public void disableMaxMSPInstrumentCommunication()
 	{
 		this.maxReceiver.disableInstrumentCommunication();
-	}
+	}*/
 	
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
 	 */
-	public void enableMaxMSPBeatCommunication()
+	/*public void enableMaxMSPBeatCommunication()
 	{
 		this.maxReceiver.enableBeatCommunication();
-	}
+	}*/
 	
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
 	 */
-	public void disableMaxMSPBeatCommunication()
+	/*public void disableMaxMSPBeatCommunication()
 	{
 		this.maxReceiver.disableBeatCommunication();
-	}
+	}*/
 	
 	/**
 	 * See {@link MaxMSPCommunication} for an explanation.
 	 */
-	public void resetMaxMSPCommunication()
+	/*public void resetMaxMSPCommunication()
 	{
 		this.maxReceiver.resetMaxMSP();
-	}
+	}*/
 	
 	/**
 	 * Returns the song length in seconds.
@@ -487,5 +488,43 @@ public class Player
 
 	     gui.updateTimer("0:00");
 	     gui.enableSlider();
+	}
+	
+	public void enableBeatChannelAudio()
+	{
+		MidiChannel[] channels = synthesizer.getChannels();
+		channels[9].setMute(false);
+	}
+	
+	public void disableBeatChannelAudio()
+	{
+		MidiChannel[] channels = synthesizer.getChannels();
+		channels[9].setMute(true);
+	}
+	
+	public void enableInstrumentChannelAudio()
+	{
+		MidiChannel[] channels = synthesizer.getChannels();
+		
+		for( int i = 0 ; i < channels.length; i++ )
+		{
+			if( i != 9 )
+			{
+				channels[i].setMute(false);
+			}
+		}
+	}
+	
+	public void disableInstrumentChannelAudio()
+	{
+		MidiChannel[] channels = synthesizer.getChannels();
+		
+		for( int i = 0 ; i < channels.length; i++ )
+		{
+			if( i != 9 )
+			{
+				channels[i].setMute(true);
+			}
+		}
 	}
 }

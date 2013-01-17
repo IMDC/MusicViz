@@ -32,7 +32,7 @@ public class MaxMSPSettingsListener implements MouseListener
 	private GridLayout gridLayout;
 	private JCheckBox toggleMaxMSPBeat;
 	private JCheckBox toggleMaxMSPInstrument;
-	private JCheckBox toggleMaxMSP;
+	//private JCheckBox toggleMaxMSP;
 
 	/**
 	 * Creates the GUI window that contains the controls to alter
@@ -53,14 +53,14 @@ public class MaxMSPSettingsListener implements MouseListener
 		this.gridLayout.setVgap(5);
 		this.controls.setLayout( this.gridLayout );
 		
-		this.toggleMaxMSP = new JCheckBox("Enable/Disable MaxMSp Communication");
-		this.toggleMaxMSP.setSelected(false);
+		//this.toggleMaxMSP = new JCheckBox("Enable/Disable MaxMSp Communication");
+		//this.toggleMaxMSP.setSelected(false);
 		this.toggleMaxMSPBeat = new JCheckBox("Toggle Beat Communication");
 		this.toggleMaxMSPBeat.setSelected(true);
 		this.toggleMaxMSPInstrument = new JCheckBox("Toggle Instrument Communication");
 		this.toggleMaxMSPInstrument.setSelected(true);
 		
-		this.toggleMaxMSP.addItemListener( new ItemListener() 
+		/*this.toggleMaxMSP.addItemListener( new ItemListener() 
 		{
 			public void itemStateChanged(ItemEvent e) 
 			{
@@ -81,7 +81,7 @@ public class MaxMSPSettingsListener implements MouseListener
 					controller.getPlayer().disableMaxMSPCommunication();
 				}
 			}
-		});
+		});*/
 		
 		this.toggleMaxMSPBeat.addItemListener( new ItemListener() 
 		{
@@ -89,12 +89,14 @@ public class MaxMSPSettingsListener implements MouseListener
 			{
 				if( e.getStateChange() == ItemEvent.SELECTED )
 				{
-					controller.getPlayer().enableMaxMSPBeatCommunication();
+					//controller.getPlayer().enableMaxMSPBeatCommunication();
+					controller.getPlayer().enableBeatChannelAudio();
 				}
 				else if( e.getStateChange() == ItemEvent.DESELECTED )
 				{
-					controller.getPlayer().disableMaxMSPBeatCommunication();
-					controller.getPlayer().resetMaxMSPCommunication();
+					//controller.getPlayer().disableMaxMSPBeatCommunication();
+					//controller.getPlayer().resetMaxMSPCommunication();
+					controller.getPlayer().disableBeatChannelAudio();
 				}
 			}
 		});
@@ -105,17 +107,19 @@ public class MaxMSPSettingsListener implements MouseListener
 			{
 				if( e.getStateChange() == ItemEvent.SELECTED )
 				{
-					controller.getPlayer().enableMaxMSPInstrumentCommunication();
+					//controller.getPlayer().enableMaxMSPInstrumentCommunication();
+					controller.getPlayer().enableInstrumentChannelAudio();
 				}
 				else if( e.getStateChange() == ItemEvent.DESELECTED )
 				{
-					controller.getPlayer().disableMaxMSPInstrumentCommunication();
-					controller.getPlayer().resetMaxMSPCommunication();
+					//controller.getPlayer().disableMaxMSPInstrumentCommunication();
+					//controller.getPlayer().resetMaxMSPCommunication();
+					controller.getPlayer().disableInstrumentChannelAudio();
 				}
 			}
 		});
 		
-		this.controls.add(this.toggleMaxMSP);
+		//this.controls.add(this.toggleMaxMSP);
 		this.controls.add(this.toggleMaxMSPInstrument);
 		this.controls.add(this.toggleMaxMSPBeat);
 		
