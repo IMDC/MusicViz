@@ -19,6 +19,8 @@ import controller.Controller;
  * objects. This is passed around the program so that objects
  * can access the GUI and Player as needed.
  * 
+ * This is the final version used for the VITA 2013 Study for Michael Pouris's
+ * Masters Thesis.
  * 
  * @author Michael Pouris
  * @see Player
